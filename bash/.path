@@ -1,0 +1,8 @@
+# Rust
+export PATH="$HOME/.cargo/bin:$PATH"
+
+# Personal bin
+export PATH="$HOME/.local/bin:$PATH"
+
+# PNPM
+export PATH="$HOME/.local/share/pnpm:$PATH"

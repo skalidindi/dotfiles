@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+
+# Exa
+alias ls="command exa --icons"
+alias la="command exa --icons -a"
+alias ll="ls --long --header --git"
+alias lt="ls --tree --level=4 -I=.git --git-ignore"
+
+# Enable aliases to be sudo’ed
+alias sudo='sudo '
+
+# Get week number
+alias week='date +%V'
+
+# Trim new lines and copy to clipboard
+alias c="tr -d '\n' | pbcopy"
+
+# Intuitive map function
+# For example, to list all directories that contain a certain file:
+# find . -name .gitattributes | map dirname
+alias map="xargs -n1"
+
+# Print each PATH entry on a separate line
+alias path='echo -e ${PATH//:/\\n}'
+
+# Force nvim
+alias vim="nvim"
+alias vi="nvim"
+
+# TLDR
+alias tldrf='tldr --list | fzf --preview "tldr {1} --color=always" --preview-window=right,70% | xargs tldr'
+
+# View File
+alias v="fd --type f --hidden --exclude .git | fzf --preview 'bat --style numbers,changes --color=always {}' | xargs nvim"
+
+# Weather
+alias weather="curl wttr.in"
+
+alias gcb="git branch --sort=-committerdate | fzf --header Checkout | xargs git checkout"
+
+# Tmux Sessionizer
+bindkey -s '^f' 'tmux-sessionizer\n'

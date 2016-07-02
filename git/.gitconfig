@@ -1,0 +1,120 @@
+[alias]
+
+  # List aliases.
+	aliases = config --get-regexp alias
+
+  # Branch
+  br = branch
+
+  # Checkout
+  co = checkout
+
+  # List contributors with number of commits.
+	contributors = shortlog --summary --numbered
+
+  # Remove branches that have already been merged with main.
+	# a.k.a. ‘delete merged’
+	dm = "!git branch --merged | grep -v '\\*' | xargs -n 1 git branch -d"
+
+  # Make Empty commit
+  empty = "git commit --allow-empty"
+
+	# View abbreviated SHA, description, and history graph of the latest 20 commits.
+	l = log --pretty=oneline -n 20 --graph --abbrev-commit
+
+  # Push
+  p = push
+
+  # List remotes
+	remotes = remote --verbose
+
+  # Show verbose output about tags, branches or remotes
+	tags = tag -l
+
+	# Show the user email for the current repository.
+	whoami = config user.email
+
+[apply]
+
+  # Detect whitespace errors when applying a patch
+  whitespace = fix
+
+[branch]
+
+  # Show most recently changed branches first.
+	sort = -committerdate
+
+[core]
+
+  editor = 'nvim'
+
+  pager = delta
+
+[color]
+
+  # Use colors in Git commands that are capable of colored output when
+  # outputting to the terminal. (This is the default setting in Git ≥ 1.8.4.)
+  ui = true
+  status = auto
+
+[color "status"]
+
+	added = "green normal"
+	changed = "yellow normal"
+
+[commit]
+
+  # https://help.github.com/articles/signing-commits-using-gpg/
+	# gpgsign = true
+
+[delta]
+
+  light = false      # set to true if you're in a terminal w/ a light background color (e.g. the default macOS terminal)
+  line-numbers = true
+  navigate = true    # use n and N to move between diff sections
+  side-by-side = true
+
+[diff]
+
+	colorMoved = default
+	# Detect copies as well as renames.
+	renames = copies
+
+[fetch]
+    prune = true
+
+[help]
+
+  # Automatically correct and execute mistyped commands
+  autocorrect = 1
+
+[interactive]
+
+  diffFilter = delta --color-only
+
+[merge]
+
+  conflictstyle = diff3
+	# Include summaries of merged commits in newly created merge commit messages
+	log = true
+
+[push]
+
+	# https://git-scm.com/docs/git-config#git-config-pushdefault
+	default = simple
+	# Make `git push` push relevant annotated tags when pushing branches out.
+	followTags = true
+
+[init]
+
+	defaultBranch = main
+
+[rebase]
+
+  autosquash = true
+
+[user]
+
+  name = Santosh Kalidindi
+  initials = sk
+  email = skalidindi8@gmail.com
