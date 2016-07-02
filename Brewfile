@@ -67,6 +67,7 @@ cask "vagrant"
 cask "google-chrome"
 cask "iterm2"
 cask "macvim"
+cask "intellij-idea"
 
 cask "adium"
 cask "slack"
