@@ -14,9 +14,11 @@ Plugin 'scrooloose/nerdtree'
 Plugin 'mileszs/ack.vim'
 Plugin 'Fugitive.Vim'
 Plugin 'scrooloose/syntastic'
-Plugin 'valloric/youcompleteme'
 Plugin 'pangloss/vim-javascript'
 Plugin 'easymotion/vim-easymotion'
+Plugin 'tagbar'
+Plugin 'airblade/vim-gitgutter'
+Plugin 'vim-airline/vim-airline'
 
 " ================ General Config ====================
 
