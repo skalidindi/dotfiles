@@ -10,6 +10,14 @@ call vundle#begin()
 " let Vundle manage Vundle, required
 Plugin 'VundleVim/Vundle.vim'
 
+Plugin 'scrooloose/nerdtree'
+Plugin 'mileszs/ack.vim'
+Plugin 'Fugitive.Vim'
+Plugin 'scrooloose/syntastic'
+Plugin 'valloric/youcompleteme'
+Plugin 'pangloss/vim-javascript'
+Plugin 'easymotion/vim-easymotion'
+
 " ================ General Config ====================
 
 set number                      "Line numbers are good
@@ -139,3 +147,5 @@ set incsearch       " Find the next match as we type the search
 set hlsearch        " Highlight searches by default
 set ignorecase      " Ignore case when searching...
 set smartcase       " ...unless we type a capital
+execute pathogen#infect()
+call pathogen#helptags()
