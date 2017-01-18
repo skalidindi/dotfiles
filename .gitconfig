@@ -1,0 +1,47 @@
+[user]
+	name = skalidindi
+	email = skalidindi8@gmail.com
+[color]
+	ui = true
+[push]
+	default = simple
+[reviewboard]
+   url = https://reviewboard.eng.vmware.com/
+[alias]
+      co = checkout
+      ci = commit
+      st = status
+      br = branch
+      hist = log --pretty=format:\"%h% ad | %s %d [%an]\" --graph --date=short
+      type = cat-file -t
+      dump = cat-file -p
+      lg1 = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)' --all
+      lg2 = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n''          %C(white)%s%C(reset) %C(dim white)- %an%C(reset)' --all
+      lg = !"git lg1"
+
+[core]
+  editor = subl -n -w
+[commit]
+	template = /Users/skalidindi/.gitmessage.txt
+[diff]
+	tool = Kaleidoscope
+[difftool]
+   prompt = false
+[merge]
+	tool = Kaleidoscope
+   keepBackup = false
+[filter "hawser"]
+	clean = git hawser clean %f
+	smudge = git hawser smudge %f
+	required = true
+[filter "lfs"]
+	clean = git-lfs clean %f
+	smudge = git-lfs smudge %f
+	required = true
+[mergetool "Kaleidoscope"]
+	cmd = ksdiff --merge --output \"$MERGED\" --base \"$BASE\" -- \"$LOCAL\" --snapshot \"$REMOTE\" --snapshot
+	trustexitcode = true
+[difftool "Kaleidoscope"]
+	cmd = ksdiff --partial-changeset --relative-path \"$MERGED\" -- \"$LOCAL\" \"$REMOTE\"
+[mergetool]
+	prompt = false

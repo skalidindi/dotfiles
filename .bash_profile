@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
+export PATH=$HOME/bin:/usr/local/bin:/usr/local/sbin:$PATH
+export PATH=$HOME/.rbenv/bin:$PATH # rbenv
 
-export PATH=/usr/local/bin:$PATH
+# Cask
+export HOMEBREW_CASK_OPTS="--appdir=/Applications"
+
+# Brew
+alias brewski='brew update && brew upgrade && brew cleanup && brew cask cleanup; brew doctor'
 
 # Easier navigation: .., ..., ...., ....., ~ and -
 alias ..="cd .."
@@ -20,7 +26,7 @@ alias h="history"
 alias j="jobs"
 
 # Enable aliases to be sudo’ed
-alias sudo='sudo '
+#alias sudo='sudo '
 
 # IP addresses
 alias ip="dig +short myip.opendns.com @resolver1.opendns.com"
@@ -81,3 +87,45 @@ export EDITOR='atom -wn'
 if [ -n "$BASH" ] && [ -r ~/.bashrc ]; then
     . ~/.bashrc
 fi
+
+# H5
+alias v='cd ~/workspace/$H5_DIR'
+alias vc='cd ~/workspace/$H5_DIR/vim-clients'
+alias vcm='cd ~/workspace/$H5_DIR/vsphere-client-modules'
+alias vui='cd ~/workspace/h5_client/vui-components'
+alias cui='cd ~/workspace/vsphere-client-config-ui'
+alias resprout='(cd ~/workspace/sprout-vmwareh5 && git pull && bundle exec soloist)'
+alias updatecfg='source ~/.bash_profile'
+
+export H5_BRANCH=h5c-dev
+if [[ "$H5_BRANCH" == "h5c-rel" ]]
+then
+   H5_DIR=h5_client_rel
+   H5_SERVER_EXT=-rel
+elif [[ "$H5_BRANCH" == "h5c-dev" ]]
+then
+   H5_DIR=h5_client_dev
+   H5_SERVER_EXT=-dev
+else
+   H5_DIR=h5_client
+   H5_SERVER_EXT=''
+fi
+
+export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.7.0_80.jdk/Contents/Home
+#export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_112.jdk/Contents/Home
+#export M2_HOME=/build/toolchain/noarch/apache-maven-3.3.3
+export M2=${M2_HOME}/bin
+export MAVEN_OPTS="-Xmx4352m -Xms512m -XX:PermSize=128m -XX:MaxPermSize=512m -Dorg.slf4j.simpleLogger.showThreadName=true -Dorg.slf4j.simpleLogger.showDateTime=true"
+export TCROOT=${HOME}/workspace/toolchain
+export BUILDAPPSROOT=${HOME}/workspace/apps
+export BUILDAPPS=${BUILDAPPSROOT}/bin
+export P4CONFIG=.p4config
+export H5_CLIENT=${HOME}/workspace/devServers${H5_SERVER_EXT}/h5-client
+export VMWARE_CFG_DIR=/var/lib/vmware/vsphere-client
+
+H5_CLI=${HOME}/workspace/${H5_DIR}/vim-clients/cli
+VM_CLI=${HOME}/workspace/${H5_DIR}/vsphere-client-modules/h5-plugin/ui/vm-ui/cli
+
+export PATH=${H5_CLI}:${VM_CLI}:${PATH}:${M2}:${BUILDAPPS}
+
+[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
