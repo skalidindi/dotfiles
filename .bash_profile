@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 export PATH=$HOME/bin:/usr/local/bin:/usr/local/sbin:$PATH
-export PATH=$HOME/.rbenv/bin:$PATH # rbenv
 
 # Cask
 export HOMEBREW_CASK_OPTS="--appdir=/Applications"
@@ -128,4 +127,3 @@ VM_CLI=${HOME}/workspace/${H5_DIR}/vsphere-client-modules/h5-plugin/ui/vm-ui/cli
 
 export PATH=${H5_CLI}:${VM_CLI}:${PATH}:${M2}:${BUILDAPPS}
 
-[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*

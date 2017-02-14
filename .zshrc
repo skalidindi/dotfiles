@@ -101,3 +101,7 @@ bindkey '^[[1;9C' forward-word
 bindkey '^[[1;9D' backward-word
 bindkey '^[[A' history-substring-search-up
 bindkey '^[[B' history-substring-search-down
+
+#RUBY
+export PATH="$HOME/.rbenv/bin:$PATH"
+eval "$(rbenv init -)"
