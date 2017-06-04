@@ -133,6 +133,11 @@ cask "iterm2"
 cask "dash"
 cask "sketch"
 cask "shiftit"
+cask "hazel"
+cask "transmission"
+cask "forklift"
+cask "bettertouchtool"
+
 
 # IDEs
 cask "visual-studio-code"
@@ -151,3 +156,4 @@ echo "need whatsapp"
 echo "need paste"
 echo "need dr. cleaner"
 echo "need wake up time"
+echo "need helium"
