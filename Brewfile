@@ -2,75 +2,152 @@
 tap "homebrew/bundle"
 tap "homebrew/dupes"
 
-brew "wget"
+# Shell
+brew "zsh"
+brew "z"
+brew "zsh-completions"
+brew "the_silver_searcher"
+
+# Git
+brew "git"
+brew "hub"
+brew "git-flow"
+
+# Misc
+brew "speedtest-cli"
+brew "node"
+brew "nginx"
+brew "libyaml"
+brew "go --with-cc-all"
+brew "macvim"
+brew "unzip"
+brew "unrar"
+brew "dark-mode"
+brew "youtube-dl"
+brew "memcached"
+brew "heroku"
+
+# DBs
 brew "redis"
 brew "postgresql"
-brew "git-flow"
-brew "node"
-brew "ctags"
-brew "hub"
-brew "rsync"
-brew "ant"
-brew "nginx"
+brew "mongodb"
+brew "mysql"
+
+# Apache
 brew "spark"
+brew "hadoop"
+brew "thrift"
+brew "ant"
+brew "maven"
+brew "zookeeper"
+brew "subversion"
+brew "mesos"
+
+# Linux
+brew "vim --with-override-system-vi"
+brew "vimpager"
+brew "openssh"
+brew "coreutils"
+brew "moreutils"
+brew "findutils"
+brew "gnu-tar"
+brew "gnu-sed"
+brew "tree"
+brew "grep"
+brew "gawk"
+brew "wget"
 brew "openldap"
 brew "openssh"
 brew "openssl"
-brew "hadoop"
-brew "calc"
-brew "tree"
-brew "thrift"
-brew "unzip"
+brew "rsync"
 brew "tmux"
 brew "watch"
-brew "z"
-brew "zsh"
-brew "zookeeper"
-brew "pyenv"
+brew "htop"
+brew "ack"
+
+# C
+brew "gdb"
+brew "cmake"
+brew "automake"
+
+# JVM
+brew "jenv"
+brew "scala"
+
+# Ruby
+brew "rbenv"
+brew "rbenv-default-gems"
+
+# Python
 brew "python"
 brew "python3"
-brew "maven"
-brew "mesos"
-brew "libyaml"
-brew "lftp"
-brew "irssi"
-brew "htop"
-brew "gdb"
-brew "geoip"
-brew "git"
-brew "go"
-brew "calc"
-brew "cmake"
+brew "pyenv"
+brew "scons"
+
+# Amazon
+brew "aws-shell"
 brew "awscli"
-brew "colordiff"
-brew "coreutils"
-brew "gawk"
-brew "openssh"
-brew "macvim"
-brew "protobuf"
-brew "subversion"
-brew "the_silver_searcher"
-brew "unrar"
-brew "vimpager"
 
 # Install Cask
 brew "caskroom/cask/brew-cask"
 
 # Install Casks
-cask "alfred"
-cask "caffeine"
-cask "flux"
-
+cask "dropbox"
 cask "virtualbox"
 cask "vagrant"
-
-cask "google-chrome"
-cask "iterm2"
-cask "macvim"
-cask "intellij-idea"
-
-cask "adium"
+cask "postman"
+cask "docker"
+cask "surge"
+cask "robomongo"
+cask "synergy"
+cask "steam"
+cask "skype"
 cask "slack"
-cask "textexpander"
+cask "screenhero"
 cask "vlc"
+
+# Adobe
+cask "adobe-air"
+cask "adobe-reader"
+cask "flash"
+
+# Google
+cask "google-chrome"
+cask "chromecast"
+cask "google-drive"
+cask "google-hangouts"
+cask "chrome-remote-desktop-host"
+
+# MacOS
+cask "alfred"
+cask "flux"
 cask "the-unarchiver"
+cask "airmail-beta"
+cask "cheatsheet"
+cask "totalfinder"
+cask "fantastical"
+cask "bartender"
+cask "boom"
+cask "appcleaner"
+cask "iterm2"
+cask "dash"
+cask "sketch"
+cask "shiftit"
+
+# IDEs
+cask "visual-studio-code"
+cask "intellij-idea"
+cask "sublime-text"
+
+# Source control
+cask "github"
+cask "sourcetree"
+cask "p4v"
+cask "p4merge"
+
+echo "need install Amphetamine"
+echo "need better snap tool"
+echo "need whatsapp"
+echo "need paste"
+echo "need dr. cleaner"
+echo "need wake up time"

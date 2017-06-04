@@ -4,8 +4,10 @@ export PATH=$HOME/bin:/usr/local/bin:/usr/local/sbin:$PATH
 # Cask
 export HOMEBREW_CASK_OPTS="--appdir=/Applications"
 
-# Brew
-alias brewski='brew update && brew upgrade && brew cleanup && brew cask cleanup; brew doctor'
+# Updates
+alias brewup='brew update && brew upgrade && brew prune && brew cleanup && brew cask cleanup; brew doctor'
+alias nodeup='npm outdated --global && npm update -g'
+alias gemup='gem update'
 
 # Easier navigation: .., ..., ...., ....., ~ and -
 alias ..="cd .."
@@ -96,7 +98,7 @@ alias cui='cd ~/workspace/vsphere-client-config-ui'
 alias resprout='(cd ~/workspace/sprout-vmwareh5 && git pull && bundle exec soloist)'
 alias updatecfg='source ~/.bash_profile'
 
-export H5_BRANCH=h5c-dev
+export H5_BRANCH=vmkernel-main
 if [[ "$H5_BRANCH" == "h5c-rel" ]]
 then
    H5_DIR=h5_client_rel
@@ -110,9 +112,6 @@ else
    H5_SERVER_EXT=''
 fi
 
-export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.7.0_80.jdk/Contents/Home
-#export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_112.jdk/Contents/Home
-#export M2_HOME=/build/toolchain/noarch/apache-maven-3.3.3
 export M2=${M2_HOME}/bin
 export MAVEN_OPTS="-Xmx4352m -Xms512m -XX:PermSize=128m -XX:MaxPermSize=512m -Dorg.slf4j.simpleLogger.showThreadName=true -Dorg.slf4j.simpleLogger.showDateTime=true"
 export TCROOT=${HOME}/workspace/toolchain
