@@ -3,6 +3,7 @@
 set nocompatible
 filetype off                  " required
 
+" ================ Vundle ====================
 " set the runtime path to include Vundle and initialize
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
@@ -19,6 +20,9 @@ Plugin 'easymotion/vim-easymotion'
 Plugin 'tagbar'
 Plugin 'airblade/vim-gitgutter'
 Plugin 'vim-airline/vim-airline'
+Plugin 'altercation/vim-colors-solarized'
+
+call vundle#end()
 
 " ================ General Config ====================
 
@@ -149,5 +153,3 @@ set incsearch       " Find the next match as we type the search
 set hlsearch        " Highlight searches by default
 set ignorecase      " Ignore case when searching...
 set smartcase       " ...unless we type a capital
-execute pathogen#infect()
-call pathogen#helptags()
