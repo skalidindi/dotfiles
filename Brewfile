@@ -1,6 +1,8 @@
 # Santosh's awesome brewfile with Casks
 tap "homebrew/bundle"
 tap "homebrew/dupes"
+tap "caskroom/cask"
+tap "caskroom/versions"
 
 # Java
 cask "java"
@@ -108,12 +110,10 @@ cask "vlc"
 
 # Adobe
 cask "adobe-air"
-cask "adobe-reader"
-cask "flash"
+cask "adobe-acrobat-reader"
 
 # Google
 cask "google-chrome"
-cask "chromecast"
 cask "google-drive"
 cask "google-hangouts"
 cask "chrome-remote-desktop-host"
@@ -122,7 +122,6 @@ cask "chrome-remote-desktop-host"
 cask "alfred"
 cask "flux"
 cask "the-unarchiver"
-cask "airmail-beta"
 cask "cheatsheet"
 cask "totalfinder"
 cask "fantastical"
@@ -145,7 +144,5 @@ cask "intellij-idea"
 cask "sublime-text"
 
 # Source control
-cask "github"
+cask "github-desktop"
 cask "sourcetree"
-cask "p4v"
-cask "p4merge"
