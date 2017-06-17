@@ -79,6 +79,7 @@ brew "automake"
 # JVM
 brew "jenv"
 brew "scala"
+brew "sbt"
 
 # Ruby
 brew "rbenv"
