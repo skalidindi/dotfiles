@@ -2,6 +2,9 @@
 tap "homebrew/bundle"
 tap "homebrew/dupes"
 
+# Java
+cask "java"
+
 # Shell
 brew "zsh"
 brew "z"
@@ -18,7 +21,7 @@ brew "speedtest-cli"
 brew "node"
 brew "nginx"
 brew "libyaml"
-brew "go --with-cc-all"
+brew "go", args: ['with-cc-all']
 brew "macvim"
 brew "unzip"
 brew "unrar"
@@ -44,7 +47,7 @@ brew "subversion"
 brew "mesos"
 
 # Linux
-brew "vim --with-override-system-vi"
+brew "vim", args: ['--with-override-system-vi']
 brew "vimpager"
 brew "openssh"
 brew "coreutils"
@@ -87,9 +90,6 @@ brew "scons"
 # Amazon
 brew "aws-shell"
 brew "awscli"
-
-# Install Cask
-brew "caskroom/cask/brew-cask"
 
 # Install Casks
 cask "dropbox"
@@ -149,10 +149,3 @@ cask "github"
 cask "sourcetree"
 cask "p4v"
 cask "p4merge"
-
-echo "need install Amphetamine"
-echo "need install whatsapp"
-echo "need install paste"
-echo "need install dr. cleaner"
-echo "need install wake up time"
-echo "need install helium"
