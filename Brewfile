@@ -11,6 +11,7 @@ cask "java"
 brew "zsh"
 brew "z"
 brew "zsh-completions"
+brew "zsh-history-substring-search"
 brew "the_silver_searcher"
 
 # Git
