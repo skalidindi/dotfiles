@@ -21,11 +21,13 @@ Plugin 'tagbar'
 Plugin 'airblade/vim-gitgutter'
 Plugin 'vim-airline/vim-airline'
 Plugin 'altercation/vim-colors-solarized'
+Plugin 'elzr/vim-json'
 
 call vundle#end()
 
 " ================ General Config ====================
-
+set title                       "Show the filename in the window titlebar
+set ruler                       "Show the cursor posiiton
 set number                      "Line numbers are good
 set backspace=indent,eol,start  "Allow backspace in insert mode
 set history=1000                "Store lots of :cmdline history
@@ -34,19 +36,19 @@ set showmode                    "Show current mode down the bottom
 set gcr=a:blinkon0              "Disable cursor blink
 set visualbell                  "No sounds
 set autoread                    "Reload files changed outside vim
-set mouse=a
+set mouse=a                     "Enable mouse in all modes
+set clipboard=unnamed           "Use OS clipboard
+set lcs=tab:▸\ ,trail:·,eol:¬,nbsp:_ "Show “invisible” characters
+
 
 " Highlight Current Line
 set cul
 hi CursorLine term=none cterm=none ctermbg=152
 
 " Favorite Color Scheme
-if has('gui_running')
-   set background=light
-else
-   set background=dark
-endif
-let g:solarized_termcolors=256
+set background=dark
+" let g:solarized_termcolors=256
+let g:solarized_termtrans=1
 colorscheme solarized
 
 " ================ Spell Check =======================
