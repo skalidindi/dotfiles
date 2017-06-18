@@ -1,9 +1,9 @@
 {
   "caret_style": "phase",
-  "color_scheme": "Packages/User/SublimeLinter/base16-ocean.dark (SL).tmTheme",
+  "color_scheme": "Packages/User/SublimeLinter/Monokai (SL).tmTheme",
   "detect_indentation": false,
   "fade_fold_buttons": false,
-  "font_face": "Source Code Pro",
+  "font_face": "Meslo LG M",
   "font_options": "subpixel_antialias",
   "font_size": 14,
   "highlight_line": true,
@@ -27,10 +27,8 @@
   "spacegray_tabs_font_large": true,
   "spacegray_tabs_xlarge": true,
   "tab_completion": true,
-  "tab_size": 3,
-  "theme": "Spacegray.sublime-theme",
+  "tab_size": 2,
   "translate_tabs_to_spaces": true,
   "trim_trailing_white_space_on_save": true,
-  "typescript_plugin_tsc_version": "1.7.2",
   "word_wrap": true
 }
