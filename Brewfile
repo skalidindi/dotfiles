@@ -11,10 +11,8 @@ cask "xquartz"
 
 # Shell
 brew "zsh"
-brew "z"
-brew "zsh-completions"
-brew "zsh-history-substring-search"
 brew "the_silver_searcher"
+brew "fasd"
 
 # Git
 brew "git"
@@ -53,7 +51,7 @@ brew "subversion"
 brew "mesos"
 
 # Linux
-brew "vim", args: ['--with-override-system-vi']
+brew "vim", args: ['--with-override-system-vi', '--with-python', '--with-ruby']
 brew "vimpager"
 brew "openssh"
 brew "coreutils"
