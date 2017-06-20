@@ -1,10 +1,6 @@
 [user]
   name = Santosh Kalidindi
-  email = skalidindi@vmware.com
   initials = sk
-
-[reviewboard]
-  url = https://reviewboard.eng.vmware.com/
 
 [apply]
   # Detect whitespace errors when applying a patch
@@ -25,7 +21,7 @@
 [color]
   # Use colors in Git commands that are capable of colored output when
   # outputting to the terminal. (This is the default setting in Git ≥ 1.8.4.)
-	ui = auto
+  ui = auto
   status = auto
 
 [color "branch"]
