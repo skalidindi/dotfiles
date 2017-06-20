@@ -126,6 +126,7 @@ cask "chrome-remote-desktop-host"
 
 # MacOS
 cask "alfred"
+cask "aerial"
 cask "flux"
 cask "the-unarchiver"
 cask "cheatsheet"
