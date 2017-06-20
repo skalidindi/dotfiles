@@ -93,7 +93,7 @@ alias ohmyzsh="atom ~/.oh-my-zsh"
 
 # Load custom scripts
 source ~/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-source ~/zsh-history-substring-search/zsh-history-substring-search.zsh
+source /usr/local/share/zsh-history-substring-search/zsh-history-substring-search.zsh
 
 # Custom binds
 bindkey -e
