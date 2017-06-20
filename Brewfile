@@ -1,11 +1,13 @@
 # Santosh's awesome brewfile with Casks
 tap "homebrew/bundle"
 tap "homebrew/dupes"
+tap "homebrew/science"
 tap "caskroom/cask"
 tap "caskroom/versions"
 
-# Java
+# Install first these dependencies
 cask "java"
+cask "xquartz"
 
 # Shell
 brew "zsh"
@@ -32,6 +34,7 @@ brew "dark-mode"
 brew "youtube-dl"
 brew "memcached"
 brew "heroku"
+brew "octave"
 
 # DBs
 brew "redis"
@@ -98,6 +101,7 @@ brew "awscli"
 # Install Casks
 cask "dropbox"
 cask "virtualbox"
+cask "evernote"
 cask "vagrant"
 cask "postman"
 cask "docker"
@@ -125,7 +129,6 @@ cask "alfred"
 cask "flux"
 cask "the-unarchiver"
 cask "cheatsheet"
-cask "totalfinder"
 cask "fantastical"
 cask "bartender"
 cask "boom"
@@ -133,7 +136,6 @@ cask "appcleaner"
 cask "iterm2"
 cask "dash"
 cask "sketch"
-cask "shiftit"
 cask "hazel"
 cask "transmission"
 cask "forklift"

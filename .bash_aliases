@@ -182,13 +182,3 @@ alias gco='git checkout'
 alias gs='git status -sb' # upgrade your git if -sb breaks for you. it's fun.
 alias gac='git add -A && git commit -m'
 
-# H5
-alias v='cd ~/workspace/$H5_DIR'
-alias vc='cd ~/workspace/$H5_DIR/vim-clients'
-alias vcm='cd ~/workspace/$H5_DIR/vsphere-client-modules'
-alias vui='cd ~/workspace/h5_client/vui-components'
-alias cui='cd ~/workspace/vsphere-client-config-ui'
-alias resprout='(cd ~/workspace/sprout-vmwareh5 && git pull && bundle exec soloist)'
-alias updatecfg='source ~/.bash_profile'
-
-
