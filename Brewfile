@@ -139,6 +139,7 @@ cask "hazel"
 cask "transmission"
 cask "forklift"
 cask "bettertouchtool"
+cask "spotify"
 
 
 # IDEs
