@@ -5,10 +5,6 @@
 #   Sorin Ionescu <sorin.ionescu@gmail.com>
 #
 
-# Exports (Must load first for dircolors to work)
-export PATH="/usr/local/opt/coreutils/libexec/gnubin:/usr/local/bin:/usr/local/sbin:$PATH"
-export MANPATH="/usr/local/opt/coreutils/libexec/gnuman:$MANPATH"
-
 # Source Prezto.
 if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
   source "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"
@@ -19,10 +15,6 @@ fi
 # Execute bash_profile
 source ~/.bash_profile
 
-# jEnv
-# export PATH="$HOME/.jenv/bin:$PATH"
-# eval "$(jenv init -)"
-
 # Custom binds
 bindkey -e
 bindkey '^[[1;9C' forward-word
@@ -32,3 +24,11 @@ bindkey '^[[1;9D' backward-word
 unalias rm
 unalias cp
 unalias mv
+
+# jEnv
+export PATH="$HOME/.jenv/bin:$PATH"
+eval "$(jenv init -)"
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
