@@ -5,6 +5,9 @@
 #   Sorin Ionescu <sorin.ionescu@gmail.com>
 #
 
+# Time startup
+start=$(gdate +%s.%N)
+
 # Source Prezto.
 if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
   source "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"
@@ -26,6 +29,31 @@ unalias cp
 unalias mv
 
 # jEnv
-export PATH="$HOME/.jenv/bin:$PATH"
-eval "$(jenv init - --no-rehash)"
-(jenv rehash &) 2> /dev/null
+jenv() {
+  unset -f jenv
+  PATH="$HOME/.jenv/bin:$PATH"
+  eval "$(command jenv init -)"
+  jenv "$@"
+}
+
+# Nvm
+nvm() {
+  unset -f nvm
+  export NVM_DIR="$HOME/.nvm"
+  [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" # This loads nvm
+  nvm "$@"
+}
+
+# pyenv
+pyenv() {
+  unset -f pyenv
+  export PYENV_ROOT="$HOME/.pyenv"
+  export PATH="$PYENV_ROOT/bin:$PATH"
+  eval "$(command pyenv init -)"
+  pyenv "$@"
+}
+
+# End time startup
+end=$(gdate +%s.%N)
+runtime=$(python -c "print(${end} - ${start})")
+echo "Runtime was $runtime"

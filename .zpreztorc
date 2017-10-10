@@ -36,10 +36,7 @@ zstyle ':prezto:load' pmodule \
   'completion' \
   'homebrew' \
   'osx' \
-  'ruby' \
-  'node' \
   'git' \
-  'python' \
   'docker' \
   'tmux' \
   'archive' \
@@ -47,6 +44,11 @@ zstyle ':prezto:load' pmodule \
   'syntax-highlighting' \
   'history-substring-search' \
   'prompt'
+
+# slow (add on if you want)
+# 'python' \
+# 'node' \
+# 'ruby' \
 
 #
 # Autosuggestions
