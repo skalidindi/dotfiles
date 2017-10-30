@@ -1,30 +1,22 @@
 " Use Vim settings, rather then Vi settings (much better!).
 " This must be first, because it changes other options as a side effect.
 set nocompatible
-filetype off                  " required
 
-" ================ Vundle ====================
-" set the runtime path to include Vundle and initialize
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
-
-" let Vundle manage Vundle, required
-Plugin 'VundleVim/Vundle.vim'
-
-Plugin 'scrooloose/nerdtree'
-Plugin 'mileszs/ack.vim'
-Plugin 'Fugitive.Vim'
-Plugin 'scrooloose/syntastic'
-Plugin 'pangloss/vim-javascript'
-Plugin 'easymotion/vim-easymotion'
-Plugin 'tagbar'
-Plugin 'airblade/vim-gitgutter'
-Plugin 'vim-airline/vim-airline'
-Plugin 'altercation/vim-colors-solarized'
-Plugin 'elzr/vim-json'
-Plugin 'Valloric/YouCompleteMe'
-
-call vundle#end()
+" ================ vim-plug ====================
+call plug#begin('~/.vim/plugged')
+Plug 'scrooloose/nerdtree'
+Plug 'mileszs/ack.vim'
+Plug 'tpope/vim-fugitive'
+Plug 'scrooloose/syntastic'
+Plug 'pangloss/vim-javascript', { 'for': 'javascript' }
+Plug 'easymotion/vim-easymotion'
+Plug 'majutsushi/tagbar'
+Plug 'airblade/vim-gitgutter'
+Plug 'vim-airline/vim-airline'
+Plug 'altercation/vim-colors-solarized'
+Plug 'elzr/vim-json'
+Plug 'Valloric/YouCompleteMe'
+call plug#end()
 
 " ================ General Config ====================
 set title                       "Show the filename in the window titlebar
@@ -99,12 +91,12 @@ set softtabstop=2
 set tabstop=2
 set expandtab
 
+filetype plugin on
+filetype indent on
+
 " Auto indent pasted text
 nnoremap p p=`]<C-o>
 nnoremap P P=`]<C-o>
-
-filetype plugin on
-filetype indent on
 
 " Display tabs and trailing spaces visually
 set list listchars=tab:\ \ ,trail:·
