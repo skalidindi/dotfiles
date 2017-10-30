@@ -22,6 +22,7 @@ brew "git-flow"
 # Misc
 brew "speedtest-cli"
 brew "node"
+brew "fzf"
 brew "nginx"
 brew "libyaml"
 brew "go", args: ['with-cc-all']
