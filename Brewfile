@@ -25,7 +25,7 @@ brew "node"
 brew "nginx"
 brew "libyaml"
 brew "go", args: ['with-cc-all']
-brew "macvim"
+brew "macvim", args: ['with-override-system-vim']
 brew "unzip"
 brew "unrar"
 brew "dark-mode"
