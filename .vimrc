@@ -4,18 +4,51 @@ set nocompatible
 
 " ================ vim-plug ====================
 call plug#begin('~/.vim/plugged')
-Plug 'scrooloose/nerdtree'
-Plug 'mileszs/ack.vim'
-Plug 'tpope/vim-fugitive'
-Plug 'scrooloose/syntastic'
-Plug 'pangloss/vim-javascript', { 'for': 'javascript' }
-Plug 'easymotion/vim-easymotion'
-Plug 'majutsushi/tagbar'
-Plug 'airblade/vim-gitgutter'
-Plug 'vim-airline/vim-airline'
+" UI setting
 Plug 'altercation/vim-colors-solarized'
-Plug 'elzr/vim-json'
+Plug 'vim-airline/vim-airline' | Plug 'vim-airline/vim-airline-themes' " Status line
+Plug 'ryanoasis/vim-devicons' " Devicons
+Plug 'mhinz/vim-startify' " Start page
+Plug 'junegunn/limelight.vim'
+Plug 'majutsushi/tagbar'
+Plug 'mhinz/vim-signify'
+Plug 'farmergreg/vim-lastplace'
+
+" Editing/Syntax
+Plug 'Raimondi/delimitMate' " Closing of quotes
+Plug 'tomtom/tcomment_vim' " Commenter
+Plug 'editorconfig/editorconfig-vim'
+Plug 'sjl/gundo.vim'
+Plug 'tpope/vim-abolish'
+Plug 'tpope/vim-surround'
+Plug 'nathanaelkane/vim-indent-guides'
+Plug 'terryma/vim-expand-region'
+Plug 'scrooloose/nerdcommenter'
+Plug 'scrooloose/syntastic'
 Plug 'Valloric/YouCompleteMe'
+
+" File Management
+Plug 'scrooloose/nerdtree'
+
+" Git
+Plug 'tpope/vim-fugitive'
+Plug 'airblade/vim-gitgutter'
+
+" Searching
+Plug 'ctrlpvim/ctrlp.vim'
+Plug 'mileszs/ack.vim'
+
+" Text navigation
+Plug 'easymotion/vim-easymotion'
+
+" Python
+Plug 'klen/python-mode', { 'for': 'python' }
+
+" Javascript
+Plug 'pangloss/vim-javascript', { 'for': 'javascript' }
+
+" JSON
+Plug 'elzr/vim-json'
 call plug#end()
 
 " ================ General Config ====================
@@ -40,9 +73,9 @@ hi CursorLine term=none cterm=none ctermbg=152
 
 " Favorite Color Scheme
 set background=dark
-" let g:solarized_termcolors=256
 let g:solarized_termtrans=1
 colorscheme solarized
+let g:airline_theme='solarized'
 
 " ================ Spell Check =======================
 if version >= 700
