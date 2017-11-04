@@ -44,16 +44,21 @@ nvm() {
   nvm "$@"
 }
 
-# pyenv
-pyenv() {
-  unset -f pyenv
-  export PYENV_ROOT="$HOME/.pyenv"
-  export PATH="$PYENV_ROOT/bin:$PATH"
-  eval "$(command pyenv init -)"
-  pyenv "$@"
+# Anaconda
+export PATH="/anaconda3/bin:$PATH"
+
+# rbenv
+rbenv() {
+  unset -f rbenv
+  export PATH="$HOME/.rbenv/bin:$PATH"
+  eval "$(command rbenv init -)"
+  rbenv "$@"
 }
+
+# Rust
+export PATH="$HOME/.cargo/bin:$PATH"
 
 # End time startup
 end=$(gdate +%s.%N)
 runtime=$(python -c "print(${end} - ${start})")
-echo "Runtime was $runtime"
+#echo "Runtime was $runtime"
