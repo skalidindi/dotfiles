@@ -40,14 +40,14 @@ Plug 'mileszs/ack.vim'
 " Text navigation
 Plug 'easymotion/vim-easymotion'
 
+" VimDevIcons
+Plug 'ryanoasis/vim-devicons' " Devicons
+
 " Python
 Plug 'klen/python-mode', { 'for': 'python' }
 
 " Javascript
 Plug 'pangloss/vim-javascript', { 'for': 'javascript' }
-
-" VimDevIcons
-Plug 'ryanoasis/vim-devicons' " Devicons
 
 " JSON
 Plug 'elzr/vim-json'
