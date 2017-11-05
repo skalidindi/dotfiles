@@ -31,3 +31,7 @@ indent_style = space
 indent_size = 2
 max_char = 100
 brace_style = expand
+
+[**.rs]
+indent_style = space
+indent_size = 4
