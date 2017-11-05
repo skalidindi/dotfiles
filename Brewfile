@@ -18,6 +18,7 @@ brew "fasd"
 brew "git"
 brew "hub"
 brew "git-flow"
+brew "diff-so-fancy"
 
 # Misc
 brew "speedtest-cli"

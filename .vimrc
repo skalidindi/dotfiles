@@ -15,7 +15,7 @@ Plug 'farmergreg/vim-lastplace'
 
 " Editing/Syntax
 Plug 'Raimondi/delimitMate' " Closing of quotes
-Plug 'tomtom/tcomment_vim' " Commenter
+Plug 'tpope/vim-commentary' " Commenter
 Plug 'editorconfig/editorconfig-vim'
 Plug 'sjl/gundo.vim'
 Plug 'tpope/vim-abolish'
@@ -25,6 +25,10 @@ Plug 'terryma/vim-expand-region'
 Plug 'scrooloose/nerdcommenter'
 Plug 'vim-syntastic/syntastic'
 Plug 'Valloric/YouCompleteMe'
+Plug 'maxbrunsfeld/vim-yankstack'
+
+" Snippets
+Plug 'scrooloose/snipmate-snippets'
 
 " File Management
 Plug 'scrooloose/nerdtree'
@@ -67,6 +71,17 @@ map <C-n> :NERDTreeToggle<CR>
 " Close if only tab left
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 
+" ================ Syntastic Setup ====================
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+let g:syntastic_javascript_checkers = ['eslint']
+let g:syntastic_javascript_eslint_exe='$(npm bin)/eslint'
+
 " ================ CtrlP Setup ====================
 " Setup some default ignores
 let g:ctrlp_custom_ignore = {
@@ -93,6 +108,7 @@ set title                       "Show the filename in the window titlebar
 set ruler                       "Show the cursor posiiton
 set number                      "Line numbers are good
 set backspace=indent,eol,start  "Allow backspace in insert mode
+set whichwrap+=<,>,h,l          "Wrap on keys
 set history=1000                "Store lots of :cmdline history
 set showcmd                     "Show incomplete cmds down the bottom
 set showmode                    "Show current mode down the bottom
@@ -102,10 +118,12 @@ set autoread                    "Reload files changed outside vim
 set mouse=a                     "Enable mouse in all modes
 set clipboard=unnamed           "Use OS clipboard
 set lcs=tab:▸\ ,trail:·,eol:¬,nbsp:_ "Show “invisible” characters
-set termencoding=utf8
-set encoding=utf8
-set laststatus=2
-let mapleader=','
+set termencoding=utf8           "Encoding
+set encoding=utf8               "Endoting
+set ffs=unix,dos,mac            "Use Unix as the standard file type
+set laststatus=2                "Always show status bar
+set showmatch                   "Show matching brackets when text indicator is over them
+let g:mapleader = ','           "Set Leader key
 
 " Highlight Current Line
 set cul
@@ -173,7 +191,7 @@ nnoremap P P=`]<C-o>
 " Display tabs and trailing spaces visually
 set list listchars=tab:\ \ ,trail:·
 
-set nowrap       "Don't wrap lines
+set wrap         "Don't wrap lines
 set linebreak    "Wrap lines at convenient points
 
 " ================ Folds ============================
