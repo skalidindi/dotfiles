@@ -1,6 +1,7 @@
 [user]
-  name = Santosh Kalidindi
+	name = Santosh Kalidindi
   initials = sk
+	email = skalidindi8@gmail.com
 
 [apply]
   # Detect whitespace errors when applying a patch
@@ -16,7 +17,9 @@
   # More info: <http://www.git-tower.com/blog/make-git-rebase-safe-on-osx/>
   trustctime = false
 
-  editor = 'subl' --wait
+  editor = 'vim'
+
+	pager = diff-so-fancy | less --tabs=4 -RFX
 
 [color]
   # Use colors in Git commands that are capable of colored output when
@@ -42,9 +45,6 @@
 [difftool]
   prompt = false
 
-[mergetool]
-  prompt = false
-
 [help]
   # Automatically correct and execute mistyped commands
   autocorrect = 1
@@ -59,6 +59,9 @@
   # Include summaries of merged commits in newly created merge commit messages
   log = true
 
+[mergetool]
+  prompt = false
+
 [commit]
   template = ~/.gitmessage.txt
 
@@ -67,11 +70,9 @@
   default = simple
 
 [alias]
-  # View abbreviated SHA, description, and history graph of the latest 20 commits
+  # View log efficiently
   l = log --pretty=oneline -n 20 --graph --abbrev-commit
-
-  # View log
-  lol = log --graph --decorate --oneline
+  lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
 
   # View the current working tree status using the short format
   s = status -s
@@ -96,6 +97,9 @@
 
   # Commit all changes
   ca = !git add -A && git commit -av
+
+  # Chery pick
+  cp = cherry-pick
 
   # Switch to a branch, creating it if necessary
   go = "!f() { git checkout -b \"$1\" 2> /dev/null || git checkout \"$1\"; }; f"
