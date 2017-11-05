@@ -102,8 +102,10 @@ set autoread                    "Reload files changed outside vim
 set mouse=a                     "Enable mouse in all modes
 set clipboard=unnamed           "Use OS clipboard
 set lcs=tab:▸\ ,trail:·,eol:¬,nbsp:_ "Show “invisible” characters
+set termencoding=utf8
 set encoding=utf8
-
+set laststatus=2
+let mapleader=','
 
 " Highlight Current Line
 set cul
