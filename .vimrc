@@ -7,7 +7,6 @@ call plug#begin('~/.vim/plugged')
 " UI setting
 Plug 'altercation/vim-colors-solarized'
 Plug 'vim-airline/vim-airline' | Plug 'vim-airline/vim-airline-themes' " Status line
-Plug 'ryanoasis/vim-devicons' " Devicons
 Plug 'mhinz/vim-startify' " Start page
 Plug 'junegunn/limelight.vim'
 Plug 'majutsushi/tagbar'
@@ -24,7 +23,7 @@ Plug 'tpope/vim-surround'
 Plug 'nathanaelkane/vim-indent-guides'
 Plug 'terryma/vim-expand-region'
 Plug 'scrooloose/nerdcommenter'
-Plug 'scrooloose/syntastic'
+Plug 'vim-syntastic/syntastic'
 Plug 'Valloric/YouCompleteMe'
 
 " File Management
@@ -47,9 +46,47 @@ Plug 'klen/python-mode', { 'for': 'python' }
 " Javascript
 Plug 'pangloss/vim-javascript', { 'for': 'javascript' }
 
+" VimDevIcons
+Plug 'ryanoasis/vim-devicons' " Devicons
+
 " JSON
 Plug 'elzr/vim-json'
 call plug#end()
+" ================ NERDTree Setup ====================
+let NERDTreeQuitOnOpen = 1 " Quit on open
+let NERDTreeAutoDeleteBuffer = 1 " Deleting files
+
+" Open by default
+autocmd StdinReadPre * let s:std_in=1
+autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
+autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | endif
+
+" Toggle NerdTree hotkey
+map <C-n> :NERDTreeToggle<CR>
+
+" Close if only tab left
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+
+" ================ CtrlP Setup ====================
+" Setup some default ignores
+let g:ctrlp_custom_ignore = {
+  \ 'dir':  '\v[\/](\.(git|hg|svn)|\_site)$',
+  \ 'file': '\v\.(exe|so|dll|class|png|jpg|jpeg)$',
+\}
+let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files -co --exclude-standard']
+
+" ================ Airline Setup =====================
+" Enable the list of buffers
+let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#syntastic#enabled = 1
+let g:airline_theme='solarized'
+let g:airline_solarized_bg='dark'
+let g:airline_powerline_fonts = 1
+
+" move among buffers with CTRL
+nnoremap <Tab> :bnext<CR>
+nnoremap <S-Tab> :bprevious<CR>
+nnoremap <C-X> :bdelete<CR>
 
 " ================ General Config ====================
 set title                       "Show the filename in the window titlebar
@@ -65,6 +102,7 @@ set autoread                    "Reload files changed outside vim
 set mouse=a                     "Enable mouse in all modes
 set clipboard=unnamed           "Use OS clipboard
 set lcs=tab:▸\ ,trail:·,eol:¬,nbsp:_ "Show “invisible” characters
+set encoding=utf8
 
 
 " Highlight Current Line
@@ -75,7 +113,6 @@ hi CursorLine term=none cterm=none ctermbg=152
 set background=dark
 let g:solarized_termtrans=1
 colorscheme solarized
-let g:airline_theme='solarized'
 
 " ================ Spell Check =======================
 if version >= 700
@@ -166,8 +203,7 @@ set wildignore+=*.gem
 set wildignore+=log/**
 set wildignore+=tmp/**
 set wildignore+=*.png,*.jpg,*.gif
-
-"
+set wildignore+=node_modules/**
 
 " ================ Scrolling ========================
 
