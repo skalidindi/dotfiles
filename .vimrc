@@ -23,7 +23,7 @@ Plug 'tpope/vim-surround'
 Plug 'nathanaelkane/vim-indent-guides'
 Plug 'terryma/vim-expand-region'
 Plug 'scrooloose/nerdcommenter'
-Plug 'vim-syntastic/syntastic'
+" Plug 'vim-syntastic/syntastic'
 Plug 'Valloric/YouCompleteMe'
 Plug 'maxbrunsfeld/vim-yankstack'
 
@@ -104,7 +104,7 @@ nnoremap <S-Tab> :bprevious<CR>
 nnoremap <C-X> :bdelete<CR>
 
 " ================ General Config ====================
-set title                       "Show the filename in the window titlebar
+set notitle                     "Do not show the filename in the window titlebar
 set ruler                       "Show the cursor posiiton
 set number                      "Line numbers are good
 set backspace=indent,eol,start  "Allow backspace in insert mode
