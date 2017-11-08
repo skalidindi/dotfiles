@@ -1,25 +1,118 @@
-[user]
-	name = Santosh Kalidindi
-  initials = sk
-	email = skalidindi8@gmail.com
+
+[alias]
+  # List aliases
+  aliases = config --get-regexp alias
+
+  # Amend the currently staged files to the latest commit
+  amend = commit --amend --reuse-message=HEAD
+
+  # Branch
+  br = branch
+
+  # Show verbose output branches
+  branches = branch -a
+
+  # Delete a branch
+  brdel = branch -D
+
+  # Clone a repository including all submodules
+  c = clone --recursive
+
+  # Commit all changes
+  ca = !git add -A && git commit -av
+
+  # Commit
+  ci = commit
+
+  # Checkout
+  co = checkout
+
+  # List contributors with number of commits
+  contributors = shortlog --summary --numbered
+
+  # Chery pick
+  cp = cherry-pick
+
+  # Credit an author on the latest commit
+  credit = "!f() { git commit --amend --author \"$1 <$2>\" -C HEAD; }; f"
+
+  # Show the diff between the latest commit and the current state
+  d = !"git diff-index --quiet HEAD -- || clear; git --no-pager diff --patch-with-stat"
+
+  # View the log and diff for a commit (previous if no SHA1 provided)
+  details = log -n1 -p --format=fuller
+
+  # `git di $number` shows the diff between the state `$number` revisions ago and the current state
+  di = !"d() { git diff --patch-with-stat HEAD~$1; }; git diff-index --quiet HEAD -- || clear; d"
+
+  # Remove branches that have already been merged with master
+  # a.k.a. ‘delete merged’
+  dm = "!git branch --merged | grep -v '\\*' | xargs -n 1 git branch -d"
+
+  # Show the diff between staged
+  ds = diff --staged
+
+  # Save a repo as a tarball
+  export = archive -o latest.tar.gz -9 --prefix=latest/
+
+  # Find branches containing commit
+  fb = "!f() { git branch -a --contains $1; }; f"
+
+  # Find commits by source code
+  fc = "!f() { git log --pretty=format:'%C(yellow)%h  %Cblue%ad  %Creset%s%Cgreen  [%cn] %Cred%d' --decorate --date=short -S$1; }; f"
+
+  # Find tags containing commit
+  ft = "!f() { git describe --always --contains $1; }; f"
+
+  # Find commits by commit message
+  fm = "!f() { git log --pretty=format:'%C(yellow)%h  %Cblue%ad  %Creset%s%Cgreen  [%cn] %Cred%d' --decorate --date=short --grep=$1; }; f"
+
+  # Switch to a branch, creating it if necessary
+  go = "!f() { git checkout -b \"$1\" 2> /dev/null || git checkout \"$1\"; }; f"
+
+  # View log efficiently
+  l = log --pretty=oneline -n 20 --graph --abbrev-commit
+  lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
+
+  # Pull in remote changes for the current repository and all its submodules
+  p = !"git pull; git submodule foreach git pull origin master"
+
+  # Interactive rebase with the given number of latest commits
+  reb = "!r() { git rebase -i HEAD~$1; }; r"
+
+  # Show verbose output about remotes
+  remotes = remote -v
+
+  # Remove the old tag with this name and tag the latest commit with it.
+  retag = "!r() { git tag -d $1 && git push origin :refs/tags/$1 && git tag $1; }; r"
+
+  # View the current working tree status using the short format
+  s = status -s
+
+  # View the current working tree status
+  st = status
+
+  # Stash
+  sta = stash
+
+  # Show verbose output about tags
+  tags = tag -l
+
+  # Start a new local repository and perform initial commit
+  this = !git init && git add . && git commmit -m \"Initial commit.\"
+
+  # Thin out older metadata within the repository, reduceses filesystem footprint
+  trim = !git reflog expire --expire=now --all && git gc --prune=now
+
+  # Unstage changes from the index
+  unstage = reset HEAD --
 
 [apply]
   # Detect whitespace errors when applying a patch
   whitespace = fix
 
-[core]
-  # Treat spaces before tabs and all kinds of trailing whitespace as an error
-  # [default] trailing-space: looks for spaces at the end of a line
-  # [default] space-before-tab: looks for spaces before tabs at the beginning of a line
-  whitespace = space-before-tab,-indent-with-non-tab,trailing-space
-
-  # Make `git rebase` safer on macOS
-  # More info: <http://www.git-tower.com/blog/make-git-rebase-safe-on-osx/>
-  trustctime = false
-
-  editor = 'vim'
-
-	pager = diff-so-fancy | less --tabs=4 -RFX
+[branch]
+  autosetupmerge = true
 
 [color]
   # Use colors in Git commands that are capable of colored output when
@@ -35,8 +128,30 @@
 [color "diff"]
   meta = yellow bold
   frag = magenta bold # line info
-  old = red # deletions
-  new = green # additions
+  old = red bold # deletions
+  new = green bold # additions
+
+[color "status"]
+  added = yellow
+  changed = green
+  untracked = red
+
+[commit]
+  template = ~/.gitmessage.txt
+
+[core]
+  # Treat spaces before tabs and all kinds of trailing whitespace as an error
+  # [default] trailing-space: looks for spaces at the end of a line
+  # [default] space-before-tab: looks for spaces before tabs at the beginning of a line
+  whitespace = space-before-tab,-indent-with-non-tab,trailing-space
+
+  # Make `git rebase` safer on macOS
+  # More info: <http://www.git-tower.com/blog/make-git-rebase-safe-on-osx/>
+  trustctime = false
+
+  editor = 'vim'
+
+  pager = diff-so-fancy | less --tabs=4 -RFX
 
 [diff "bin"]
   # Use `hexdump` to diff binary files
@@ -49,108 +164,22 @@
   # Automatically correct and execute mistyped commands
   autocorrect = 1
 
-[branch]
-  autosetupmerge = true
-
-[rebase]
-  autosquash = true
-
 [merge]
   # Include summaries of merged commits in newly created merge commit messages
   log = true
 
+
 [mergetool]
   prompt = false
-
-[commit]
-  template = ~/.gitmessage.txt
 
 [push]
   # Push only the current branch and warn if remote ref is missing
   default = simple
 
-[alias]
-  # View log efficiently
-  l = log --pretty=oneline -n 20 --graph --abbrev-commit
-  lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+[rebase]
+  autosquash = true
 
-  # View the current working tree status using the short format
-  s = status -s
-
-  # View the current working tree status
-  st = status
-
-  # Show the diff between the latest commit and the current state
-  d = !"git diff-index --quiet HEAD -- || clear; git --no-pager diff --patch-with-stat"
-
-  # `git di $number` shows the diff between the state `$number` revisions ago and the current state
-  di = !"d() { git diff --patch-with-stat HEAD~$1; }; git diff-index --quiet HEAD -- || clear; d"
-
-  # Show the diff between staged
-  ds = diff --staged
-
-  # Pull in remote changes for the current repository and all its submodules
-  p = !"git pull; git submodule foreach git pull origin master"
-
-  # Clone a repository including all submodules
-  c = clone --recursive
-
-  # Commit all changes
-  ca = !git add -A && git commit -av
-
-  # Chery pick
-  cp = cherry-pick
-
-  # Switch to a branch, creating it if necessary
-  go = "!f() { git checkout -b \"$1\" 2> /dev/null || git checkout \"$1\"; }; f"
-
-  # Show verbose output about tags, branches or remotes
-  tags = tag -l
-  branches = branch -a
-  remotes = remote -v
-
-  # List aliases
-  aliases = config --get-regexp alias
-
-  # Amend the currently staged files to the latest commit
-  amend = commit --amend --reuse-message=HEAD
-
-  # Credit an author on the latest commit
-  credit = "!f() { git commit --amend --author \"$1 <$2>\" -C HEAD; }; f"
-
-  # Interactive rebase with the given number of latest commits
-  reb = "!r() { git rebase -i HEAD~$1; }; r"
-
-  # Remove the old tag with this name and tag the latest commit with it.
-  retag = "!r() { git tag -d $1 && git push origin :refs/tags/$1 && git tag $1; }; r"
-
-  # Find branches containing commit
-  fb = "!f() { git branch -a --contains $1; }; f"
-
-  # Find tags containing commit
-  ft = "!f() { git describe --always --contains $1; }; f"
-
-  # Find commits by source code
-  fc = "!f() { git log --pretty=format:'%C(yellow)%h  %Cblue%ad  %Creset%s%Cgreen  [%cn] %Cred%d' --decorate --date=short -S$1; }; f"
-
-  # Find commits by commit message
-  fm = "!f() { git log --pretty=format:'%C(yellow)%h  %Cblue%ad  %Creset%s%Cgreen  [%cn] %Cred%d' --decorate --date=short --grep=$1; }; f"
-
-  # Remove branches that have already been merged with master
-  # a.k.a. ‘delete merged’
-  dm = "!git branch --merged | grep -v '\\*' | xargs -n 1 git branch -d"
-
-  # List contributors with number of commits
-  contributors = shortlog --summary --numbered
-
-  # Checkout
-  co = checkout
-
-  # Commit
-  ci = commit
-
-  # Branch
-  br = branch
-
-  # Stash
-	sta = stash
+[user]
+  name = Santosh Kalidindi
+  initials = sk
+  email = skalidindi8@gmail.com
