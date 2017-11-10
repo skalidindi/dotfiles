@@ -26,6 +26,7 @@ Plug 'scrooloose/nerdcommenter'
 " Plug 'vim-syntastic/syntastic'
 Plug 'Valloric/YouCompleteMe'
 Plug 'maxbrunsfeld/vim-yankstack'
+Plug 'mattn/emmet-vim'
 
 " Snippets
 Plug 'scrooloose/snipmate-snippets'
