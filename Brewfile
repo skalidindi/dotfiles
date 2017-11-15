@@ -11,7 +11,6 @@ cask "xquartz"
 
 # Shell
 brew "zsh"
-brew "the_silver_searcher"
 brew "fasd"
 brew "ripgrep"
 
