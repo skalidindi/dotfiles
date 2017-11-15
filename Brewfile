@@ -13,6 +13,7 @@ cask "xquartz"
 brew "zsh"
 brew "the_silver_searcher"
 brew "fasd"
+brew "ripgrep"
 
 # Git
 brew "git"
