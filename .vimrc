@@ -47,6 +47,7 @@ Plug 'easymotion/vim-easymotion'
 
 " VimDevIcons
 Plug 'ryanoasis/vim-devicons' " Devicons
+Plug 'tiagofumo/vim-nerdtree-syntax-highlight' " Icon colors
 
 " Python
 Plug 'klen/python-mode', { 'for': 'python' }
@@ -60,6 +61,7 @@ call plug#end()
 " ================ NERDTree Setup ====================
 let NERDTreeQuitOnOpen = 1 " Quit on open
 let NERDTreeAutoDeleteBuffer = 1 " Deleting files
+let NERDTreeShowBookmarks = 1 " Show bookmarks
 
 " Open by default
 autocmd StdinReadPre * let s:std_in=1
@@ -99,6 +101,13 @@ let g:airline_theme='solarized'
 let g:airline_solarized_bg='dark'
 let g:airline_powerline_fonts = 1
 
+" ================ Dev Icons =========================
+let g:WebDevIconsNerdTreeAfterGlyphPadding = ''
+
+" ================ vim-javascript =========================
+let g:javascript_plugin_jsdoc = 1
+let g:javascript_plugin_ngdoc = 1
+
 " move among buffers with CTRL
 nnoremap <Tab> :bnext<CR>
 nnoremap <S-Tab> :bprevious<CR>
@@ -120,7 +129,7 @@ set mouse=a                     "Enable mouse in all modes
 set clipboard=unnamed           "Use OS clipboard
 set lcs=tab:▸\ ,trail:·,eol:¬,nbsp:_ "Show “invisible” characters
 set termencoding=utf8           "Encoding
-set encoding=utf8               "Endoting
+set encoding=utf8               "Encoding
 set ffs=unix,dos,mac            "Use Unix as the standard file type
 set laststatus=2                "Always show status bar
 set showmatch                   "Show matching brackets when text indicator is over them
@@ -146,7 +155,7 @@ endif
 " http://items.sjbach.com/319/configuring-vim-right
 set hidden
 
-"turn on syntax highlighting
+" turn on syntax highlighting
 syntax on
 
 " ================ Turn Off Swap Files ==============
