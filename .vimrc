@@ -1,8 +1,45 @@
-" Use Vim settings, rather then Vi settings (much better!).
-" This must be first, because it changes other options as a side effect.
-set nocompatible
+" Vim Settings by Santosh Kalidindi
 
-" ================ vim-plug ====================
+"------------------------------------------------
+" => General
+"------------------------------------------------
+set nocompatible                " Get out of vi compatible mode
+set notitle                     " Do not show the filename in the window titlebar
+set ruler                       " Show the cursor posiiton
+set number                      " Line numbers are good
+set backspace=indent,eol,start  " Allow backspace in insert mode
+set history=1000                " Store lots of :cmdline history
+set showcmd                     " Show incomplete cmds down the bottom
+set showmode                    " Show current mode down the bottom
+set gcr=a:blinkon0              " Disable cursor blink
+set visualbell                  " No sounds
+set autoread                    " Reload files changed outside vim
+set mouse=a                     " Enable mouse in all modes
+set clipboard=unnamed           " Use OS clipboard
+set lcs=tab:▸\ ,trail:·,eol:¬,nbsp:_ " Show “invisible” characters
+set termencoding=utf8           " Encoding
+set encoding=utf8               " Encoding
+set ffs=unix,dos,mac            " Use Unix as the standard file type
+set laststatus=2                " Always show status bar
+set showmatch                   " Show matching brackets when text indicator is over them
+let g:mapleader = ','           " Set Leader key
+nnoremap <Tab> :bnext<CR>       " Move to next tab
+nnoremap <S-Tab> :bprevious<CR> " Move to previous tab
+nnoremap <C-X> :bdelete<CR>     " Delete tab
+set cul                         " Highlight Current Line
+hi CursorLine term=none cterm=none ctermbg=152 "Highlight
+set background=dark             " Set background
+
+" Persistent Undo
+" Keep undo history across sessions, by storing in file.
+" Only works all the time.
+silent !mkdir ~/.vim/backups > /dev/null 2>&1
+set undodir=~/.vim/backups
+set undofile
+
+"------------------------------------------------
+" => vim-plug
+"------------------------------------------------
 call plug#begin('~/.vim/plugged')
 " UI setting
 Plug 'altercation/vim-colors-solarized'
@@ -58,23 +95,24 @@ Plug 'pangloss/vim-javascript', { 'for': 'javascript' }
 " JSON
 Plug 'elzr/vim-json'
 call plug#end()
-" ================ NERDTree Setup ====================
+
+"------------------------------------------------
+" => Plugin Settings
+"------------------------------------------------
+" NERDTree Setup
 let NERDTreeQuitOnOpen = 1 " Quit on open
 let NERDTreeAutoDeleteBuffer = 1 " Deleting files
 let NERDTreeShowBookmarks = 1 " Show bookmarks
-
 " Open by default
 autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
 autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | endif
-
 " Toggle NerdTree hotkey
 map <C-n> :NERDTreeToggle<CR>
-
 " Close if only tab left
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 
-" ================ Syntastic Setup ====================
+" Syntastic Setup
 set statusline+=%#warningmsg#
 set statusline+=%{SyntasticStatuslineFlag()}
 set statusline+=%*
@@ -85,7 +123,7 @@ let g:syntastic_check_on_wq = 0
 let g:syntastic_javascript_checkers = ['eslint']
 let g:syntastic_javascript_eslint_exe='$(npm bin)/eslint'
 
-" ================ CtrlP Setup ====================
+" CtrlP Setup
 " Setup some default ignores
 let g:ctrlp_custom_ignore = {
   \ 'dir':  '\v[\/](\.(git|hg|svn)|\_site)$',
@@ -93,7 +131,7 @@ let g:ctrlp_custom_ignore = {
 \}
 let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files -co --exclude-standard']
 
-" ================ Airline Setup =====================
+" Airline Setup
 " Enable the list of buffers
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#syntastic#enabled = 1
@@ -101,50 +139,22 @@ let g:airline_theme='solarized'
 let g:airline_solarized_bg='dark'
 let g:airline_powerline_fonts = 1
 
-" ================ Dev Icons =========================
+" Dev Icons
 let g:WebDevIconsNerdTreeAfterGlyphPadding = ''
 
-" ================ vim-javascript =========================
+" vim-javascript
 let g:javascript_plugin_jsdoc = 1
 let g:javascript_plugin_ngdoc = 1
 
-" move among buffers with CTRL
-nnoremap <Tab> :bnext<CR>
-nnoremap <S-Tab> :bprevious<CR>
-nnoremap <C-X> :bdelete<CR>
+"-------------------------------------------------
+" => Color Scheme
+"-------------------------------------------------
+colorscheme solarized           " Set the colorscheme
+let g:solarized_termtrans=1     " Support transparent background
 
-" ================ General Config ====================
-set notitle                     "Do not show the filename in the window titlebar
-set ruler                       "Show the cursor posiiton
-set number                      "Line numbers are good
-set backspace=indent,eol,start  "Allow backspace in insert mode
-set whichwrap+=<,>,h,l          "Wrap on keys
-set history=1000                "Store lots of :cmdline history
-set showcmd                     "Show incomplete cmds down the bottom
-set showmode                    "Show current mode down the bottom
-set gcr=a:blinkon0              "Disable cursor blink
-set visualbell                  "No sounds
-set autoread                    "Reload files changed outside vim
-set mouse=a                     "Enable mouse in all modes
-set clipboard=unnamed           "Use OS clipboard
-set lcs=tab:▸\ ,trail:·,eol:¬,nbsp:_ "Show “invisible” characters
-set termencoding=utf8           "Encoding
-set encoding=utf8               "Encoding
-set ffs=unix,dos,mac            "Use Unix as the standard file type
-set laststatus=2                "Always show status bar
-set showmatch                   "Show matching brackets when text indicator is over them
-let g:mapleader = ','           "Set Leader key
-
-" Highlight Current Line
-set cul
-hi CursorLine term=none cterm=none ctermbg=152
-
-" Favorite Color Scheme
-set background=dark
-let g:solarized_termtrans=1
-colorscheme solarized
-
-" ================ Spell Check =======================
+"-------------------------------------------------
+" => Spell Check
+"-------------------------------------------------
 if version >= 700
   set spl=en spell
   set nospell
@@ -158,31 +168,26 @@ set hidden
 " turn on syntax highlighting
 syntax on
 
-" ================ Turn Off Swap Files ==============
-
+"-------------------------------------------------
+" => Turn off swap files
+"-------------------------------------------------
 set noswapfile
 set nobackup
 set nowb
 
-" ================ Search Settings  =================
+"-------------------------------------------------
+" => Search
+"-------------------------------------------------
+set incsearch        " Find the next match as we type the search
+set hlsearch         " Highlight searches by default
+set wrapscan         " wrap around
+set ignorecase       " Ignore case when searching..
+set viminfo='100,f1  " Save up to 100 marks, enable capital marks
+set smartcase        " ...unless we type a capital
 
-set incsearch        "Find the next match as we type the search
-set wrapscan
-set ignorecase
-:nnoremap <silent> <Space> :nohlsearch<Bar>:echo<CR>
-set hlsearch         "Hilight searches by default
-set viminfo='100,f1  "Save up to 100 marks, enable capital marks
-
-" ================ Persistent Undo ==================
-" Keep undo history across sessions, by storing in file.
-" Only works all the time.
-
-silent !mkdir ~/.vim/backups > /dev/null 2>&1
-set undodir=~/.vim/backups
-set undofile
-
-" ================ Indentation ======================
-
+"-------------------------------------------------
+" => Indentation
+"-------------------------------------------------
 set autoindent
 set smartindent
 set smarttab
@@ -194,36 +199,26 @@ set expandtab
 filetype plugin on
 filetype indent on
 
-" Auto indent pasted text
-nnoremap p p=`]<C-o>
-nnoremap P P=`]<C-o>
-
 " Display tabs and trailing spaces visually
 set list listchars=tab:\ \ ,trail:·
 
-set wrap         "Don't wrap lines
-set linebreak    "Wrap lines at convenient points
+set wrap                        " Don't wrap lines
+set linebreak                   " Wrap lines at convenient points
+set whichwrap+=<,>,h,l          " Wrap on keys
 
-" ================ Folds ============================
+"-------------------------------------------------
+" => Fold
+"-------------------------------------------------
+set foldmethod=indent   " fold based on indent
+set foldnestmax=3       " deepest fold is 3 levels
+set nofoldenable        " dont fold by default
 
-set foldmethod=indent   "fold based on indent
-set foldnestmax=3       "deepest fold is 3 levels
-set nofoldenable        "dont fold by default
-
-" ================ Save from Line ===================
-augroup line_return
-      au!
-          au BufReadPost *
-                  \ if line("'\"") > 0 && line("'\"") <= line("$") |
-                  \     execute 'normal! g`"zvzz' |
-                  \ endif
-        augroup END
-
-" ================ Completion =======================
-
+"-------------------------------------------------
+" => Completion
+"-------------------------------------------------
 set wildmode=list:longest
-set wildmenu                "enable ctrl-n and ctrl-p to scroll thru matches
-set wildignore=*.o,*.obj,*~ "stuff to ignore when tab completing
+set wildmenu                " enable ctrl-n and ctrl-p to scroll thru matches
+set wildignore=*.o,*.obj,*~ " stuff to ignore when tab completing
 set wildignore+=*vim/backups*
 set wildignore+=*sass-cache*
 set wildignore+=*DS_Store*
@@ -235,15 +230,18 @@ set wildignore+=tmp/**
 set wildignore+=*.png,*.jpg,*.gif
 set wildignore+=node_modules/**
 
-" ================ Scrolling ========================
-
-set scrolloff=8         "Start scrolling when we're 8 lines away from margins
+"-------------------------------------------------
+" => Scrolling
+"-------------------------------------------------
+set scrolloff=8         " Start scrolling when we're 8 lines away from margins
 set sidescrolloff=15
 set sidescroll=1
 
-" ================ Search ===========================
+"-------------------------------------------------
+" => Key Mapping
+"-------------------------------------------------
+nnoremap <silent> <Space> :nohlsearch<Bar>:echo<CR> " ????
 
-set incsearch       " Find the next match as we type the search
-set hlsearch        " Highlight searches by default
-set ignorecase      " Ignore case when searching...
-set smartcase       " ...unless we type a capital
+" Auto indent pasted text
+nnoremap p p=`]<C-o>
+nnoremap P P=`]<C-o>
