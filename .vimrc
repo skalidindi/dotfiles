@@ -14,6 +14,7 @@ set showmode                    " Show current mode down the bottom
 set gcr=a:blinkon0              " Disable cursor blink
 set visualbell                  " No sounds
 set autoread                    " Reload files changed outside vim
+set autowrite                   " Write on make/shell commands
 set mouse=a                     " Enable mouse in all modes
 set clipboard=unnamed           " Use OS clipboard
 set lcs=tab:▸\ ,trail:·,eol:¬,nbsp:_ " Show “invisible” characters
@@ -22,13 +23,18 @@ set encoding=utf8               " Encoding
 set ffs=unix,dos,mac            " Use Unix as the standard file type
 set laststatus=2                " Always show status bar
 set showmatch                   " Show matching brackets when text indicator is over them
-let g:mapleader = ','           " Set Leader key
-nnoremap <Tab> :bnext<CR>       " Move to next tab
-nnoremap <S-Tab> :bprevious<CR> " Move to previous tab
-nnoremap <C-X> :bdelete<CR>     " Delete tab
 set cul                         " Highlight Current Line
-hi CursorLine term=none cterm=none ctermbg=152 "Highlight
 set background=dark             " Set background
+set timeoutlen=500              " Time to wait for a command
+set modeline                    " Turn on modeline
+set noswapfile                  " No swap file
+set nobackup                    " No backup
+set nowb                        " Replace tabs with spaces
+set completeopt+=longest        " Optimize auto complete
+set completeopt-=preview        " Optimize auto complete
+
+
+let g:mapleader = ','           " Set Leader key
 
 " Persistent Undo
 " Keep undo history across sessions, by storing in file.
@@ -37,18 +43,34 @@ silent !mkdir ~/.vim/backups > /dev/null 2>&1
 set undodir=~/.vim/backups
 set undofile
 
+" Source the vimrc file after saving it
+autocmd BufWritePost $MYVIMRC source $MYVIMRC
+
+"-------------------------------------------------
+" => Platform Specific Setting
+"-------------------------------------------------
+" On Windows, also use .vim instead of vimfiles
+if has('win32') || has('win64')
+    set runtimepath=$HOME/.vim,$VIM/vimfiles,$VIMRUNTIME,$VIM/vimfiles/after,$HOME/.vim/after
+endif
+
+set viewoptions+=slash,unix " Better Unix/Windows compatibility
+set viewoptions-=options " in case of mapping change
+
 "------------------------------------------------
 " => vim-plug
 "------------------------------------------------
 call plug#begin('~/.vim/plugged')
 " UI setting
 Plug 'altercation/vim-colors-solarized'
+Plug 'jdkanani/vim-material-theme'
+Plug 'mhartington/oceanic-next'
 Plug 'vim-airline/vim-airline' | Plug 'vim-airline/vim-airline-themes' " Status line
 Plug 'mhinz/vim-startify' " Start page
-Plug 'junegunn/limelight.vim'
-Plug 'majutsushi/tagbar'
 Plug 'mhinz/vim-signify'
 Plug 'farmergreg/vim-lastplace'
+Plug 'junegunn/goyo.vim', { 'for': 'markdown' } " Distraction-free
+Plug 'junegunn/limelight.vim', { 'for': 'markdown' } " Hyperfocus-writing
 
 " Editing/Syntax
 Plug 'Raimondi/delimitMate' " Closing of quotes
@@ -60,40 +82,46 @@ Plug 'tpope/vim-surround'
 Plug 'nathanaelkane/vim-indent-guides'
 Plug 'terryma/vim-expand-region'
 Plug 'scrooloose/nerdcommenter'
-" Plug 'vim-syntastic/syntastic'
 Plug 'Valloric/YouCompleteMe'
 Plug 'maxbrunsfeld/vim-yankstack'
-Plug 'mattn/emmet-vim'
+Plug 'w0rp/ale' " Async syntax checking
+
+" Motion
+Plug 'tpope/vim-unimpaired' " Pairs of mappings
+Plug 'easymotion/vim-easymotion' " Easy motion
+Plug 'unblevable/quick-scope' " Quick scope
+Plug 'bkad/CamelCaseMotion' " Camel case motion
+Plug 'majutsushi/tagbar' " Tag bar
 
 " Snippets
 Plug 'scrooloose/snipmate-snippets'
 
-" File Management
-Plug 'scrooloose/nerdtree'
-
 " Git
-Plug 'tpope/vim-fugitive'
-Plug 'airblade/vim-gitgutter'
+Plug 'tpope/vim-fugitive' " Git wrapper
+Plug 'gregsexton/gitv' " Gitk clone
+Plug 'airblade/vim-gitgutter' " Git diff sign
 
-" Searching
+" Navigation
+Plug 'scrooloose/nerdtree'
+Plug 'Xuyuanp/nerdtree-git-plugin', { 'on': 'NERDTreeToggle' } " NERD tree git plugin
 Plug 'ctrlpvim/ctrlp.vim'
 Plug 'mileszs/ack.vim'
-
-" Text navigation
-Plug 'easymotion/vim-easymotion'
 
 " VimDevIcons
 Plug 'ryanoasis/vim-devicons' " Devicons
 Plug 'tiagofumo/vim-nerdtree-syntax-highlight' " Icon colors
 
-" Python
+" Language Specificity
+Plug 'sheerun/vim-polyglot' " Language Support (includes javascript and all other types)
 Plug 'klen/python-mode', { 'for': 'python' }
-
-" Javascript
 Plug 'pangloss/vim-javascript', { 'for': 'javascript' }
-
-" JSON
 Plug 'elzr/vim-json'
+Plug 'tpope/vim-rails' " Rails
+Plug 'mattn/emmet-vim' " Emmet
+Plug 'heavenshell/vim-jsdoc' " JSDoc for vim
+Plug 'greyblake/vim-preview' " vim preview
+Plug 'tpope/vim-bundler' " gem bundler
+Plug 'Shougo/vimproc.vim', {'do' : 'make'} " vim proc
 call plug#end()
 
 "------------------------------------------------
@@ -111,17 +139,6 @@ autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in
 map <C-n> :NERDTreeToggle<CR>
 " Close if only tab left
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
-
-" Syntastic Setup
-set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
-set statusline+=%*
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_open = 1
-let g:syntastic_check_on_wq = 0
-let g:syntastic_javascript_checkers = ['eslint']
-let g:syntastic_javascript_eslint_exe='$(npm bin)/eslint'
 
 " CtrlP Setup
 " Setup some default ignores
@@ -147,10 +164,9 @@ let g:javascript_plugin_jsdoc = 1
 let g:javascript_plugin_ngdoc = 1
 
 "-------------------------------------------------
-" => Color Scheme
+" => User interface
 "-------------------------------------------------
 colorscheme solarized           " Set the colorscheme
-let g:solarized_termtrans=1     " Support transparent background
 
 "-------------------------------------------------
 " => Spell Check
@@ -195,6 +211,7 @@ set shiftwidth=2
 set softtabstop=2
 set tabstop=2
 set expandtab
+set textwidth=80 " Change text width
 
 filetype plugin on
 filetype indent on
@@ -245,3 +262,7 @@ nnoremap <silent> <Space> :nohlsearch<Bar>:echo<CR> " ????
 " Auto indent pasted text
 nnoremap p p=`]<C-o>
 nnoremap P P=`]<C-o>
+
+nnoremap <Tab> :bnext<CR>       " Move to next tab
+nnoremap <S-Tab> :bprevious<CR> " Move to previous tab
+nnoremap <C-X> :bdelete<CR>     " Delete tab
