@@ -62,29 +62,41 @@ set viewoptions-=options " in case of mapping change
 "------------------------------------------------
 call plug#begin('~/.vim/plugged')
 " UI setting
-Plug 'altercation/vim-colors-solarized'
-Plug 'jdkanani/vim-material-theme'
-Plug 'mhartington/oceanic-next'
+Plug 'altercation/vim-colors-solarized' " Colorsheme solarized
+Plug 'jdkanani/vim-material-theme' " Colorscheme material
 Plug 'vim-airline/vim-airline' | Plug 'vim-airline/vim-airline-themes' " Status line
 Plug 'mhinz/vim-startify' " Start page
-Plug 'mhinz/vim-signify'
-Plug 'farmergreg/vim-lastplace'
+Plug 'farmergreg/vim-lastplace' " Reopen files at last edit position
+Plug 'nathanaelkane/vim-indent-guides' " Visually display indent levels
 Plug 'junegunn/goyo.vim', { 'for': 'markdown' } " Distraction-free
 Plug 'junegunn/limelight.vim', { 'for': 'markdown' } " Hyperfocus-writing
 
-" Editing/Syntax
-Plug 'Raimondi/delimitMate' " Closing of quotes
-Plug 'tpope/vim-commentary' " Commenter
+" Syntax/Autocomplete
 Plug 'editorconfig/editorconfig-vim'
-Plug 'sjl/gundo.vim'
-Plug 'tpope/vim-abolish'
-Plug 'tpope/vim-surround'
-Plug 'nathanaelkane/vim-indent-guides'
-Plug 'terryma/vim-expand-region'
-Plug 'scrooloose/nerdcommenter'
 Plug 'Valloric/YouCompleteMe'
-Plug 'maxbrunsfeld/vim-yankstack'
 Plug 'w0rp/ale' " Async syntax checking
+
+" Enhancement
+Plug 'Raimondi/delimitMate' " Closing of quotes
+Plug 'sjl/gundo.vim' " Visualize undo tree
+Plug 'nathanaelkane/vim-indent-guides' " Visualize indent bars
+Plug 'terryma/vim-expand-region' " Visually select increasingly larger regions of text
+Plug 'tpope/vim-surround' " Surround
+Plug 'scrooloose/nerdcommenter' " Commenter
+Plug 'tpope/vim-abolish' " Abolish
+Plug 'sickill/vim-pasta' " Vim pasta
+Plug 'AndrewRadev/splitjoin.vim' " Splitjoin
+Plug 'maxbrunsfeld/vim-yankstack' " Yank history for vim
+Plug 'godlygeek/tabular' " Vim script for text filtering and alignment
+Plug 'tpope/vim-repeat' " Repeat
+Plug 'terryma/vim-multiple-cursors' " Multiple cursors
+Plug 'junegunn/vim-easy-align' " Easy align
+Plug 'AndrewRadev/splitjoin.vim' " Splitjoin
+Plug 'roman/golden-ratio' " Resize windows
+Plug 'mhinz/vim-hugefile' " Largefile
+Plug 'KabbAmine/vCoolor.vim' " Color Picker
+Plug 'amiorin/vim-project' " Project
+Plug 'wellle/targets.vim' " Text objects
 
 " Motion
 Plug 'tpope/vim-unimpaired' " Pairs of mappings
@@ -92,6 +104,7 @@ Plug 'easymotion/vim-easymotion' " Easy motion
 Plug 'unblevable/quick-scope' " Quick scope
 Plug 'bkad/CamelCaseMotion' " Camel case motion
 Plug 'majutsushi/tagbar' " Tag bar
+Plug 'rking/ag.vim' " Silver Surfer
 
 " Snippets
 Plug 'scrooloose/snipmate-snippets'
@@ -100,6 +113,7 @@ Plug 'scrooloose/snipmate-snippets'
 Plug 'tpope/vim-fugitive' " Git wrapper
 Plug 'gregsexton/gitv' " Gitk clone
 Plug 'airblade/vim-gitgutter' " Git diff sign
+Plug 'mhinz/vim-signify' " Git show diffs in side
 
 " Navigation
 Plug 'scrooloose/nerdtree'
@@ -113,15 +127,18 @@ Plug 'tiagofumo/vim-nerdtree-syntax-highlight' " Icon colors
 
 " Language Specificity
 Plug 'sheerun/vim-polyglot' " Language Support (includes javascript and all other types)
+Plug 'othree/html5.vim'
 Plug 'klen/python-mode', { 'for': 'python' }
 Plug 'pangloss/vim-javascript', { 'for': 'javascript' }
 Plug 'elzr/vim-json'
 Plug 'tpope/vim-rails' " Rails
 Plug 'mattn/emmet-vim' " Emmet
+Plug 'fatih/vim-go', { 'for': 'go' } " Go
 Plug 'heavenshell/vim-jsdoc' " JSDoc for vim
 Plug 'greyblake/vim-preview' " vim preview
 Plug 'tpope/vim-bundler' " gem bundler
 Plug 'Shougo/vimproc.vim', {'do' : 'make'} " vim proc
+Plug 'ap/vim-css-color', { 'for': ['css', 'less', 'scss', 'vim'] } " Css
 call plug#end()
 
 "------------------------------------------------
@@ -151,7 +168,6 @@ let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files -co --exclude-standar
 " Airline Setup
 " Enable the list of buffers
 let g:airline#extensions#tabline#enabled = 1
-let g:airline#extensions#syntastic#enabled = 1
 let g:airline_theme='solarized'
 let g:airline_solarized_bg='dark'
 let g:airline_powerline_fonts = 1
@@ -162,6 +178,9 @@ let g:WebDevIconsNerdTreeAfterGlyphPadding = ''
 " vim-javascript
 let g:javascript_plugin_jsdoc = 1
 let g:javascript_plugin_ngdoc = 1
+
+" vim-indent-guides
+let g:indent_guides_enable_on_vim_startup = 1
 
 "-------------------------------------------------
 " => User interface
