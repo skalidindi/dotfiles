@@ -1,12 +1,11 @@
 # Santosh's awesome brewfile with Casks
 tap "homebrew/bundle"
-tap "homebrew/dupes"
-tap "homebrew/science"
-tap "caskroom/cask"
 tap "caskroom/versions"
+tap "caskroom/fonts"
 
 # Install first these dependencies
 cask "java"
+#cask "java8"
 cask "xquartz"
 
 # Shell
@@ -20,34 +19,35 @@ brew "hub"
 brew "git-flow"
 brew "diff-so-fancy"
 
-# Misc
-brew "speedtest-cli"
+# Node
 brew "node"
+brew "yarn"
+
+# Misc
 brew "fzf"
 brew "nginx"
 brew "libyaml"
-brew "go", args: ['with-cc-all']
+# brew "go", args: ['with-cc-all']
 brew "macvim", args: ['with-override-system-vim']
 brew "unzip"
 brew "unrar"
-brew "dark-mode"
-brew "youtube-dl"
-brew "memcached"
-brew "heroku"
-brew "octave"
+# brew "youtube-dl"
+# brew "heroku"
 
 # DBs
-brew "redis"
-brew "postgresql"
-brew "mongodb"
-brew "mysql"
+# brew "redis"
+# brew "postgresql"
+# brew "mongodb"
+# brew "mysql"
+cask "sequel-pro"
 
 # Apache
 brew "spark"
+brew "kafka"
 brew "hadoop"
-brew "thrift"
-brew "ant"
+# brew "thrift"
 brew "maven"
+brew "gradle"
 brew "zookeeper"
 brew "subversion"
 brew "mesos"
@@ -80,19 +80,19 @@ brew "cmake"
 brew "automake"
 
 # JVM
-brew "jenv"
+# brew "jenv"
 brew "scala"
 brew "sbt"
 
 # Ruby
-brew "rbenv"
-brew "rbenv-default-gems"
+#brew "rbenv"
+#brew "rbenv-default-gems"
 
 # Python
-brew "python"
-brew "python3"
-brew "pyenv"
-brew "scons"
+#brew "python"
+#brew "python3"
+#brew "pyenv"
+cask "anaconda"
 
 # Amazon
 brew "aws-shell"
@@ -100,17 +100,14 @@ brew "awscli"
 
 # Install Casks
 cask "dropbox"
-cask "virtualbox"
 cask "evernote"
-cask "vagrant"
-cask "postman"
+cask "insomnia"
 cask "docker"
 cask "surge"
-cask "synergy"
-cask "steam"
-cask "skype"
+#cask "synergy"
+#cask "steam"
 cask "slack"
-cask "screenhero"
+cask "whatsapp"
 cask "vlc"
 
 # Adobe
@@ -119,19 +116,17 @@ cask "adobe-acrobat-reader"
 
 # Google
 cask "google-chrome"
-cask "google-drive"
+cask "google-drive-file-stream"
 cask "google-hangouts"
-cask "chrome-remote-desktop-host"
 
 # MacOS
 cask "alfred"
 cask "aerial"
-cask "flux"
 cask "the-unarchiver"
 cask "cheatsheet"
 cask "fantastical"
 cask "bartender"
-cask "boom"
+#cask "boom"
 cask "appcleaner"
 cask "iterm2"
 cask "dash"
@@ -141,7 +136,7 @@ cask "transmission"
 cask "forklift"
 cask "bettertouchtool"
 cask "spotify"
-
+cask "balsamiq-mockups"
 
 # IDEs
 cask "visual-studio-code"
@@ -151,3 +146,8 @@ cask "sublime-text"
 # Source control
 cask "github-desktop"
 cask "sourcetree"
+
+# Fonts
+cask "font-source-code-pro"
+cask "font-source-code-pro-for-powerline"
+cask "font-meslo-lg"
