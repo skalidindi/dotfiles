@@ -42,6 +42,7 @@ brew "unrar"
 cask "sequel-pro"
 
 # Apache
+brew "apache-flink"
 brew "spark"
 brew "kafka"
 brew "hadoop"
