@@ -18,11 +18,6 @@ fi
 # Execute bash_profile
 source ~/.bash_profile
 
-# Custom binds
-bindkey -e
-bindkey '^[[1;9C' forward-word
-bindkey '^[[1;9D' backward-word
-
 # Overwrite Prezto defaults (Live dangerously)
 unalias rm
 unalias cp
