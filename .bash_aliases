@@ -19,7 +19,7 @@ alias timer='echo "Timer started. Stop with Ctrl-D." && date && time cat && date
 alias update='sudo softwareupdate -i -a; brew update; brew upgrade; brew cleanup; npm install npm -g; npm update -g; sudo gem update --system; sudo gem update; sudo gem cleanup'
 
 # Updates
-alias brewup='brew update && brew upgrade && brew prune && brew cleanup && brew cask cleanup; brew doctor'
+alias brewup='brew update && brew upgrade && brew cleanup && brew cask cleanup; brew doctor'
 alias nodeup='npm outdated --global && npm update -g'
 alias gemup='gem update'
 
