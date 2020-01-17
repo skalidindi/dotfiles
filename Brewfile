@@ -1,11 +1,5 @@
-# Santosh's awesome brewfile with Casks
-tap "homebrew/bundle"
-tap "caskroom/versions"
-tap "caskroom/fonts"
-
 # Install first these dependencies
 cask "java"
-#cask "java8"
 cask "xquartz"
 
 # Shell
@@ -30,9 +24,7 @@ brew "libyaml"
 # brew "go", args: ['with-cc-all']
 brew "macvim", args: ['with-override-system-vim']
 brew "unzip"
-brew "unrar"
 # brew "youtube-dl"
-# brew "heroku"
 
 # DBs
 # brew "redis"
@@ -54,9 +46,6 @@ brew "subversion"
 brew "mesos"
 
 # Linux
-brew "vim", args: ['--with-override-system-vi', '--with-python', '--with-ruby']
-brew "vimpager"
-brew "openssh"
 brew "coreutils"
 brew "moreutils"
 brew "findutils"
@@ -105,7 +94,6 @@ cask "evernote"
 cask "insomnia"
 cask "docker"
 cask "surge"
-#cask "synergy"
 #cask "steam"
 cask "slack"
 cask "whatsapp"
@@ -117,22 +105,18 @@ cask "adobe-acrobat-reader"
 
 # Google
 cask "google-chrome"
-cask "google-drive-file-stream"
 cask "google-hangouts"
 
 # MacOS
 cask "alfred"
 cask "aerial"
 cask "the-unarchiver"
-cask "cheatsheet"
-cask "fantastical"
 cask "bartender"
 #cask "boom"
 cask "appcleaner"
 cask "iterm2"
 cask "dash"
 cask "sketch"
-cask "hazel"
 cask "transmission"
 cask "forklift"
 cask "bettertouchtool"
