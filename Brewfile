@@ -1,6 +1,5 @@
 # Install first these dependencies
-cask "java"
-cask "xquartz"
+cask "adoptopenjdk"
 
 # Shell
 brew "zsh"
@@ -107,11 +106,8 @@ cask "google-chrome"
 cask "google-hangouts"
 
 # MacOS
-cask "alfred"
 cask "aerial"
 cask "bartender"
-#cask "boom"
-cask "appcleaner"
 cask "iterm2"
 cask "sketch"
 cask "bettertouchtool"
