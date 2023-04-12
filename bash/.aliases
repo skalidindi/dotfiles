@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# Shortcuts
+alias doc='cd ~/Documents'
+alias desk='cd ~/Desktop'
+
 # Exa
 alias ls="command exa --icons"
 alias la="command exa --icons -a"
