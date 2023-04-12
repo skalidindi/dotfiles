@@ -34,7 +34,7 @@ set -- "${POSITIONAL_ARGS[@]}" # restore positional parameters
 
 
 # Is tmux running and arje we inside a tmux session
-is_running=$(ps aux | grep '[t]mux new-session')
+is_running=$(pgrep tmux)
 if tmux info &> /dev/null; then
     is_inside="true"
 fi
