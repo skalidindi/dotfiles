@@ -16,3 +16,4 @@ Thumbs.db
 *.zwc
 
 tmux/plugins
+!tmux/plugins/tpm
