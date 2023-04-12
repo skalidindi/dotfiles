@@ -16,6 +16,9 @@ bindkey -e
 # `znap prompt` makes your prompt visible in just 15-40ms!
 znap prompt sindresorhus/pure
 
+# Option to change to Starship instead of pure
+# eval "$(starship init zsh)"
+
 # znap source marlonrichert/zsh-autocomplete # Bug: https://github.com/marlonrichert/zsh-autocomplete/issues/571
 znap source zsh-users/zsh-autosuggestions
 znap source zsh-users/zsh-syntax-highlighting
@@ -23,6 +26,8 @@ znap source zsh-users/zsh-history-substring-search
 znap source ohmyzsh/ohmyzsh lib/git plugins/git
 
 znap eval z 'zoxide init zsh'
+
+znap eval fnm 'fnm env --use-on-cd'
 
 # Execute bash_profile
 source ~/.bash_profile
