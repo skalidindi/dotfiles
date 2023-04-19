@@ -179,7 +179,7 @@ key_bindings:
           args: ["-c", "nvim ~/.config/alacritty/alacritty.yml"],
         },
     }
-  - { key: N, mods: Command, action: SpawnNewInstance }
+  - { key: N, mods: Command, action: CreateNewWindow }
   - { key: Space, mods: Alt, chars: " " }
   - { key: Back, mods: Super, chars: "\x15" } # delete word/line
   - { key: Left, mods: Alt, chars: "\x1bb" } # one word left
