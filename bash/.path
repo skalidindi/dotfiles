@@ -1,3 +1,9 @@
+# Add `~/bin` to the `$PATH`
+export PATH="$HOME/bin:$PATH";
+
+# Coursier
+export PATH="$HOME/Library/Application Support/Coursier/bin:$PATH"
+
 # Rust
 export PATH="$HOME/.cargo/bin:$PATH"
 
@@ -10,9 +16,6 @@ case ":$PATH:" in
   *":$PNPM_HOME:"*) ;;
   *) export PATH="$PNPM_HOME:$PATH" ;;
 esac
-
-# Coursier
-export PATH="$HOME/Library/Application Support/Coursier/bin:$PATH"
 
 # Sbin
 export PATH="/usr/local/sbin:$PATH"
