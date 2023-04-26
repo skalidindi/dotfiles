@@ -10,7 +10,9 @@ case ":$PATH:" in
   *":$PNPM_HOME:"*) ;;
   *) export PATH="$PNPM_HOME:$PATH" ;;
 esac
-# pnpm end
+
+# Coursier
+export PATH="$HOME/Library/Application Support/Coursier/bin:$PATH"
 
 # Sbin
 export PATH="/usr/local/sbin:$PATH"
