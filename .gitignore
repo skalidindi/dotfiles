@@ -17,3 +17,6 @@ Thumbs.db
 
 tmux/.tmux/plugins/*
 !tmux/.tmux/plugins/tpm
+
+bin/.local/*
+!bin/.local/bin
