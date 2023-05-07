@@ -25,14 +25,11 @@ znap source zsh-users/zsh-syntax-highlighting
 znap source zsh-users/zsh-history-substring-search
 znap source ohmyzsh/ohmyzsh lib/git plugins/git
 
-# znap eval brew '/opt/homebrew/bin/brew shellenv'
-eval "$(/opt/homebrew/bin/brew shellenv)"
+znap eval brew '/opt/homebrew/bin/brew shellenv'
 
-# znap eval z 'zoxide init zsh'
-eval "$(zoxide init zsh)"
+znap eval z 'zoxide init zsh'
 
-# znap eval fnm 'fnm env --use-on-cd'
-eval "$(fnm env --use-on-cd)"
+znap eval fnm 'fnm env --use-on-cd'
 
 # Execute bash_profile
 source ~/.bash_profile
