@@ -48,7 +48,25 @@ local plugins = {
   },
 
   {
+    "goolord/alpha-nvim",
+    opts = function(_, opts)
+      local logo = [[
+      ███╗   ██╗███████╗ ██████╗ ██╗   ██╗██╗███╗   ███╗
+      ████╗  ██║██╔════╝██╔═══██╗██║   ██║██║████╗ ████║
+      ██╔██╗ ██║█████╗  ██║   ██║██║   ██║██║██╔████╔██║
+      ██║╚██╗██║██╔══╝  ██║   ██║╚██╗ ██╔╝██║██║╚██╔╝██║
+      ██║ ╚████║███████╗╚██████╔╝ ╚████╔╝ ██║██║ ╚═╝ ██║
+      ╚═╝  ╚═══╝╚══════╝ ╚═════╝   ╚═══╝  ╚═╝╚═╝     ╚═╝
+      ]]
+      opts.section.header.val = vim.split(logo, "\n", { trimempty = true })
+    end,
+  },
+
+  { "github/copilot.vim" },
+
+  {
     "christoomey/vim-tmux-navigator",
+    lazy = false,
   },
 
   -- To make a plugin not be loaded
