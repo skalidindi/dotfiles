@@ -33,11 +33,14 @@ M.mason = {
     "typescript-language-server",
     "deno",
     "prettier",
-    "rust",
+    "tailwindcss-language-server",
 
-    -- c/cpp stuff
-    "clangd",
-    "clang-format",
+    -- Rust
+    "rust-analyzer",
+
+    -- Python
+    "pyright",
+    "python-lsp-server",
   },
 }
 
