@@ -38,6 +38,11 @@ local plugins = {
     opts = overrides.nvimtree,
   },
 
+  {
+    "hrsh7th/nvim-cmp",
+    opts = overrides.cmp,
+  },
+
   -- Install a plugin
   {
     "max397574/better-escape.nvim",
@@ -47,12 +52,17 @@ local plugins = {
     end,
   },
 
-  { "github/copilot.vim" },
-
   {
     "christoomey/vim-tmux-navigator",
     lazy = false,
   },
+
+  { import = "custom.configs.extras.rust-tools", },
+
+  { import = "custom.configs.extras.copilot", },
+
+  { import = "custom.configs.extras.trouble", },
+
 
   -- To make a plugin not be loaded
   -- {

@@ -2,14 +2,25 @@ local M = {}
 
 M.treesitter = {
   ensure_installed = {
+    -- defaults
     "vim",
     "lua",
+
+    -- web dev
+    "json",
     "html",
     "css",
     "javascript",
     "typescript",
     "tsx",
+    -- "vue", "svelte",
+
+    -- low level
     "c",
+    "rust",
+    "zig",
+
+    -- other
     "markdown",
     "markdown_inline",
   },
@@ -38,6 +49,9 @@ M.mason = {
     -- Rust
     "rust-analyzer",
 
+    -- Debugger
+    "codelldb",
+
     -- Python
     "pyright",
     "python-lsp-server",
@@ -58,6 +72,14 @@ M.nvimtree = {
       },
     },
   },
+}
+
+M.cmp = {
+  mapping = {
+    sources = {
+      { name = "copilot" },
+    },
+  }
 }
 
 return M
