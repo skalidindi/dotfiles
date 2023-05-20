@@ -12,6 +12,7 @@ return {
 
       -- web dev
       "json",
+      "jsonc",
       "html",
       "css",
       "javascript",
