@@ -1,8 +1,12 @@
 # Add `~/bin` to the `$PATH`
 export PATH="$HOME/bin:$PATH";
 
-# Pip path
-export PATH="$HOME/Library/Python/3.11/bin:$PATH"
+# Homebrew
+export PATH="/opt/homebrew/bin:$PATH";
+
+# Python
+export PYTHON_HOME=$(brew --prefix)/opt/python/libexec
+export PATH=$PYTHON_HOME/bin:$PATH
 
 # Coursier
 export PATH="$HOME/Library/Application Support/Coursier/bin:$PATH"
