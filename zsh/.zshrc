@@ -16,14 +16,17 @@ bindkey -e
 # `znap prompt` makes your prompt visible in just 15-40ms!
 znap prompt sindresorhus/pure
 
-# znap source marlonrichert/zsh-autocomplete
+znap source marlonrichert/zsh-autocomplete
 znap source zsh-users/zsh-autosuggestions
 znap source zsh-users/zsh-syntax-highlighting
 znap source zsh-users/zsh-history-substring-search
 znap source ohmyzsh/ohmyzsh lib/git plugins/git
 
-eval "$(zoxide init zsh)" # temp fix for https://github.com/marlonrichert/zsh-snap/issues/211
-# znap eval zoxide '$(zoxide init zsh)'
+## temp fix for https://github.com/marlonrichert/zsh-snap/issues/211
+znap eval brew '/opt/homebrew/bin/brew shellenv'
+
+eval "$(zoxide init zsh)"
+znap eval zoxide '$(zoxide init zsh)'
 
 znap eval fnm 'fnm env --use-on-cd'
 
