@@ -1,3 +1,10 @@
+##### BEGIN METATRON AUTOCONFIG
+# Do not remove the above line. The metatron CLI uses it to update this file.
+# Set git proxy configuration (must be the first directive in this file)
+[include]
+    path = /Users/skalidindi/.gitconfig-proxy
+# Do not remove the below line. The metatron CLI uses it to update this file.
+##### END METATRON AUTOCONFIG
 [alias]
 
   # List aliases.
@@ -27,6 +34,9 @@
 
   # List remotes
 	remotes = remote --verbose
+
+  # Switch
+  s = switch
 
   # Show verbose output about tags, branches or remotes
 	tags = tag -l
@@ -104,6 +114,7 @@
 	default = simple
 	# Make `git push` push relevant annotated tags when pushing branches out.
 	followTags = true
+	autoSetupRemote = true
 
 [init]
 
@@ -118,3 +129,18 @@
   name = Santosh Kalidindi
   initials = sk
   email = skalidindi8@gmail.com
+[http "https://stash.prod.netflix.net:7006"]
+	sslCert = /Users/skalidindi/.metatron/certificates/user.crt
+	sslKey = /Users/skalidindi/.metatron/certificates/user.key
+	sslVerify = true
+[url "https://stash.prod.netflix.net:7006/scm"]
+	insteadOf = ssh://git@stash.corp.netflix.com:7999
+[url "https://stash.prod.netflix.net:7006"]
+	insteadOf = https://stash.corp.netflix.com
+	insteadOf = https://stash.corp.netflix.com:7006
+	insteadOf = https://stash.corp.netflix.com:7004
+	insteadOf = https://stash.netflix.com
+[http "https://stash-corp-ci-stable.prod.netflix.net:7006"]
+	sslCert = /Users/skalidindi/.metatron/certificates/user.crt
+	sslKey = /Users/skalidindi/.metatron/certificates/user.key
+	sslVerify = true

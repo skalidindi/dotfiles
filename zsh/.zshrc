@@ -30,8 +30,21 @@ znap eval zoxide '$(zoxide init zsh)'
 
 znap eval fnm 'fnm env --use-on-cd'
 
+eval "$(pyenv init -)"
+
 # Execute bash_profile
 source ~/.bash_profile
 
 # Update function path
 fpath=(~/.zsh.d/ $fpath)
+
+# bun completions
+[ -s "/Users/skalidindi/.bun/_bun" ] && source "/Users/skalidindi/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
+#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
+export SDKMAN_DIR="$HOME/.sdkman"
+[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
