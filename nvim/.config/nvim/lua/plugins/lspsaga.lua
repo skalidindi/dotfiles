@@ -1,13 +1,11 @@
 return {
-  "glepnir/lspsaga.nvim",
+  'nvimdev/lspsaga.nvim',
   event = "LspAttach",
   config = function()
-      require("lspsaga").setup({})
+      require('lspsaga').setup({})
   end,
   dependencies = {
-    'neovim/nvim-lspconfig',
-    'nvim-tree/nvim-web-devicons',
-    --Please make sure you install markdown and markdown_inline parser
-    'nvim-treesitter/nvim-treesitter'
+      'nvim-treesitter/nvim-treesitter',
+      'nvim-tree/nvim-web-devicons'
   }
 }

@@ -12,14 +12,9 @@ return {
     },
     keys = {
       {
-        "<leader>pg",
-        function() require("telescope.builtin").live_grep() end,
+        "<C-p>",
+        function() require("telescope.builtin").find_files() end,
         desc = "Grep Project",
-      },
-      {
-        "<leader>fg",
-        function() require("telescope.builtin").git_files() end,
-        desc = "Find Git Files",
       },
     },
   },
