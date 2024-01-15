@@ -13,6 +13,8 @@ return {
       "typescript-language-server",
       "deno",
       "tailwindcss-language-server",
+      "prettier",
+      "eslint-lsp",
 
       -- Rust
       "rust-analyzer",
@@ -21,6 +23,7 @@ return {
       "codelldb",
 
       -- Python
+      "black",
       "pyright",
       "python-lsp-server",
     })
