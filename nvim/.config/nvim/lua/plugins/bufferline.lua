@@ -1,7 +1,7 @@
 return {
   "akinsho/bufferline.nvim",
   dependencies = {
-    'nvim-tree/nvim-web-devicons',
+    "nvim-tree/nvim-web-devicons",
   },
   event = "VeryLazy",
   opts = {
@@ -9,7 +9,7 @@ return {
       hover = {
         enabled = true,
         delay = 200,
-        reveal = {'close'}
+        reveal = {"close"}
       }
     },
   },
