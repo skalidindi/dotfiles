@@ -143,6 +143,7 @@
 
 [core]
 
+  fsmonitor = true
   editor = 'nvim'
   pager = delta
 
@@ -173,6 +174,7 @@
 
 [fetch]
     prune = true
+    writeCommitGraph = true
 
 [help]
 
