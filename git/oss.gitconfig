@@ -1,0 +1,10 @@
+[user]
+
+  name = Santosh Kalidindi
+  initials = sk
+  email = skalidindi8@gmail.com
+
+[commit]
+
+  # https://help.github.com/articles/signing-commits-using-gpg/
+	# gpgsign = true
