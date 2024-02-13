@@ -42,5 +42,7 @@ alias weather="curl wttr.in"
 
 alias gcb="git branch --sort=-committerdate | fzf --header Checkout | xargs git checkout"
 
+alias reset_vpn="sudo kill -SEGV $(ps auwx | grep dsAccessService | grep Ss | awk '{print $2}'); sudo route delete pcs.flxvpn.net; sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder"
+
 # Tmux Sessionizer
 bindkey -s '^f' 'tmux-sessionizer\n'
