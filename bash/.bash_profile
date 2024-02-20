@@ -8,6 +8,7 @@ unset file;
 
 . "$HOME/.cargo/env"
 . "$HOME/.rye/env"
+source ~/znap/ohmyzsh/ohmyzsh/plugins/rye/_rye
 
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
 export SDKMAN_DIR="$HOME/.sdkman"
