@@ -23,7 +23,7 @@ return {
       "codelldb",
 
       -- Python
-      "black",
+      "ruff",
       "pyright",
       "python-lsp-server",
     })
