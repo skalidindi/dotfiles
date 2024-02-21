@@ -35,3 +35,11 @@ brace_style = expand
 [**.rs]
 indent_style = space
 indent_size = 4
+
+[**.java]
+indent_style = space
+indent_size = 4
+
+[**.kts]
+indent_style = space
+indent_size = 4
