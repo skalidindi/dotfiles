@@ -46,5 +46,7 @@ alias reset_vpn="sudo kill -SEGV $(ps auwx | grep dsAccessService | grep Ss | aw
 
 alias get_ip="ipconfig getifaddr en0 | pbcopy"
 
+alias cat='bat --style=plain'
+
 # Tmux Sessionizer
 bindkey -s '^f' 'tmux-sessionizer\n'
