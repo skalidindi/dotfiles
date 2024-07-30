@@ -31,6 +31,9 @@ alias path='echo -e ${PATH//:/\\n}'
 alias vim="nvim"
 alias vi="nvim"
 
+# Git
+alias lg="lazygit"
+
 # TLDR
 alias tldrf='tldr --list | fzf --preview "tldr {1} --color=always" --preview-window=right,70% | xargs tldr'
 
