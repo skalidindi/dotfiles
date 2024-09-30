@@ -36,3 +36,6 @@ export BASH_SILENCE_DEPRECATION_WARNING=1;
 
 # LS COLORS
 export LS_COLORS=$(vivid generate catppuccin-macchiato);
+
+# Auto update Brew Packages every 24 hours
+export HOMEBREW_AUTO_UPDATE_SECS=86400
