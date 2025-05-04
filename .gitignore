@@ -20,3 +20,5 @@ tmux/.tmux/plugins/*
 
 bin/.local/*
 !bin/.local/bin
+
+.env-secrets
