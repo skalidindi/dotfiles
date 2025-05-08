@@ -22,3 +22,4 @@ bin/.local/*
 !bin/.local/bin
 
 .env-secrets
+.private_functions
