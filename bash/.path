@@ -11,6 +11,12 @@ export PATH=$PYTHON_HOME/bin:$PATH
 # Coursier
 export PATH="$HOME/Library/Application Support/Coursier/bin:$PATH"
 
+# Istio
+export PATH=$HOME/istio-1.25.2/bin:$PATH
+
+# Go
+export PATH=$HOME/go/bin:$PATH
+
 # Rust
 export PATH="$HOME/.cargo/bin:$PATH"
 
