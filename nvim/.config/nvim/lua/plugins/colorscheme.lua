@@ -1,34 +1,20 @@
 return {
-  -- {
-  --   "folke/tokyonight.nvim",
-    -- opts = {
-    --   transparent = true,
-    --   styles = {
-    --     sidebars = "transparent",
-    --     floats = "transparent",
-    --   },
-    -- },
-  -- },
   {
-    "catppuccin/nvim",
+    "folke/tokyonight.nvim",
+    enabled = false,
     opts = {
-      flavor = "macchiato",
+      transparent = true,
+      style = "moon",
+      styles = {
+        sidebars = "transparent",
+        floats = "transparent",
+      },
     },
   },
-  -- {
-  --   "projekt0n/github-nvim-theme",
-  --   lazy = false, -- make sure we load this during startup if it is your main colorscheme
-  --   priority = 1000, -- make sure to load this before all the other start plugins
-  --   config = function()
-  --     require("github-theme").setup({
-  --       -- ...
-  --     })
-  --   end,
-  -- },
   {
     "LazyVim/LazyVim",
     opts = {
-      colorscheme = "catppuccin",
+      colorscheme = "catppuccin-frappe",
     },
-  }
+  },
 }
