@@ -1,7 +1,6 @@
 return {
   {
     "folke/tokyonight.nvim",
-    enabled = false,
     opts = {
       transparent = true,
       style = "moon",
@@ -12,9 +11,15 @@ return {
     },
   },
   {
+    "shaunsingh/nord.nvim",
+  },
+  {
+    "rebelot/kanagawa.nvim",
+  },
+  {
     "LazyVim/LazyVim",
     opts = {
-      colorscheme = "catppuccin-frappe",
+      colorscheme = "catppuccin-macchiato",
     },
   },
 }
