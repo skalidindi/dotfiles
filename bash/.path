@@ -4,6 +4,10 @@ export PATH="$HOME/bin:$PATH";
 # Homebrew
 export PATH="/opt/homebrew/bin:$PATH";
 
+# Bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
 # Python
 export PYTHON_HOME=$(brew --prefix)/opt/python/libexec
 export PATH=$PYTHON_HOME/bin:$PATH
@@ -29,14 +33,6 @@ case ":$PATH:" in
   *":$PNPM_HOME:"*) ;;
   *) export PATH="$PNPM_HOME:$PATH" ;;
 esac
-
-# pyenv
-export PYENV_ROOT="$HOME/.pyenv"
-command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
-
-# SDKMAN
-# export SDKMAN_DIR=$(brew --prefix sdkman-cli)/libexec
-# [[ -s "${SDKMAN_DIR}/bin/sdkman-init.sh" ]] && source "${SDKMAN_DIR}/bin/sdkman-init.sh"
 
 # Sbin
 export PATH="/usr/local/sbin:$PATH"

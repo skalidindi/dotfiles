@@ -1,4 +1,3 @@
-source ~/znap/zsh-snap/znap.zsh
 # Download Znap, if it's not there yet.
 [[ -f ~/znap/zsh-snap/znap.zsh ]] ||
     git clone --depth 1 -- \
@@ -30,8 +29,6 @@ znap eval zoxide '$(zoxide init zsh)'
 
 znap eval fnm 'fnm env --use-on-cd'
 
-eval "$(pyenv init -)"
-
 # Execute bash_profile
 source ~/.bash_profile
 
@@ -41,23 +38,11 @@ fpath=(~/.zsh.d/ $fpath)
 # bun completions
 [ -s "/Users/skalidindi/.bun/_bun" ] && source "/Users/skalidindi/.bun/_bun"
 
-# bun
-export BUN_INSTALL="$HOME/.bun"
-export PATH="$BUN_INSTALL/bin:$PATH"
-
 # Rust
 . "$HOME/.cargo/env"
 
 # Load API keys
 source ~/.env-secrets
-
-# pnpm
-export PNPM_HOME="/Users/skalidindi/.local/share/pnpm"
-case ":$PATH:" in
-  *":$PNPM_HOME:"*) ;;
-  *) export PATH="$PNPM_HOME:$PATH" ;;
-esac
-# pnpm end
 
 # THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
 export SDKMAN_DIR="$HOME/.sdkman"
