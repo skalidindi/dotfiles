@@ -25,6 +25,7 @@ romkatv/powerlevel10k kind:fpath
 
 # popular fish-like plugins
 mattmc3/zfunctions
+zsh-users/zsh-autosuggestions
 
 # Deferred Plugins
 zdharma-continuum/fast-syntax-highlighting kind:defer
