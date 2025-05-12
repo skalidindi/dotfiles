@@ -20,6 +20,7 @@ tmux/.tmux/plugins/*
 
 bin/.local/*
 !bin/.local/bin
+bin/.local/bin/ruff
 
 .env-secrets
 .private_functions
