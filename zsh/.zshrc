@@ -1,32 +1,26 @@
-# Download Znap, if it's not there yet.
-[[ -f ~/znap/zsh-snap/znap.zsh ]] ||
-    git clone --depth 1 -- \
-        https://github.com/marlonrichert/zsh-snap.git ~/znap/zsh-snap
-
-##
-# Source Znap at the start of your .zshrc file.
-#
-source ~/znap/zsh-snap/znap.zsh
-
 # Navigation in tmux works better with this
 bindkey -e
 
-# Plugins
-# `znap prompt` makes your prompt visible in just 15-40ms!
-znap prompt sindresorhus/pure
+# Download antigen, if it's not there yet.
+if [ ! -d "${ZDOTDIR:-$HOME}/.antidote" ]; then
+  echo "Antidote not found. Cloning Antidote..."
+  git clone --depth=1 https://github.com/mattmc3/antidote.git "${ZDOTDIR:-$HOME}/.antidote"
+fi
 
-znap source marlonrichert/zsh-autocomplete
-znap source zsh-users/zsh-autosuggestions
-znap source zsh-users/zsh-syntax-highlighting
-znap source zsh-users/zsh-history-substring-search
+eval $(/opt/homebrew/bin/brew shellenv)
 
-## temp fix for https://github.com/marlonrichert/zsh-snap/issues/211
-znap eval brew '/opt/homebrew/bin/brew shellenv'
+# Source antidote at the start of your .zshrc file.
+source $(brew --prefix)/opt/antidote/share/antidote/antidote.zsh
+
+# Load Plugins from .zsh_plugins.txt
+antidote load
+
+# znap eval fnm 'fnm env --use-on-cd'
+autoload -Uz promptinit && promptinit
+prompt pure
 
 eval "$(zoxide init zsh)"
-znap eval zoxide '$(zoxide init zsh)'
-
-znap eval fnm 'fnm env --use-on-cd'
+eval "$(fnm env --use-on-cd --shell zsh)"
 
 # Execute bash_profile
 source ~/.bash_profile
