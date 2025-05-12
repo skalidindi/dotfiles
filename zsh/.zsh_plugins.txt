@@ -12,15 +12,9 @@ belak/zsh-utils path:history
 belak/zsh-utils path:prompt
 belak/zsh-utils path:utility
 
-# oh-my-zsh
-ohmyzsh/ohmyzsh path:lib/clipboard.zsh
-ohmyzsh/ohmyzsh path:plugins/extract
-ohmyzsh/ohmyzsh path:plugins/magic-enter
-
 
 # Prezto
 # sorin-ionescu/prezto path:modules/directory
-# sorin-ionescu/prezto path:modules/terminal
 
 
 # prompts:
