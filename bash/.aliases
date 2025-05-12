@@ -49,6 +49,7 @@ bindkey -s "^f" "tmux-sessionizer\n"
 # Git
 alias g="git"
 alias ga="git add"
+alias gac="git commit -a"
 alias gb="git branch"
 alias gc="git commit"
 alias gcl="git clone"

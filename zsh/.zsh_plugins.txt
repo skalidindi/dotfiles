@@ -12,6 +12,8 @@ belak/zsh-utils path:history
 belak/zsh-utils path:prompt
 belak/zsh-utils path:utility
 
+# other plugins
+MichaelAquilina/zsh-you-should-use
 
 # Prezto
 # sorin-ionescu/prezto path:modules/directory
