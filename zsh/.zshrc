@@ -19,7 +19,6 @@ znap source marlonrichert/zsh-autocomplete
 znap source zsh-users/zsh-autosuggestions
 znap source zsh-users/zsh-syntax-highlighting
 znap source zsh-users/zsh-history-substring-search
-znap source ohmyzsh/ohmyzsh lib/git plugins/git
 
 ## temp fix for https://github.com/marlonrichert/zsh-snap/issues/211
 znap eval brew '/opt/homebrew/bin/brew shellenv'

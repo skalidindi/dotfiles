@@ -53,3 +53,21 @@ alias cat='bat --style=plain'
 
 # Tmux Sessionizer
 bindkey -s '^f' 'tmux-sessionizer\n'
+
+
+# Git
+alias g="git"
+alias ga="git add"
+alias gb="git branch"
+alias gc="git commit"
+alias gcl="git clone"
+alias gcf="git commit --fixup"
+alias gd="git diff"
+alias gi="git init"
+alias gl="git log --graph --pretty='%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%ad) %C(bold blue)<%an>%Creset'"
+alias gp="git push"
+alias gpf="git push --force-with-lease --force-if-includes"
+alias grf="git reflog"
+alias gst="git status"
+alias gsw="git switch"
+alias gu="git pull"

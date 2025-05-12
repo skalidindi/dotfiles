@@ -59,7 +59,7 @@
 
   # Remove branches that have already been merged with main.
 	# a.k.a. ‘delete merged’
-	dm = "!git branch --merged | grep -v '\\*' | xargs -n 1 git branch -d"
+	dm = "git branch --merged | grep -v '\\*' | xargs -n 1 git branch -d"
 
   # Make Empty commit
   empty = "git commit --allow-empty"
@@ -107,8 +107,7 @@
   std = stash drop
   stl = stash list
   stp = stash pop
-  sts = stash save
-  stsk = stash save -k
+  stpu = stash push
   stw = stash show
 
   s = switch
