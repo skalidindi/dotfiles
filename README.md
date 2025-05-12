@@ -10,8 +10,6 @@ Dotfiles are configuration files in Unix-like systems that begin with a dot (.) 
 
 This repository includes configurations for:
 
-- **aerospace** - Window manager configuration
-- **alacritty** - Terminal emulator configuration
 - **bash** - Bash shell configuration
 - **bat** - Cat clone with syntax highlighting
 - **bin** - Custom scripts and binaries
@@ -21,10 +19,12 @@ This repository includes configurations for:
 - **ghostty** - Terminal emulator configuration
 - **git** - Git version control configuration
 - **kitty** - Terminal emulator configuration
+- **lazygit** - Lazygit configuration
 - **misc** - Miscellaneous configuration files
 - **nvim** - Neovim text editor configuration
-- **skhd** - Simple hotkey daemon configuration
 - **tmux** - Terminal multiplexer configuration
+- **Yazi** - Yazi configuration
+- **Zellij** - Zellij configuration
 - **zsh** - Zsh shell configuration
 
 ## Prerequisites
