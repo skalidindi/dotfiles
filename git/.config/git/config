@@ -2,21 +2,18 @@
 # Do not remove the above line. The metatron CLI uses it to update this file.
 # Set git proxy configuration (must be the first directive in this file)
 [include]
-    path = /Users/skalidindi/.gitconfig-proxy
+  path = ~/.gitconfig-proxy
 # Do not remove the below line. The metatron CLI uses it to update this file.
 ##### END METATRON AUTOCONFIG
 
 [includeIf "gitdir:~/oss/"]
-
-  path = ~/oss.gitconfig
+  path = ~/.config/git/oss.gitconfig
 
 [includeIf "gitdir:~/work/"]
-
-  path = ~/work.gitconfig
+  path = ~/.config/git/work.gitconfig
 
 ##### END METATRON AUTOCONFIG
 [alias]
-
   # Add
   a = add --all
   ai = add -i
@@ -91,8 +88,7 @@
 	rbi = rebase --interactive
 	rbs = rebase --skip
 
-  # List remotes
-	remotes = remote --verbose
+	remotes = remote --verbose # List remotes
 
   # Reset
   re = reset
@@ -115,102 +111,123 @@
   stsk = stash save -k
   stw = stash show
 
-  # Switch
   s = switch
 
-  # Show verbose output about tags, branches or remotes
-	tags = tag -l
+	tags = tag -l # Show verbose output about tags, branches or remotes
 
   undo = reset --soft HEAD^
 
-  #wdiff
-  wdiff = diff --word-diff
+  wdiff = diff --word-diff #w diff
 
-	# Show the user email for the current repository.
-	whoami = config user.email
+	whoami = config user.email # Show the user email for the current repository.
 
 [apply]
+  whitespace = fix # Detect whitespace errors when applying a patch
 
-  # Detect whitespace errors when applying a patch
-  whitespace = fix
+[blame]
+  coloring = highlightRecent
+  date = relative
 
 [branch]
-
-  # Show most recently changed branches first.
-	sort = -committerdate
+  autoSetupRebase = always
+	sort = -committerdate # Show most recently changed branches first.
 
 [column]
-
   ui = auto
 
-[core]
+[commit]
+  template = ~/.config/git/template
 
-  fsmonitor = true
+[core]
+  autocrlf = input  # keep newlines as in input
+  compression = 9
   editor = 'nvim'
+  fsmonitor = true
   pager = delta
-	compression = 1
+  preloadindex = true
+  whitespace = error # treat incorrect whitespace as errors
 
 [color]
-
   # Use colors in Git commands that are capable of colored output when
   # outputting to the terminal. (This is the default setting in Git ≥ 1.8.4.)
   ui = true
   status = auto
 
-[color "status"]
 
+[color "decorate"]
+	added = "green normal"
+	changed = "yellow normal"
+
+[color "status"]
 	added = "green normal"
 	changed = "yellow normal"
 
 [delta]
-
-  light = false      # set to true if you're in a terminal w/ a light background color (e.g. the default macOS terminal)
+  dark = true
   line-numbers = true
-  navigate = true    # use n and N to move between diff sections
+  navigate = true # use n and N to move between diff sections
   side-by-side = true
 
 [diff]
-
 	colorMoved = default
-	# Detect copies as well as renames.
 	renames = copies
 
 [fetch]
-    prune = true
-    writeCommitGraph = true
+  prune = true
+  writeCommitGraph = true
 
 [help]
-
-  # Automatically correct and execute mistyped commands
-  autocorrect = 1
+  autoCorrect = 1 # Automatically correct and execute mistyped commands
 
 [init]
-
 	defaultBranch = main
 
 [interactive]
-
   diffFilter = delta --color-only
+  singlekey = true
+
+[log]
+  abbrevCommit = true
+  graphColors = "blue, yellow, cyan, magenta, green, red"
 
 [merge]
+  conflictStyle = zdiff3
+	log = true # Include summaries of merged commits in newly created merge commit messages
 
-  conflictstyle = diff3
-	# Include summaries of merged commits in newly created merge commit messages
-	log = true
+[pager]
+  diff = delta
+  log = delta
+  # show = delta
+  # status = delta
+
+[pull]
+  rebase = true
 
 [push]
-
-	# https://git-scm.com/docs/git-config#git-config-pushdefault
-	default = simple
-	# Make `git push` push relevant annotated tags when pushing branches out.
+  autoSetupRemote = true
+  default = current
 	followTags = true
-	autoSetupRemote = true
 
 [rebase]
-
-  autosquash = true
+  autoSquash = true
+  autoStash = true
+  missingCommitsCheck = warn
 
 [rerere]
-
 	enabled = 1
-	autoupdate = 1
+	autoUpdate = 1
+
+[status]
+  branch = true
+  showStash = true
+  showUntrackedFiles = all # show individual untracked files
+
+[tag]
+  sort = -taggerdate
+
+# URL shortcuts
+[url "git@github.com:skalidindi/"]
+  insteadOf = "sk:"
+
+[url "git@github.com:"]
+  insteadOf = "gh:"

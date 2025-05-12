@@ -8,3 +8,4 @@
 
   # https://help.github.com/articles/signing-commits-using-gpg/
 	gpgsign = true
+  signingKey = 5EFA48B9657D7C02
