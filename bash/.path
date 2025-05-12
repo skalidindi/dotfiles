@@ -1,6 +1,9 @@
 # Add `~/bin` to the `$PATH`
 export PATH="$HOME/bin:$PATH";
 
+# Sbin
+export PATH="/usr/local/sbin:$PATH"
+
 # Homebrew
 export PATH="/opt/homebrew/bin:$PATH";
 
@@ -33,6 +36,3 @@ case ":$PATH:" in
   *":$PNPM_HOME:"*) ;;
   *) export PATH="$PNPM_HOME:$PATH" ;;
 esac
-
-# Sbin
-export PATH="/usr/local/sbin:$PATH"

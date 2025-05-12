@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 # Shortcuts
-alias doc='cd ~/Documents'
-alias desk='cd ~/Desktop'
+alias doc="cd ~/Documents"
+alias desk="cd ~/Desktop"
 
 # Exa
 alias ls="command eza --icons"
@@ -11,13 +11,13 @@ alias ll="ls --long --header --git"
 alias lt="ls --tree --level=4 -I=.git --git-ignore"
 
 # Enable aliases to be sudo’ed
-alias sudo='sudo '
+alias sudo="sudo "
 
 # Get week number
-alias week='date +%V'
+alias week="date +%V"
 
 # Trim new lines and copy to clipboard
-alias c="tr -d '\n' | pbcopy"
+alias c="tr -d "\n" | pbcopy"
 
 # Intuitive map function
 # For example, to list all directories that contain a certain file:
@@ -25,23 +25,14 @@ alias c="tr -d '\n' | pbcopy"
 alias map="xargs -n1"
 
 # Print each PATH entry on a separate line
-alias path='echo -e ${PATH//:/\\n}'
+alias path="echo -e ${PATH//:/\\n}"
 
 # Force nvim
 alias vim="nvim"
 alias vi="nvim"
 
-# Git
-alias lg="lazygit"
-
-# TLDR
-alias tldrf='tldr --list | fzf --preview "tldr {1} --color=always" --preview-window=right,70% | xargs tldr'
-
 # View File
 alias v="fd --type f --hidden --exclude .git | fzf --preview 'bat --style numbers,changes --color=always {}' | xargs nvim"
-
-# Weather
-alias weather="curl wttr.in"
 
 alias gcb="git branch --sort=-committerdate | fzf --header Checkout | xargs git checkout"
 
@@ -49,10 +40,10 @@ alias reset_vpn="sudo kill -SEGV $(ps auwx | grep dsAccessService | grep Ss | aw
 
 alias get_ip="ipconfig getifaddr en0 | pbcopy"
 
-alias cat='bat --style=plain'
+alias cat="bat --style=plain"
 
 # Tmux Sessionizer
-bindkey -s '^f' 'tmux-sessionizer\n'
+bindkey -s "^f" "tmux-sessionizer\n"
 
 
 # Git
@@ -71,3 +62,6 @@ alias grf="git reflog"
 alias gst="git status"
 alias gsw="git switch"
 alias gu="git pull"
+
+#LazyGit
+alias lg="lazygit"

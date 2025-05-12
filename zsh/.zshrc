@@ -19,17 +19,20 @@ antidote load
 autoload -Uz promptinit && promptinit
 prompt pure
 
-eval "$(zoxide init zsh)"
-eval "$(fnm env --use-on-cd --shell zsh)"
-
 # Execute bash_profile
 source ~/.bash_profile
 
 # Update function path
 fpath+=("~/.zsh.d")
 
-# bun completions
-[ -s "/Users/skalidindi/.bun/_bun" ] && source "/Users/skalidindi/.bun/_bun"
+# Zoxide
+eval "$(zoxide init zsh)"
+
+# FNM
+eval "$(fnm env --use-on-cd --shell zsh)"
+
+# Bun
+eval "$(bun completions zsh)"
 
 # Rust
 . "$HOME/.cargo/env"
