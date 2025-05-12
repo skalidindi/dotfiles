@@ -26,7 +26,7 @@ eval "$(fnm env --use-on-cd --shell zsh)"
 source ~/.bash_profile
 
 # Update function path
-fpath=(~/.zsh.d/ $fpath)
+fpath+=("~/.zsh.d")
 
 # bun completions
 [ -s "/Users/skalidindi/.bun/_bun" ] && source "/Users/skalidindi/.bun/_bun"
