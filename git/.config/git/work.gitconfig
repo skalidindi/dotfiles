@@ -2,3 +2,7 @@
   name = Santosh Kalidindi
   initials = sk
   email = skalidindi@netflix.com
+
+[commit]
+	gpgsign = true # https://docs.github.com/en/authentication/managing-commit-signature-verification/generating-a-new-gpg-key
+  signingKey = EF9EFFABBE224EB6
