@@ -74,3 +74,16 @@ function y() {
 	fi
 	rm -f -- "$tmp"
 }
+
+function ghrepo(){
+
+    if [[ -e .git/ ]]; then
+
+        $(which gh) -R corp/$(basename $PWD) "$@"
+
+    else
+
+        $(which gh) "$@"
+
+    fi
+}
