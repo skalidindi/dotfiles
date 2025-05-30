@@ -46,3 +46,6 @@ export SDKMAN_DIR="$HOME/.sdkman"
 
 # Generated for envman. Do not edit.
 [ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"
+
+# bun completions
+[ -s "/Users/skalidindi/.bun/_bun" ] && source "/Users/skalidindi/.bun/_bun"
