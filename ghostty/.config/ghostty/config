@@ -5,3 +5,4 @@ mouse-hide-while-typing = true
 background-opacity = 0.9
 
 keybind = global:cmd+g=toggle_quick_terminal
+keybind = shift+enter=text:\n
