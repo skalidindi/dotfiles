@@ -86,4 +86,16 @@ else
   echo "Encrypted file env/.env-secrets.gpg not found."
 fi
 
+# Bat theme setup
+if [ ! -d "$(bat --config-dir)" ]; then
+  mkdir -p "$(bat --config-dir)/themes"
+  wget -P "$(bat --config-dir)/themes" https://github.com/catppuccin/bat/raw/main/themes/Catppuccin%20Latte.tmTheme
+  wget -P "$(bat --config-dir)/themes" https://github.com/catppuccin/bat/raw/main/themes/Catppuccin%20Frappe.tmTheme
+  wget -P "$(bat --config-dir)/themes" https://github.com/catppuccin/bat/raw/main/themes/Catppuccin%20Macchiato.tmTheme
+  wget -P "$(bat --config-dir)/themes" https://github.com/catppuccin/bat/raw/main/themes/Catppuccin%20Mocha.tmTheme
+  bat cache --build
+else
+  echo "The bat configuration directory does not exist."
+fi
+
 echo "Bootstrap completed!"
