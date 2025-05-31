@@ -19,8 +19,6 @@ tmux/.tmux/plugins/*
 !tmux/.tmux/plugins/tpm
 
 bin/.local/*
-!bin/.local/bin
-bin/.local/bin/ruff
-bin/.local/bin/webi
+!bin/.local/bin/sample
 
 .env-secrets
