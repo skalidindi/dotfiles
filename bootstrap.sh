@@ -18,7 +18,7 @@ fi
 
 # Run GNU Stow for all config directories in the current folder
 echo "Running stow for dotfiles..."
-STOW_DIRS=( bash bat bin btop fastfetch gh ghostty git kitty lazygit misc nvim tmux yazi zellij zsh )
+STOW_DIRS=( bash bat bin btop env fastfetch gh ghostty git kitty lazygit misc nvim tmux yazi zellij zsh )
 for dir in "${STOW_DIRS[@]}"
 do
   if [[ -d "$dir" ]]; then
@@ -76,6 +76,14 @@ if command -v uv &>/dev/null; then
   uv tool install ty
 else
   echo "uv is not installed. Please ensure brew are installed, then install uv with 'brew install uv'."
+fi
+
+# Decrypt .env-secrets.gpg file
+if [[ -f env/.env-secrets.gpg ]]; then
+  echo "Decrypting env/.env-secrets.gpg..."
+  gpg --decrypt env/.env-secrets.gpg > env/.env-secrets
+else
+  echo "Encrypted file env/.env-secrets.gpg not found."
 fi
 
 echo "Bootstrap completed!"

@@ -56,12 +56,12 @@ git clone https://github.com/skalidindi/dotfiles.git ~/dotfiles
 cd ~/dotfiles
 ```
 
-2. Run the stow script to create symlinks:
+2. Run the bootstrap script to set up the environment:
 ```bash
-./stow.sh
+./bootstrap.sh
 ```
 
-This will create symlinks for all configuration files in your home directory.
+This will install necessary dependencies and create symlinks for all configuration files in your home directory.
 
 ### Installing Individual Configurations
 
@@ -91,10 +91,10 @@ The git configuration includes separate files for different contexts:
 
 ## Updating
 
-To update your dotfiles after making changes:
+To update your dotfiles after making changes, you can re-run the bootstrap script:
 
 ```bash
-./stow.sh
+./bootstrap.sh
 ```
 
 ## License
