@@ -14,6 +14,7 @@ This repository includes configurations for:
 - **bat** - Cat clone with syntax highlighting
 - **bin** - Custom scripts and binaries
 - **btop** - System monitor configuration
+- **env** - Env variables that are secrets
 - **fastfetch** - System information display
 - **gh** - GitHub CLI configuration
 - **ghostty** - Terminal emulator configuration
@@ -30,22 +31,12 @@ This repository includes configurations for:
 ## Prerequisites
 
 - [GNU Stow](https://www.gnu.org/software/stow/) - Symlink manager
+- [GPG] (https://gpgtools.org/) - GPG for encryption / decryption
 
 ### Installing GNU Stow
 
-#### macOS
 ```bash
 brew install stow
-```
-
-#### Debian/Ubuntu
-```bash
-sudo apt-get install stow
-```
-
-#### Fedora
-```bash
-sudo dnf install stow
 ```
 
 ## Installation
