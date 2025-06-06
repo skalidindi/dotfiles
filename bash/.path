@@ -27,6 +27,10 @@ export PATH="/usr/local/sbin:$PATH"
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 
+# newt
+export NEWT_HOME="$HOME/.newt-cache"
+export PATH="$NEWT_HOME/global-npm-libs/bin:$PATH"
+
 # pnpm
 export PNPM_HOME="$HOME/.local/share/pnpm"
 case ":$PATH:" in
