@@ -18,6 +18,9 @@ MichaelAquilina/zsh-you-should-use
 # Prezto
 # sorin-ionescu/prezto path:modules/directory
 
+# docker
+ohmyzsh/ohmyzsh path:lib
+ohmyzsh/ohmyzsh path:plugins/docker kind:fpath
 
 # prompts:
 #   with prompt plugins, remember to add this to your .zshrc:
