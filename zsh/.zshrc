@@ -40,12 +40,17 @@ eval "$(bun completions zsh)"
 # Load API keys
 source ~/.env-secrets
 
+# bun completions
+[ -s "~/.bun/_bun" ] && source "~/.bun/_bun"
+
+# Docker CLI completions.
+fpath=(~/.docker/completions $fpath)
+autoload -Uz compinit
+compinit
+
 # THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
 export SDKMAN_DIR="$HOME/.sdkman"
 [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
 
 # Generated for envman. Do not edit.
 [ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"
-
-# bun completions
-[ -s "/Users/skalidindi/.bun/_bun" ] && source "/Users/skalidindi/.bun/_bun"
