@@ -35,14 +35,20 @@ return {
           add_current = prefix .. ".",
         },
       },
+      provider = "claude",
+      providers = {
+        claude = {
+          endpoint = "https://api.anthropic.com",
+          model = "claude-sonnet-4-20250514",
+          timeout = 30000, -- Timeout in milliseconds
+            extra_request_body = {
+              temperature = 0.75,
+              max_tokens = 20480,
+            },
+        },
+      },
       behaviour = {
         auto_suggestions = false,
-      },
-      provider = "copilot",
-      copilot = {
-        model = "claude-3.7-sonnet",
-        temperature = 0,
-        max_tokens = 8192,
       },
     },
     -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
