@@ -15,7 +15,6 @@ source $(brew --prefix)/opt/antidote/share/antidote/antidote.zsh
 # Load Plugins from .zsh_plugins.txt
 antidote load
 
-# znap eval fnm 'fnm env --use-on-cd'
 autoload -Uz promptinit && promptinit
 prompt pure
 
@@ -33,6 +32,11 @@ eval "$(fnm env --use-on-cd --shell zsh)"
 
 # Bun
 eval "$(bun completions zsh)"
+
+# JJ
+autoload -U compinit
+compinit
+source <(jj util completion zsh)
 
 # Rust
 . "$HOME/.cargo/env"
