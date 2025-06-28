@@ -32,6 +32,7 @@ eval "$(fnm env --use-on-cd --shell zsh)"
 
 # Bun
 eval "$(bun completions zsh)"
+[ -s "~/.bun/_bun" ] && source "~/.bun/_bun"
 
 # JJ
 autoload -U compinit
@@ -44,12 +45,12 @@ source <(jj util completion zsh)
 # Load API keys
 source ~/.env-secrets
 
-# bun completions
-[ -s "~/.bun/_bun" ] && source "~/.bun/_bun"
-
 # THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
 export SDKMAN_DIR="$HOME/.sdkman"
 [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
 
 # Generated for envman. Do not edit.
 [ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"
+
+# bun completions
+[ -s "/Users/skalidindi/oss/dotfiles/zsh/_bun" ] && source "/Users/skalidindi/oss/dotfiles/zsh/_bun"
