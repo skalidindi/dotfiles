@@ -24,3 +24,5 @@ bin/.local/*
 !bin/.local/bin/sample
 
 .env-secrets
+
+.jj
