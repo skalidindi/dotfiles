@@ -18,7 +18,7 @@ fi
 
 # Run GNU Stow for all config directories in the current folder
 echo "Running stow for dotfiles..."
-STOW_DIRS=( bash bat bin btop env fastfetch gh ghostty git lazygit misc nvim tmux yazi zellij zsh )
+STOW_DIRS=( bash bat bin btop env fastfetch gh ghostty git jj lazygit misc nvim tmux yazi zellij zsh )
 for dir in "${STOW_DIRS[@]}"
 do
   if [[ -d "$dir" ]]; then
