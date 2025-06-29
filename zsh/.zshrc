@@ -24,6 +24,9 @@ source ~/.bash_profile
 # Update function path
 fpath+=("~/.zsh.d")
 
+# Atuin
+eval "$(atuin init zsh)"
+
 # Zoxide
 eval "$(zoxide init zsh)"
 
