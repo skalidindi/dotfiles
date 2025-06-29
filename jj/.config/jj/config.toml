@@ -44,6 +44,22 @@ log_node = '''
 '''
 
 [template-aliases]
+default_commit_description = '''
+"# feat: ✨
+# fix: 🐛
+# style: 💅
+# release: 🔖
+# chore: 🔧
+# docs: 📝
+# refactor: ♻️
+# perf: ⚡️
+# test: 🚦
+# debug: 🧪
+# security: 🔒
+# BREAKING CHANGE: 🚨
+"
+'''
+
 "format_timestamp(timestamp)" = "timestamp.ago()"
 
 [ui]
