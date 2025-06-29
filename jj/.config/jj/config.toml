@@ -1,22 +1,43 @@
 "$schema" = "https://jj-vcs.github.io/jj/latest/config-schema.json"
 
-[user]
-name = "Santosh Kalidindi"
-email = "skalidindi8@gmail.com"
+[aliases]
+d = ["diff"]
+dm = ["describe", "-m"]
+rp = ["log", "--no-graph", "-T", "commit_id"]
+ds = ["diff", "--stat"]
+cm = ["commit"]
+tug = ["bookmark", "move", "--from", "closest_bookmark(@)", "--to", "@-"]
+
+[git]
+push-branch-prefix = "sk/push-"
 
 [signing]
 behavior = "own"
 backend = "gpg"
 backends.gpg.program = "gpg2"
 
+[ui]
+pager = "delta"
+default-command = "log"
+editor = "nvim"
+# merge-editor = "vscode"
+diff.format = "git"
+
+[user]
+name = "Santosh Kalidindi"
+email = "skalidindi8@gmail.com"
+
+# Folder specific settings
 [[--scope]]
 --when.repositories = ["~/oss"]
 [--scope.user]
 email = "skalidindi8@gmail.com"
+[--scope.signing]
 key = "5EFA48B9657D7C02"
 
 [[--scope]]
 --when.repositories = ["~/work"]
 [--scope.user]
 email = "skalidindi@netflix.com"
+[--scope.signing]
 key = "EF9EFFABBE224EB6"
