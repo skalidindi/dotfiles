@@ -1,27 +1,56 @@
 "$schema" = "https://jj-vcs.github.io/jj/latest/config-schema.json"
 
 [aliases]
+cm = ["commit"]
 d = ["diff"]
 dm = ["describe", "-m"]
-rp = ["log", "--no-graph", "-T", "commit_id"]
 ds = ["diff", "--stat"]
-cm = ["commit"]
+l = ["log", "-r", "ancestors(@)"]
+rp = ["log", "--no-graph", "-T", "commit_id"]
 tug = ["bookmark", "move", "--from", "closest_bookmark(@)", "--to", "@-"]
 
 [git]
 push-branch-prefix = "sk/push-"
 
 [signing]
-behavior = "own"
 backend = "gpg"
+behavior = "own"
 backends.gpg.program = "gpg2"
 
+[templates]
+# Setup: https://oppi.li/posts/configuring_jujutsu/
+draft_commit_description = '''
+    concat(
+      coalesce(description, default_commit_description, "\n"),
+      surround(
+        "\nJJ: This commit contains the following changes:\n", "",
+        indent("JJ:     ", diff.stat(72)),
+      ),
+      "\nJJ: ignore-rest\n",
+      diff.git(),
+    )
+'''
+
+log_node = '''
+  label("node",
+    coalesce(
+      if(!self, label("elided", "~")),
+      if(current_working_copy, label("working_copy", "@")),
+      if(conflict, label("conflict", "×")),
+      if(immutable, label("immutable", "*")),
+      label("normal", "·")
+    )
+  )
+'''
+
+[template-aliases]
+"format_timestamp(timestamp)" = "timestamp.ago()"
+
 [ui]
-pager = "delta"
 default-command = "log"
+diff-formatter = ":git"
 editor = "nvim"
-# merge-editor = "vscode"
-diff.format = "git"
+pager = "delta"
 
 [user]
 name = "Santosh Kalidindi"
