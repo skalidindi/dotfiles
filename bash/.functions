@@ -76,14 +76,9 @@ function y() {
 }
 
 function ghrepo(){
-
-    if [[ -e .git/ ]]; then
-
-        $(which gh) -R corp/$(basename $PWD) "$@"
-
-    else
-
-        $(which gh) "$@"
-
-    fi
+  if [[ -e .git/ ]]; then
+      $(which gh) -R corp/$(basename $PWD) "$@"
+  else
+      $(which gh) "$@"
+  fi
 }

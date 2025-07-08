@@ -66,3 +66,6 @@ alias gu="git pull"
 
 #LazyGit
 alias lg="lazygit"
+
+# Claude Code
+alias cc="claude"
