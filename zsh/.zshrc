@@ -57,3 +57,7 @@ export SDKMAN_DIR="$HOME/.sdkman"
 
 # bun completions
 [ -s "/Users/skalidindi/oss/dotfiles/zsh/_bun" ] && source "/Users/skalidindi/oss/dotfiles/zsh/_bun"
+
+# LM Studio CLI (lms)
+export PATH="$PATH:/Users/skalidindi/.lmstudio/bin"
+
