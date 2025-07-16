@@ -15,14 +15,29 @@ Thumbs.db
 
 *.zwc
 
-zsh/_bun
+# Custom ignores
 
-tmux/.tmux/plugins/*
-!tmux/.tmux/plugins/tpm
-
+# Bin
 bin/.local/*
 !bin/.local/bin/sample
 
+# Claude
+claude/.claude/ide/*
+claude/.claude/projects/*
+claude/.claude/shell-snapshots/*
+claude/.claude/statsig/*
+claude/.claude/todos/*
+claude/.claude/settings.json
+claude/.claude/commands/git/create-pr.md
+
 .env-secrets
 
+# JJ
 .jj
+
+# Tmux
+tmux/.tmux/plugins/*
+!tmux/.tmux/plugins/tpm
+
+# Zsh
+zsh/_bun
