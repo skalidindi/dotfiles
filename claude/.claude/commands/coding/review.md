@@ -1,12 +1,12 @@
 ---
 description: Comprehensive automated code review with intelligent analysis
-allowed-tools: Bash(git:*), Read, Grep, Glob
+allowed-tools: Bash(mkdir:*), Bash(rg:*), Bash(cd:*), Bash(fd:*), Bash(ls:*), Read, Edit, WebFetch
 ---
 
 # 🔍 Automated Code Review
 
 ## Usage
-`/coding:code-review`
+`/coding:review`
 
 ## Arguments
 - No arguments needed - analyzes current git state and conversation context
@@ -92,7 +92,7 @@ Check adherence to coding standards:
 Analyze test coverage and quality:
 ```bash
 # Check for test files related to changes
-find . -name "*test*" -o -name "*spec*" | grep -E "\.(js|ts|py|java|scala|go|rs)$"
+fd '(test|spec)\.(js|ts|py|java|scala|go|rs)$'
 ```
 
 **Test Assessment**:
@@ -109,7 +109,7 @@ Create comprehensive review report and save the output to a file
 
 ```bash
 # Perform comprehensive code review
-/coding:code-review
+/coding:review
 
 # The command will:
 # 1. Analyze current git state
@@ -252,7 +252,7 @@ Comprehensive performance analysis covers:
 **Resolution Steps**:
 1. Resolve merge conflicts in affected files
 2. Stage resolved files: `git add [files]`
-3. Re-run code review: `/coding:code-review`
+3. Re-run code review: `/coding:review`
 ```
 
 ### Missing Dependencies
