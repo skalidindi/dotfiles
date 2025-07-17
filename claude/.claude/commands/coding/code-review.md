@@ -69,6 +69,7 @@ Perform comprehensive code analysis:
 - Function/class size and responsibility
 - Code duplication
 - Documentation completeness
+- Maintain existing code style and patterns
 
 ### Step 4: Best Practices Validation
 Check adherence to coding standards:
@@ -91,7 +92,7 @@ Check adherence to coding standards:
 Analyze test coverage and quality:
 ```bash
 # Check for test files related to changes
-find . -name "*test*" -o -name "*spec*" | grep -E "\.(js|ts|py|java|go|rb)$"
+find . -name "*test*" -o -name "*spec*" | grep -E "\.(js|ts|py|java|scala|go|rs)$"
 ```
 
 **Test Assessment**:
@@ -102,7 +103,7 @@ find . -name "*test*" -o -name "*spec*" | grep -E "\.(js|ts|py|java|go|rb)$"
 - Mock usage appropriateness
 
 ### Step 6: Generate Review Report
-Create comprehensive review report:
+Create comprehensive review report and save the output to a file
 
 ## Example Usage
 
@@ -264,8 +265,8 @@ Comprehensive performance analysis covers:
 **Installation**:
 ```bash
 # Install required tools
-npm install -g eslint  # For JavaScript projects
-pip install flake8    # For Python projects
+npm install -g eslint   # For JavaScript projects
+uv tool install ruff    # For Python projects
 ```
 
 ### Large Changesets
