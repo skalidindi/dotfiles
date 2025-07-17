@@ -1,6 +1,6 @@
 ---
 description: Systematic software implementation with test-driven development methodology
-allowed-tools: Bash, Read, Edit, WebFetch
+allowed-tools: Bash, Edit, MultiEdit, Read, WebFetch, WebSearch, Write
 ---
 
 # 🚀 Strategic Software Implementation

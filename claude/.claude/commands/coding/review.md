@@ -1,6 +1,6 @@
 ---
 description: Comprehensive automated code review with intelligent analysis
-allowed-tools: Bash(mkdir:*), Bash(rg:*), Bash(cd:*), Bash(fd:*), Bash(ls:*), Read, Edit, WebFetch
+allowed-tools: Bash(mkdir:*), Bash(rg:*), Bash(cd:*), Bash(fd:*), Bash(ls:*), Edit, Read, WebFetch, WebSearch, Write
 ---
 
 # 🔍 Automated Code Review

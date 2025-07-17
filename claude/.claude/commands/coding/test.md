@@ -1,6 +1,6 @@
 ---
 description: Execute tests, identify failures, and fix issues until all tests pass
-allowed-tools: Bash, Read, Edit, WebFetch
+allowed-tools: Bash, Edit, Read, WebFetch, WebSearch, Write
 ---
 
 # 🧪 Test Execution & Fix Cycle

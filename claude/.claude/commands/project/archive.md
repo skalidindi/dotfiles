@@ -1,6 +1,6 @@
 ---
 description: Archive completed or paused projects with proper documentation for future reference
-allowed-tools: Bash(mkdir:*), Bash(rg:*), Bash(cd:*), Bash(fd:*), Bash(ls:*), Read, Edit
+allowed-tools: Bash(mkdir:*), Bash(rg:*), Bash(cd:*), Bash(fd:*), Bash(ls:*), Read, Write
 ---
 
 # 📦 Project Archive Management

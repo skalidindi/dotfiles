@@ -1,6 +1,6 @@
 ---
 description: Create and manage structured project documents for long-lived development work
-allowed-tools: Bash(mkdir:*), Bash(rg:*), Bash(cd:*), Bash(fd:*), Bash(ls:*), Read, Edit, WebFetch
+allowed-tools: Bash(mkdir:*), Bash(rg:*), Bash(cd:*), Bash(fd:*), Bash(ls:*), Edit, Read, WebFetch, WebSearch, Write
 ---
 
 # 📋 Project Planning & Documentation

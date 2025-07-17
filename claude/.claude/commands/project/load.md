@@ -1,6 +1,6 @@
 ---
 description: Load and resume work on an existing project with full context restoration
-allowed-tools: Bash(mkdir:*), Bash(rg:*), Bash(cd:*), Bash(fd:*), Bash(ls:*), Read, Edit
+allowed-tools: Read
 ---
 
 # 🔄 Project Load & Resume

@@ -1,6 +1,6 @@
 ---
 description: Synchronize project document with actual progress and current state for accurate tracking
-allowed-tools: Bash(mkdir:*), Bash(rg:*), Bash(cd:*), Bash(fd:*), Bash(ls:*), Read, Edit
+allowed-tools: Bash(mkdir:*), Bash(rg:*), Bash(cd:*), Bash(fd:*), Bash(ls:*), Edit, Read, Write
 ---
 
 # 🔄 Project Status Update
