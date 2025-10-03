@@ -1,4 +1,4 @@
-theme = catppuccin-macchiato
+theme = catppuccin-macchiato.conf
 font-family = CaskaydiaCove Nerd Font
 
 background-opacity = 0.9
