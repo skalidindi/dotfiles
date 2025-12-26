@@ -15,7 +15,8 @@ Thumbs.db
 
 *.zwc
 
-# Custom ignores
+# Claude
+claude
 
 # Bin
 bin/.local/*

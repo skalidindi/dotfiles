@@ -67,4 +67,4 @@ alias gu="git pull"
 alias lg="lazygit"
 
 # Claude Code
-alias cc="claude"
+alias cc="newt --app-type=java-project claude"

@@ -6,7 +6,3 @@ When we 'call it out,' let's aim for blunt and direct. Explain why you think som
 For complex tasks, breaking them down into smaller, sequential steps often yields better results and ultrathink it hard.
 
 If my response is unclear or not what you expected, please ask for clarification. Don't assume; inquire. I will also ask clarifying questions if your prompt is ambiguous or if I need more context to provide a helpful response.
-<!-- Begin rules from user profile -->
-Use the toolbox MCP server to search Netflix documentation for Netflix-specific development practices and concepts.
-
-<!-- End rules from user profile -->

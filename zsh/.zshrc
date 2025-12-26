@@ -61,3 +61,6 @@ export SDKMAN_DIR="$HOME/.sdkman"
 # LM Studio CLI (lms)
 export PATH="$PATH:/Users/skalidindi/.lmstudio/bin"
 
+
+# Added by Antigravity
+export PATH="/Users/skalidindi/.antigravity/antigravity/bin:$PATH"
