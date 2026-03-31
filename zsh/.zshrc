@@ -1,7 +1,7 @@
 # Navigation in tmux works better with this
 bindkey -e
 
-# Download antigen, if it's not there yet.
+# Download antidote, if it's not there yet.
 if [ ! -d "${ZDOTDIR:-$HOME}/.antidote" ]; then
   echo "Antidote not found. Cloning Antidote..."
   git clone --depth=1 https://github.com/mattmc3/antidote.git "${ZDOTDIR:-$HOME}/.antidote"
@@ -15,14 +15,14 @@ source $(brew --prefix)/opt/antidote/share/antidote/antidote.zsh
 # Load Plugins from .zsh_plugins.txt
 antidote load
 
-autoload -Uz promptinit && promptinit
-prompt pure
-
 # Execute bash_profile
 source ~/.bash_profile
 
 # Update function path
 fpath+=("~/.zsh.d")
+
+# Starship
+eval "$(starship init zsh)"
 
 # Atuin
 eval "$(atuin init zsh)"
