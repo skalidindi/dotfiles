@@ -30,6 +30,10 @@ export PATH="$PATH:/Users/skalidindi/.lmstudio/bin"
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 
+# Codex
+export CODEX_HOME="$HOME/.codex"
+export OPENAI_API_KEY=dummy
+
 # npm
 export PATH=~/.npm-global/bin:$PATH
 
