@@ -82,3 +82,10 @@ function ghrepo(){
       $(which gh) "$@"
   fi
 }
+
+
+function lm() {
+  metatron curl -a copilotcp 'https://copilotcp.vip.us-east-1.prod.cloud.netflix.net:8443/models/list_models' \
+    -H 'accept: application/json' | \
+    jq -r '.models[] | .id + " (context size: " + (.contextSize | tostring) + ")"'
+}

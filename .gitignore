@@ -15,22 +15,17 @@ Thumbs.db
 
 *.zwc
 
+# Codex
+codex
+
 # Claude
 claude
 
+# Cursor
+cursor
+
 # Bin
 bin/.local/*
-!bin/.local/bin/sample
-
-# Claude
-claude/.claude/ide/*
-claude/.claude/projects/*
-claude/.claude/shell-snapshots/*
-claude/.claude/statsig/*
-claude/.claude/todos/*
-claude/.claude/settings.json
-claude/.claude/commands/git/create-pr.md
-claude/.claude/commands/jira/fix-issue.md
 
 .env-secrets
 
