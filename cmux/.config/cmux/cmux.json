@@ -1,0 +1,44 @@
+{
+  "$schema": "https://raw.githubusercontent.com/manaflow-ai/cmux/main/web/data/cmux.schema.json",
+  "schemaVersion": 1,
+
+  "app": {
+    "appearance": "dark",
+    "minimalMode": true,
+    "newWorkspacePlacement": "afterCurrent",
+    "commandPaletteSearchesAllSurfaces": true,
+    "warnBeforeQuit": true
+  },
+
+  "terminal": {
+    "showScrollBar": false
+  },
+
+  "sidebar": {
+    "hideAllDetails": false,
+    "branchLayout": "inline",
+    "showNotificationMessage": false,
+    "showBranchDirectory": false,
+    "showPullRequests": true,
+    "showPorts": true,
+    "showLog": false,
+    "showProgress": true,
+    "showCustomMetadata": true
+  },
+
+  "sidebarAppearance": {
+    "matchTerminalBackground": true,
+    "tintOpacity": 0
+  },
+
+  "workspaceColors": {
+    "indicatorStyle": "leftRail",
+    "notificationBadgeColor": "#f97316"
+  },
+
+  "notifications": {
+    "unreadPaneRing": true,
+    "paneFlash": false,
+    "sound": "none"
+  }
+}

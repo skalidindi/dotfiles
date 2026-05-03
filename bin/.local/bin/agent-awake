@@ -1,0 +1,213 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  cat <<'EOF'
+Usage: agent-awake [OPTIONS] COMMAND [ARGS...]
+
+Run COMMAND while preventing idle sleep. Amphetamine is used for a visible
+bounded session when available; caffeinate provides process-lifetime protection.
+
+Options:
+  --threshold PERCENT      Skip sleep prevention on low battery. Default: 20
+  --duration MINUTES       Amphetamine safety duration. Default: 720
+  --no-amphetamine         Do not control Amphetamine, use caffeinate only
+  --force                  Ignore the low-battery gate
+  -h, --help               Show this help
+EOF
+}
+
+threshold="${AGENT_AWAKE_LOW_BATTERY_THRESHOLD:-20}"
+duration_minutes="${AGENT_AWAKE_DURATION_MINUTES:-720}"
+use_amphetamine="${AGENT_AWAKE_AMPHETAMINE:-1}"
+force=0
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    --threshold)
+      if [ "$#" -lt 2 ]; then
+        printf 'agent-awake: --threshold requires a value\n' >&2
+        exit 64
+      fi
+      threshold="$2"
+      shift 2
+      ;;
+    --duration)
+      if [ "$#" -lt 2 ]; then
+        printf 'agent-awake: --duration requires a value\n' >&2
+        exit 64
+      fi
+      duration_minutes="$2"
+      shift 2
+      ;;
+    --no-amphetamine)
+      use_amphetamine=0
+      shift
+      ;;
+    --force)
+      force=1
+      shift
+      ;;
+    --)
+      shift
+      break
+      ;;
+    -*)
+      printf 'agent-awake: unknown option: %s\n' "$1" >&2
+      usage >&2
+      exit 64
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
+if [ "$#" -eq 0 ]; then
+  usage >&2
+  exit 64
+fi
+
+case "$threshold" in
+  ''|*[!0-9]*)
+    printf 'agent-awake: threshold must be a whole-number percentage\n' >&2
+    exit 64
+    ;;
+esac
+
+case "$duration_minutes" in
+  ''|*[!0-9]*)
+    printf 'agent-awake: duration must be whole-number minutes\n' >&2
+    exit 64
+    ;;
+esac
+
+battery_info() {
+  pmset -g batt 2>/dev/null || true
+}
+
+battery_percent() {
+  printf '%s\n' "$1" | sed -n 's/.*[[:space:]]\([0-9][0-9]*\)%;.*/\1/p' | head -n 1
+}
+
+on_battery_power() {
+  local info="$1"
+
+  printf '%s\n' "$info" | grep -q "Battery Power" && return 0
+  printf '%s\n' "$info" | grep -qi "discharging" && return 0
+
+  return 1
+}
+
+should_skip_awake() {
+  local info percent
+
+  [ "$force" -eq 1 ] && return 1
+
+  info="$(battery_info)"
+  [ -n "$info" ] || return 1
+
+  on_battery_power "$info" || return 1
+
+  percent="$(battery_percent "$info")"
+  [ -n "$percent" ] || return 1
+
+  [ "$percent" -le "$threshold" ]
+}
+
+amphetamine_available() {
+  [ "$use_amphetamine" != "0" ] || return 1
+  [ -d /Applications/Amphetamine.app ] || return 1
+  command -v osascript >/dev/null 2>&1 || return 1
+}
+
+amphetamine_session_active() {
+  local active
+
+  active="$(osascript 2>/dev/null <<'EOF' || true
+tell application "Amphetamine" to set sessionActiveTest to session is active
+return sessionActiveTest
+EOF
+)"
+
+  [ "$active" = "true" ]
+}
+
+amphetamine_time_remaining() {
+  osascript 2>/dev/null <<'EOF' || true
+tell application "Amphetamine" to set timeRemaining to session time remaining
+return timeRemaining
+EOF
+}
+
+amphetamine_start() {
+  osascript >/dev/null <<EOF
+tell application "Amphetamine"
+  start new session with options {duration:${duration_minutes}, interval:minutes, displaySleepAllowed:true}
+end tell
+EOF
+}
+
+amphetamine_end_if_owned() {
+  local remaining
+
+  remaining="$(amphetamine_time_remaining)"
+  case "$remaining" in
+    ''|*[!0-9]*)
+      return 0
+      ;;
+  esac
+
+  if [ "$remaining" -gt 0 ]; then
+    osascript >/dev/null <<'EOF' || true
+tell application "Amphetamine" to end session
+EOF
+  fi
+}
+
+run_command() {
+  export AGENT_AWAKE_ACTIVE=1
+
+  if command -v caffeinate >/dev/null 2>&1; then
+    caffeinate -i "$@"
+    return
+  fi
+
+  "$@"
+}
+
+amphetamine_started=0
+
+cleanup() {
+  local status=$?
+
+  trap - EXIT
+
+  if [ "$amphetamine_started" -eq 1 ]; then
+    amphetamine_end_if_owned
+  fi
+
+  exit "$status"
+}
+
+if should_skip_awake; then
+  printf 'agent-awake: battery is at or below %s%%; running without sleep prevention\n' "$threshold" >&2
+  exec "$@"
+fi
+
+if amphetamine_available; then
+  if ! amphetamine_session_active; then
+    if amphetamine_start; then
+      amphetamine_started=1
+      trap cleanup EXIT
+    else
+      printf 'agent-awake: failed to start Amphetamine session; falling back to caffeinate only\n' >&2
+    fi
+  fi
+fi
+
+run_command "$@"

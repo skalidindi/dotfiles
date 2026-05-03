@@ -1,0 +1,123 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  cat <<'EOF'
+Usage: zrun [--name SESSION | --name-prefix PREFIX] -- COMMAND [ARGS...]
+       zrun [--name SESSION | --name-prefix PREFIX] COMMAND [ARGS...]
+
+Run COMMAND inside a new zellij session. If already inside zellij, COMMAND is
+executed directly.
+EOF
+}
+
+session_name=""
+session_prefix="agent"
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    -n|--name|--session)
+      if [ "$#" -lt 2 ]; then
+        printf 'zrun: %s requires a value\n' "$1" >&2
+        exit 64
+      fi
+      session_name="$2"
+      shift 2
+      ;;
+    --name-prefix|--prefix)
+      if [ "$#" -lt 2 ]; then
+        printf 'zrun: %s requires a value\n' "$1" >&2
+        exit 64
+      fi
+      session_prefix="$2"
+      shift 2
+      ;;
+    --)
+      shift
+      break
+      ;;
+    -*)
+      printf 'zrun: unknown option: %s\n' "$1" >&2
+      usage >&2
+      exit 64
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
+if [ "$#" -eq 0 ]; then
+  usage >&2
+  exit 64
+fi
+
+if [ ! -t 0 ] || [ ! -t 1 ]; then
+  exec "$@"
+fi
+
+if [ "${AGENT_AWAKE_DISABLE:-0}" != "1" ] && [ -z "${AGENT_AWAKE_ACTIVE:-}" ]; then
+  command_name="$(basename "$1")"
+  case "$command_name" in
+    claude|codex)
+      if command -v agent-awake >/dev/null 2>&1; then
+        set -- agent-awake "$@"
+      fi
+      ;;
+  esac
+fi
+
+if [ -n "${ZELLIJ:-}" ]; then
+  exec "$@"
+fi
+
+if ! command -v zellij >/dev/null 2>&1; then
+  printf 'zrun: zellij is not installed or not on PATH\n' >&2
+  exit 69
+fi
+
+sanitize_session_name() {
+  local value
+  value="$(printf '%s' "$1" | LC_ALL=C tr -c '[:alnum:]._-' '-' | sed 's/^-*//; s/-*$//; s/--*/-/g')"
+  printf '%s' "${value:-agent}"
+}
+
+if [ -z "$session_name" ]; then
+  command_name="$(basename "$1")"
+  timestamp="$(date +%Y%m%d-%H%M%S)"
+  if [ "$session_prefix" = "$command_name" ]; then
+    session_name="${session_prefix}-${timestamp}-$$"
+  else
+    session_name="${session_prefix}-${command_name}-${timestamp}-$$"
+  fi
+fi
+
+session_name="$(sanitize_session_name "$session_name")"
+launcher="$(mktemp "${TMPDIR:-/tmp}/zrun.XXXXXXXX")"
+trap 'rm -f -- "$launcher"' EXIT
+
+kdl_escape() {
+  local value="$1"
+  value="${value//\\/\\\\}"
+  value="${value//\"/\\\"}"
+  printf '%s' "$value"
+}
+
+{
+  printf '#!/usr/bin/env bash\n'
+  printf 'set -euo pipefail\n'
+  printf 'rm -f -- %q\n' "$launcher"
+  printf 'cd -- %q\n' "$PWD"
+  printf 'exec'
+  printf ' %q' "$@"
+  printf '\n'
+} >"$launcher"
+chmod 700 "$launcher"
+
+layout_string="$(printf 'layout {\n    pane command="%s";\n}\n' "$(kdl_escape "$launcher")")"
+
+exec zellij --session "$session_name" --layout-string "$layout_string"
