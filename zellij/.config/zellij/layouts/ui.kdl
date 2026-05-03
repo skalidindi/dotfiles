@@ -1,0 +1,35 @@
+layout {
+    tab name="code" {
+        pane split_direction="vertical" {
+            pane edit="."
+            pane size="35%" {
+                pane command="zsh" {
+                    args "-lc" "git status && zsh"
+                }
+            }
+        }
+    }
+
+    tab name="dev" {
+        pane split_direction="vertical" {
+            pane command="zsh" {
+                args "-lc" "npm run dev"
+                start_suspended true
+            }
+            pane split_direction="horizontal" size="40%" {
+                pane command="zsh" {
+                    args "-lc" "npm test"
+                    start_suspended true
+                }
+                pane command="zsh" {
+                    args "-lc" "npm run lint"
+                    start_suspended true
+                }
+            }
+        }
+    }
+
+    tab name="shell" {
+        pane
+    }
+}

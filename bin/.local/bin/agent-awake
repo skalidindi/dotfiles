@@ -3,24 +3,352 @@ set -euo pipefail
 
 usage() {
   cat <<'EOF'
-Usage: agent-awake [OPTIONS] COMMAND [ARGS...]
+Usage:
+  agent-awake [OPTIONS] COMMAND [ARGS...]
+  agent-awake status
 
-Run COMMAND while preventing idle sleep. Amphetamine is used for a visible
-bounded session when available; caffeinate provides process-lifetime protection.
+Run COMMAND while preventing idle sleep and, by default, allowing closed-display
+operation. Amphetamine is used for closed-display support; caffeinate provides
+process-lifetime idle-sleep protection.
 
 Options:
   --threshold PERCENT      Skip sleep prevention on low battery. Default: 20
   --duration MINUTES       Amphetamine safety duration. Default: 720
+  --monitor-interval SEC   Battery/thermal re-check interval. Default: 60
+  --thermal-limit PERCENT  Release protection if CPU/GPU limit is <= value. Default: 60
+  --no-thermal-guard       Do not release protection for thermal pressure
+  --no-closed-display      Do not enable Amphetamine closed-display mode
+  --take-over-amphetamine  Allow changing closed-display mode on an existing session
   --no-amphetamine         Do not control Amphetamine, use caffeinate only
-  --force                  Ignore the low-battery gate
+  --force                  Ignore battery/thermal gates
   -h, --help               Show this help
 EOF
 }
 
 threshold="${AGENT_AWAKE_LOW_BATTERY_THRESHOLD:-20}"
 duration_minutes="${AGENT_AWAKE_DURATION_MINUTES:-720}"
+monitor_interval="${AGENT_AWAKE_MONITOR_INTERVAL:-60}"
+thermal_limit="${AGENT_AWAKE_THERMAL_LIMIT:-60}"
+thermal_guard="${AGENT_AWAKE_THERMAL_GUARD:-1}"
 use_amphetamine="${AGENT_AWAKE_AMPHETAMINE:-1}"
+closed_display="${AGENT_AWAKE_CLOSED_DISPLAY:-1}"
+take_over_amphetamine="${AGENT_AWAKE_TAKE_OVER_AMPHETAMINE:-0}"
 force=0
+
+amphetamine_started=0
+closed_display_enabled_by_agent=0
+child_pid=""
+caffeinate_pid=""
+monitor_pid=""
+
+battery_info() {
+  pmset -g batt 2>/dev/null || true
+}
+
+battery_percent() {
+  printf '%s\n' "$1" | sed -n 's/.*[[:space:]]\([0-9][0-9]*\)%;.*/\1/p' | head -n 1
+}
+
+power_source() {
+  printf '%s\n' "$1" | sed -n "s/^Now drawing from '\(.*\)'/\1/p" | head -n 1
+}
+
+on_battery_power() {
+  local info="$1"
+
+  printf '%s\n' "$info" | grep -q "Battery Power" && return 0
+  printf '%s\n' "$info" | grep -qi "discharging" && return 0
+
+  return 1
+}
+
+should_skip_awake() {
+  local info percent
+
+  [ "$force" -eq 1 ] && return 1
+
+  info="$(battery_info)"
+  [ -n "$info" ] || return 1
+
+  on_battery_power "$info" || return 1
+
+  percent="$(battery_percent "$info")"
+  [ -n "$percent" ] || return 1
+
+  [ "$percent" -le "$threshold" ]
+}
+
+thermal_info() {
+  local info
+
+  info="$(pmset -g therm 2>/dev/null || true)"
+  if printf '%s\n' "$info" | grep -q '^Error:'; then
+    return 0
+  fi
+
+  printf '%s\n' "$info"
+}
+
+thermal_should_release() {
+  local info limits limit
+
+  [ "$force" -eq 0 ] || return 1
+  [ "$thermal_guard" != "0" ] || return 1
+
+  info="$(thermal_info)"
+  [ -n "$info" ] || return 1
+
+  limits="$(printf '%s\n' "$info" | sed -n 's/.*_Speed_Limit[[:space:]]*=[[:space:]]*\([0-9][0-9]*\).*/\1/p')"
+  [ -n "$limits" ] || return 1
+
+  for limit in $limits; do
+    if [ "$limit" -le "$thermal_limit" ]; then
+      return 0
+    fi
+  done
+
+  return 1
+}
+
+notify_user() {
+  local title="$1"
+  local message="$2"
+
+  command -v osascript >/dev/null 2>&1 || return 0
+
+  osascript >/dev/null 2>&1 <<EOF || true
+display notification "$(printf '%s' "$message" | sed 's/"/\\"/g')" with title "$(printf '%s' "$title" | sed 's/"/\\"/g')"
+EOF
+}
+
+amphetamine_available() {
+  [ "$use_amphetamine" != "0" ] || return 1
+  [ -d /Applications/Amphetamine.app ] || return 1
+  command -v osascript >/dev/null 2>&1 || return 1
+}
+
+amphetamine_session_active() {
+  local active
+
+  active="$(osascript 2>/dev/null <<'EOF' || true
+tell application "Amphetamine" to set sessionActiveTest to session is active
+return sessionActiveTest
+EOF
+)"
+
+  [ "$active" = "true" ]
+}
+
+amphetamine_time_remaining() {
+  osascript 2>/dev/null <<'EOF' || true
+tell application "Amphetamine" to set timeRemaining to session time remaining
+return timeRemaining
+EOF
+}
+
+amphetamine_closed_display_enabled() {
+  local enabled
+
+  enabled="$(osascript 2>/dev/null <<'EOF' || true
+tell application "Amphetamine" to set closedDisplayEnabledTest to closed display mode enabled
+return closedDisplayEnabledTest
+EOF
+)"
+
+  [ "$enabled" = "true" ]
+}
+
+amphetamine_start() {
+  osascript >/dev/null <<EOF
+tell application "Amphetamine"
+  start new session with options {duration:${duration_minutes}, interval:minutes, displaySleepAllowed:true}
+end tell
+EOF
+}
+
+amphetamine_enable_closed_display() {
+  osascript >/dev/null <<'EOF'
+tell application "Amphetamine" to enable closed display mode
+EOF
+}
+
+amphetamine_disable_closed_display() {
+  amphetamine_session_active || return 0
+
+  osascript >/dev/null <<'EOF' || true
+tell application "Amphetamine" to disable closed display mode
+EOF
+}
+
+amphetamine_end_if_owned() {
+  local remaining
+
+  remaining="$(amphetamine_time_remaining)"
+  case "$remaining" in
+    ''|*[!0-9]*)
+      return 0
+      ;;
+  esac
+
+  if [ "$remaining" -gt 0 ]; then
+    osascript >/dev/null <<'EOF' || true
+tell application "Amphetamine" to end session
+EOF
+  fi
+}
+
+release_sleep_protection() {
+  local reason="$1"
+
+  printf 'agent-awake: %s; releasing sleep protection\n' "$reason" >&2
+  notify_user "agent-awake" "$reason; sleep protection released"
+
+  [ -n "${caffeinate_pid:-}" ] && kill "$caffeinate_pid" 2>/dev/null || true
+
+  if [ "${closed_display_enabled_by_agent:-0}" -eq 1 ]; then
+    amphetamine_disable_closed_display
+  fi
+
+  if [ "${amphetamine_started:-0}" -eq 1 ]; then
+    amphetamine_end_if_owned
+  fi
+}
+
+start_battery_monitor() {
+  [ "$force" -eq 0 ] || return 0
+  [ "$monitor_interval" -gt 0 ] || return 0
+
+  (
+    while kill -0 "$child_pid" 2>/dev/null; do
+      sleep "$monitor_interval"
+
+      if should_skip_awake; then
+        release_sleep_protection "battery is at or below ${threshold}%"
+        exit 0
+      fi
+
+      if thermal_should_release; then
+        release_sleep_protection "thermal pressure crossed limit ${thermal_limit}%"
+        exit 0
+      fi
+    done
+  ) &
+  monitor_pid=$!
+}
+
+stop_background_helpers() {
+  if [ -n "${monitor_pid:-}" ]; then
+    kill "$monitor_pid" 2>/dev/null || true
+    wait "$monitor_pid" 2>/dev/null || true
+    monitor_pid=""
+  fi
+
+  if [ -n "${caffeinate_pid:-}" ]; then
+    kill "$caffeinate_pid" 2>/dev/null || true
+    wait "$caffeinate_pid" 2>/dev/null || true
+    caffeinate_pid=""
+  fi
+}
+
+cleanup() {
+  local status=$?
+
+  trap - EXIT
+
+  if [ -n "${child_pid:-}" ]; then
+    kill "$child_pid" 2>/dev/null || true
+  fi
+
+  stop_background_helpers
+
+  if [ "$closed_display_enabled_by_agent" -eq 1 ]; then
+    amphetamine_disable_closed_display
+  fi
+
+  if [ "$amphetamine_started" -eq 1 ]; then
+    amphetamine_end_if_owned
+  fi
+
+  exit "$status"
+}
+
+run_command() {
+  local status=0
+
+  export AGENT_AWAKE_ACTIVE=1
+
+  "$@" &
+  child_pid=$!
+
+  if command -v caffeinate >/dev/null 2>&1; then
+    caffeinate -i -w "$child_pid" &
+    caffeinate_pid=$!
+  fi
+
+  start_battery_monitor
+
+  wait "$child_pid" || status=$?
+  child_pid=""
+
+  stop_background_helpers
+
+  return "$status"
+}
+
+print_status() {
+  local info percent source thermal active closed remaining
+
+  info="$(battery_info)"
+  percent="$(battery_percent "$info")"
+  source="$(power_source "$info")"
+
+  printf 'battery: %s%% (%s)\n' "${percent:-unknown}" "${source:-unknown}"
+  printf 'low-battery threshold: %s%%\n' "$threshold"
+
+  if [ "$thermal_guard" = "0" ]; then
+    printf 'thermal guard: disabled\n'
+  else
+    thermal="$(thermal_info)"
+    if [ -n "$thermal" ]; then
+      printf 'thermal guard: enabled (release limit <= %s%%)\n' "$thermal_limit"
+      printf '%s\n' "$thermal" | sed 's/^/  /'
+    else
+      printf 'thermal guard: enabled, current state unavailable\n'
+    fi
+  fi
+
+  if amphetamine_available; then
+    active=false
+    closed=false
+    amphetamine_session_active && active=true
+    amphetamine_closed_display_enabled && closed=true
+    remaining="$(amphetamine_time_remaining)"
+    printf 'amphetamine: installed, active=%s, closed_display=%s, time_remaining=%s\n' "$active" "$closed" "${remaining:-unknown}"
+  else
+    printf 'amphetamine: unavailable or disabled\n'
+  fi
+
+  if command -v caffeinate >/dev/null 2>&1; then
+    printf 'caffeinate: available\n'
+  else
+    printf 'caffeinate: unavailable\n'
+  fi
+
+  printf 'zellij sessions:\n'
+  if command -v zellij >/dev/null 2>&1; then
+    zellij list-sessions 2>&1 | sed 's/^/  /'
+  else
+    printf '  zellij unavailable\n'
+  fi
+
+  printf 'relevant power assertions:\n'
+  pmset -g assertions 2>/dev/null | grep -Ei 'Amphetamine|agent-awake|caffeinate|codex|claude|PreventUserIdleSystemSleep|PreventUserIdleDisplaySleep' | sed 's/^/  /' || printf '  none\n'
+}
+
+if [ "${1:-}" = "status" ]; then
+  print_status
+  exit 0
+fi
 
 while [ "$#" -gt 0 ]; do
   case "$1" in
@@ -43,6 +371,38 @@ while [ "$#" -gt 0 ]; do
       fi
       duration_minutes="$2"
       shift 2
+      ;;
+    --monitor-interval)
+      if [ "$#" -lt 2 ]; then
+        printf 'agent-awake: --monitor-interval requires a value\n' >&2
+        exit 64
+      fi
+      monitor_interval="$2"
+      shift 2
+      ;;
+    --thermal-limit)
+      if [ "$#" -lt 2 ]; then
+        printf 'agent-awake: --thermal-limit requires a value\n' >&2
+        exit 64
+      fi
+      thermal_limit="$2"
+      shift 2
+      ;;
+    --no-thermal-guard)
+      thermal_guard=0
+      shift
+      ;;
+    --closed-display)
+      closed_display=1
+      shift
+      ;;
+    --no-closed-display)
+      closed_display=0
+      shift
+      ;;
+    --take-over-amphetamine)
+      take_over_amphetamine=1
+      shift
       ;;
     --no-amphetamine)
       use_amphetamine=0
@@ -86,121 +446,37 @@ case "$duration_minutes" in
     ;;
 esac
 
-battery_info() {
-  pmset -g batt 2>/dev/null || true
-}
+case "$monitor_interval" in
+  ''|*[!0-9]*)
+    printf 'agent-awake: monitor interval must be whole-number seconds\n' >&2
+    exit 64
+    ;;
+esac
 
-battery_percent() {
-  printf '%s\n' "$1" | sed -n 's/.*[[:space:]]\([0-9][0-9]*\)%;.*/\1/p' | head -n 1
-}
-
-on_battery_power() {
-  local info="$1"
-
-  printf '%s\n' "$info" | grep -q "Battery Power" && return 0
-  printf '%s\n' "$info" | grep -qi "discharging" && return 0
-
-  return 1
-}
-
-should_skip_awake() {
-  local info percent
-
-  [ "$force" -eq 1 ] && return 1
-
-  info="$(battery_info)"
-  [ -n "$info" ] || return 1
-
-  on_battery_power "$info" || return 1
-
-  percent="$(battery_percent "$info")"
-  [ -n "$percent" ] || return 1
-
-  [ "$percent" -le "$threshold" ]
-}
-
-amphetamine_available() {
-  [ "$use_amphetamine" != "0" ] || return 1
-  [ -d /Applications/Amphetamine.app ] || return 1
-  command -v osascript >/dev/null 2>&1 || return 1
-}
-
-amphetamine_session_active() {
-  local active
-
-  active="$(osascript 2>/dev/null <<'EOF' || true
-tell application "Amphetamine" to set sessionActiveTest to session is active
-return sessionActiveTest
-EOF
-)"
-
-  [ "$active" = "true" ]
-}
-
-amphetamine_time_remaining() {
-  osascript 2>/dev/null <<'EOF' || true
-tell application "Amphetamine" to set timeRemaining to session time remaining
-return timeRemaining
-EOF
-}
-
-amphetamine_start() {
-  osascript >/dev/null <<EOF
-tell application "Amphetamine"
-  start new session with options {duration:${duration_minutes}, interval:minutes, displaySleepAllowed:true}
-end tell
-EOF
-}
-
-amphetamine_end_if_owned() {
-  local remaining
-
-  remaining="$(amphetamine_time_remaining)"
-  case "$remaining" in
-    ''|*[!0-9]*)
-      return 0
-      ;;
-  esac
-
-  if [ "$remaining" -gt 0 ]; then
-    osascript >/dev/null <<'EOF' || true
-tell application "Amphetamine" to end session
-EOF
-  fi
-}
-
-run_command() {
-  export AGENT_AWAKE_ACTIVE=1
-
-  if command -v caffeinate >/dev/null 2>&1; then
-    caffeinate -i "$@"
-    return
-  fi
-
-  "$@"
-}
-
-amphetamine_started=0
-
-cleanup() {
-  local status=$?
-
-  trap - EXIT
-
-  if [ "$amphetamine_started" -eq 1 ]; then
-    amphetamine_end_if_owned
-  fi
-
-  exit "$status"
-}
+case "$thermal_limit" in
+  ''|*[!0-9]*)
+    printf 'agent-awake: thermal limit must be a whole-number percentage\n' >&2
+    exit 64
+    ;;
+esac
 
 if should_skip_awake; then
   printf 'agent-awake: battery is at or below %s%%; running without sleep prevention\n' "$threshold" >&2
+  notify_user "agent-awake" "battery is at or below ${threshold}%; running without sleep protection"
+  exec "$@"
+fi
+
+if thermal_should_release; then
+  printf 'agent-awake: thermal pressure crossed limit %s%%; running without sleep prevention\n' "$thermal_limit" >&2
+  notify_user "agent-awake" "thermal pressure crossed limit ${thermal_limit}%; running without sleep protection"
   exec "$@"
 fi
 
 if amphetamine_available; then
-  if ! amphetamine_session_active; then
+  session_was_active=0
+  amphetamine_session_active && session_was_active=1
+
+  if [ "$session_was_active" -eq 0 ]; then
     if amphetamine_start; then
       amphetamine_started=1
       trap cleanup EXIT
@@ -208,6 +484,26 @@ if amphetamine_available; then
       printf 'agent-awake: failed to start Amphetamine session; falling back to caffeinate only\n' >&2
     fi
   fi
+
+  if [ "$closed_display" != "0" ] && amphetamine_session_active; then
+    if amphetamine_closed_display_enabled; then
+      :
+    elif [ "$amphetamine_started" -eq 1 ] || [ "$take_over_amphetamine" = "1" ]; then
+      if amphetamine_enable_closed_display; then
+        closed_display_enabled_by_agent=1
+        trap cleanup EXIT
+      else
+        printf 'agent-awake: failed to enable Amphetamine closed-display mode\n' >&2
+      fi
+    else
+      printf 'agent-awake: existing Amphetamine session left unchanged; closed-display mode not enabled\n' >&2
+    fi
+  elif [ "$closed_display" != "0" ]; then
+    printf 'agent-awake: no active Amphetamine session; closed-display mode will not be enabled\n' >&2
+  fi
+elif [ "$closed_display" != "0" ] && [ "$use_amphetamine" != "0" ]; then
+  printf 'agent-awake: Amphetamine unavailable; closed-display mode will not be enabled\n' >&2
 fi
 
+trap cleanup EXIT
 run_command "$@"
