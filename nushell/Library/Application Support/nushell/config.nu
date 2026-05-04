@@ -27,6 +27,9 @@ use $jj_completion *
 alias nu-open = open
 alias open = ^open
 
+alias codex = ^zrun codex
+alias claude = ^zrun claude
+
 alias doc = cd ~/Documents
 alias desk = cd ~/Desktop
 

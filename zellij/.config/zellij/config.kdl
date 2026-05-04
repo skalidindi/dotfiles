@@ -2,3 +2,4 @@
 // Inspect the current defaults with: zellij setup --dump-config
 
 theme "catppuccin-macchiato"
+show_startup_tips false
