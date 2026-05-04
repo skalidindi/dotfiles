@@ -78,6 +78,7 @@ prepend-path ($nu.home-dir | path join ".cargo/bin")
 prepend-path ($nu.home-dir | path join ".local/bin")
 prepend-path "/usr/local/bin"
 prepend-path "/usr/local/sbin"
+prepend-path "/opt/nflx/bin"
 prepend-path ($nu.home-dir | path join ".lmstudio/bin")
 
 $env.BUN_INSTALL = ($nu.home-dir | path join ".bun")

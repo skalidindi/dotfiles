@@ -40,7 +40,7 @@
 
   "notifications": {
     "unreadPaneRing": true,
-    "paneFlash": false,
-    "sound": "none"
+    "paneFlash": true,
+    "sound": "default"
   }
 }
