@@ -30,9 +30,6 @@ eval "$(atuin init zsh)"
 # Zoxide
 eval "$(zoxide init zsh)"
 
-# FNM
-eval "$(fnm env --use-on-cd --shell zsh)"
-
 # Bun
 eval "$(bun completions zsh)"
 [ -s "~/.bun/_bun" ] && source "~/.bun/_bun"

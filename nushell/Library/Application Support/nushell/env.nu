@@ -8,6 +8,10 @@ def --env prepend-path [path: string] {
     }
 }
 
+def --env remove-path-fragment [fragment: string] {
+    $env.PATH = ($env.PATH | where { |path| not ($path | str contains $fragment) })
+}
+
 def --env load-simple-env [file: path] {
     if not ($file | path exists) {
         return
@@ -86,13 +90,12 @@ prepend-path ($env.NEWT_HOME | path join "global-npm-libs/bin")
 
 prepend-path ($nu.home-dir | path join ".temporal")
 
-$env.PNPM_HOME = ($nu.home-dir | path join ".local/share/pnpm")
-prepend-path $env.PNPM_HOME
+hide-env -i FNM_ARCH FNM_COREPACK_ENABLED FNM_DIR FNM_LOGLEVEL FNM_MULTISHELL_PATH FNM_NODE_DIST_MIRROR FNM_RESOLVE_ENGINES FNM_VERSION_FILE_STRATEGY PNPM_HOME
+remove-path-fragment "/.local/state/fnm_multishells/"
+remove-path-fragment "/.local/share/fnm/"
+remove-path-fragment "/.local/share/pnpm"
 
-if (which fnm | is-not-empty) {
-    let fnm_env = (^fnm env --json --use-on-cd | from json)
-    load-env $fnm_env
-    prepend-path ($env.FNM_MULTISHELL_PATH | path join "bin")
-}
+$env.VOLTA_HOME = ($nu.home-dir | path join ".volta")
+prepend-path ($env.VOLTA_HOME | path join "bin")
 
 load-simple-env ($nu.home-dir | path join ".env-secrets")

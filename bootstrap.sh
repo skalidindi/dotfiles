@@ -35,22 +35,15 @@ else
   echo "No Brewfile found, skipping brew bundle."
 fi
 
-# Install the latest Node.js version using fnm
-if command -v fnm &>/dev/null; then
-  echo "Installing the latest Node.js with fnm..."
-  fnm install --lts
-  fnm use --lts
+# Install the latest Node.js version using Volta
+export VOLTA_HOME="${VOLTA_HOME:-$HOME/.volta}"
+export PATH="$VOLTA_HOME/bin:$PATH"
+if command -v volta &>/dev/null; then
+  echo "Installing the latest Node.js and pnpm with Volta..."
+  volta install node
+  volta install pnpm
 else
-  echo "fnm is not installed. Please ensure it is listed in your Brewfile."
-fi
-
-# Enable corepack and install pnpm
-if command -v corepack &>/dev/null; then
-  echo "Enabling corepack and installing pnpm..."
-  corepack enable
-  corepack prepare pnpm@latest --activate
-else
-  echo "corepack is not installed. Please ensure Node.js is installed and corepack is available."
+  echo "Volta is not installed. Please ensure it is listed in your Brewfile."
 fi
 
 # Install flamegraph using cargo
@@ -65,6 +58,7 @@ fi
 if command -v npm &>/dev/null; then
   echo "Installing global npm. packages.."
   npm install -g @anthropic-ai/claude-code
+  npm install -g @openai/codex
 else
   echo "npm is not installed. Please ensure Node.js is installed."
 fi

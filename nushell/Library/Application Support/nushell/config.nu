@@ -168,22 +168,6 @@ def lm [] {
     | each { |model| $"($model.id) \(context size: ($model.contextSize)\)" }
 }
 
-$env.config = (
-    $env.config
-    | upsert hooks { default {} }
-    | upsert hooks.env_change { default {} }
-    | upsert hooks.env_change.PWD { default [] }
-)
-
-$env.config.hooks.env_change.PWD = (
-    $env.config.hooks.env_change.PWD
-    | append {|_, _|
-        if (which fnm | is-not-empty) and ([ ".node-version" ".nvmrc" "package.json" ] | any { |file| $file | path exists }) {
-            ^fnm use --silent-if-unchanged | ignore
-        }
-    }
-)
-
 $env.config.keybindings = (
     $env.config.keybindings?
     | default []
