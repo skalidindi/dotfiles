@@ -76,6 +76,7 @@ prepend-path ($nu.home-dir | path join "istio-1.25.2/bin")
 prepend-path ($nu.home-dir | path join "go/bin")
 prepend-path ($nu.home-dir | path join ".cargo/bin")
 prepend-path ($nu.home-dir | path join ".local/bin")
+prepend-path "/usr/local/bin"
 prepend-path "/usr/local/sbin"
 prepend-path ($nu.home-dir | path join ".lmstudio/bin")
 
@@ -84,6 +85,8 @@ prepend-path ($env.BUN_INSTALL | path join "bin")
 
 $env.CODEX_HOME = ($nu.home-dir | path join ".codex")
 $env.OPENAI_API_KEY = ($env.OPENAI_API_KEY? | default "dummy")
+
+prepend-path ($nu.home-dir | path join ".npm-global/bin")
 
 $env.NEWT_HOME = ($nu.home-dir | path join ".newt-cache")
 prepend-path ($env.NEWT_HOME | path join "global-npm-libs/bin")
@@ -97,5 +100,7 @@ remove-path-fragment "/.local/share/pnpm"
 
 $env.VOLTA_HOME = ($nu.home-dir | path join ".volta")
 prepend-path ($env.VOLTA_HOME | path join "bin")
+
+prepend-path ($nu.home-dir | path join ".antigravity/antigravity/bin")
 
 load-simple-env ($nu.home-dir | path join ".env-secrets")

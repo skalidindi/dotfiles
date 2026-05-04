@@ -61,3 +61,5 @@ export PATH="$PATH:/Users/skalidindi/.lmstudio/bin"
 
 # Added by Antigravity
 export PATH="/Users/skalidindi/.antigravity/antigravity/bin:$PATH"
+
+if command -v wt >/dev/null 2>&1; then eval "$(command wt config shell init zsh)"; fi
