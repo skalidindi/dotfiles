@@ -4,30 +4,10 @@
 
   "app": {
     "appearance": "dark",
-    "minimalMode": true,
-    "newWorkspacePlacement": "afterCurrent",
-    "commandPaletteSearchesAllSurfaces": true,
-    "warnBeforeQuit": true
-  },
-
-  "terminal": {
-    "showScrollBar": false
-  },
-
-  "sidebar": {
-    "hideAllDetails": false,
-    "branchLayout": "inline",
-    "showNotificationMessage": false,
-    "showBranchDirectory": false,
-    "showPullRequests": true,
-    "showPorts": true,
-    "showLog": false,
-    "showProgress": true,
-    "showCustomMetadata": true
+    "commandPaletteSearchesAllSurfaces": true
   },
 
   "sidebarAppearance": {
-    "matchTerminalBackground": false,
     "darkModeTintColor": "#1e2030",
     "tintOpacity": 0.22
   },
@@ -36,11 +16,5 @@
     "indicatorStyle": "washRail",
     "selectionColor": "#363a4f",
     "notificationBadgeColor": "#f5a97f"
-  },
-
-  "notifications": {
-    "unreadPaneRing": true,
-    "paneFlash": true,
-    "sound": "default"
   }
 }

@@ -8,8 +8,8 @@ Usage:
   zrun --list
   zrun --attach [SESSION]
 
-Run COMMAND inside a new zellij session. If already inside zellij, COMMAND is
-executed directly.
+Run COMMAND inside a new zellij session. Interactive codex/claude runs are
+wrapped with agent-awake. If already inside zellij, COMMAND is executed directly.
 EOF
 }
 
@@ -36,7 +36,7 @@ truncate_string() {
 build_default_session_name() {
   local base cwd_name timestamp available
 
-  base="$(sanitize_session_name "${session_prefix:-$command_name}")"
+  base="$(sanitize_session_name "${session_prefix:-$original_command_name}")"
   cwd_name="$(sanitize_session_name "$(basename "$PWD")")"
   timestamp="$(date +%H%M%S)"
 
@@ -115,10 +115,20 @@ if [ "$#" -eq 0 ]; then
   exit 64
 fi
 
-command_name="$(basename "$1")"
+original_command_name="$(basename "$1")"
 
 if [ ! -t 0 ] || [ ! -t 1 ]; then
   exec "$@"
+fi
+
+if [ "${AGENT_AWAKE_DISABLE:-0}" != "1" ] && [ -z "${AGENT_AWAKE_ACTIVE:-}" ]; then
+  case "$original_command_name" in
+    claude|codex)
+      if command -v agent-awake >/dev/null 2>&1; then
+        set -- agent-awake "$@"
+      fi
+      ;;
+  esac
 fi
 
 if [ -n "${ZELLIJ:-}" ]; then
@@ -142,12 +152,13 @@ if [ "${#session_name}" -gt "$session_name_limit" ]; then
 fi
 
 launcher="$(mktemp "${TMPDIR:-/tmp}/zrun.XXXXXXXX")"
-trap 'rm -f -- "$launcher"' EXIT
+layout_file="$(mktemp "${TMPDIR:-/tmp}/zrun-layout.XXXXXXXX")"
+trap 'rm -f -- "$launcher" "$layout_file"' EXIT
 
 {
   printf '#!/usr/bin/env bash\n'
   printf 'set -euo pipefail\n'
-  printf 'rm -f -- %q\n' "$launcher"
+  printf 'rm -f -- %q %q\n' "$launcher" "$layout_file"
   printf 'cd -- %q\n' "$PWD"
   printf 'exec'
   printf ' %q' "$@"
@@ -155,10 +166,10 @@ trap 'rm -f -- "$launcher"' EXIT
 } >"$launcher"
 chmod 700 "$launcher"
 
-layout="$(
+{
   printf 'layout {\n'
   printf '    pane command="%s"\n' "$(kdl_escape "$launcher")"
   printf '}\n'
-)"
+} >"$layout_file"
 
-zellij --layout-string "$layout" --session "$session_name"
+zellij --new-session-with-layout "$layout_file" --session "$session_name"
