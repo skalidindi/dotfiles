@@ -2,4 +2,6 @@
 // Inspect the current defaults with: zellij setup --dump-config
 
 theme "catppuccin-macchiato"
+serialize_pane_viewport true
+scrollback_lines_to_serialize 10000
 show_startup_tips false
