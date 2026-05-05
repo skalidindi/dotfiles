@@ -8,6 +8,16 @@ def --env prepend-path [path: string] {
     }
 }
 
+def --env prefer-path [path: string] {
+    let expanded = ($path | path expand)
+
+    $env.PATH = (
+        $env.PATH
+        | where { |entry| $entry != $expanded }
+        | prepend $expanded
+    )
+}
+
 def --env remove-path-fragment [fragment: string] {
     $env.PATH = ($env.PATH | where { |path| not ($path | str contains $fragment) })
 }
@@ -105,3 +115,5 @@ prepend-path ($env.VOLTA_HOME | path join "bin")
 prepend-path ($nu.home-dir | path join ".antigravity/antigravity/bin")
 
 load-simple-env ($nu.home-dir | path join ".env-secrets")
+
+prefer-path ($nu.home-dir | path join ".local/bin")

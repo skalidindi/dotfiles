@@ -29,7 +29,8 @@ bin/.local/*
 !bin/.local/bin/
 bin/.local/bin/*
 !bin/.local/bin/agent-awake
-!bin/.local/bin/tmux-sessionizer
+!bin/.local/bin/fix-nflx-ssh-nushell
+!bin/.local/bin/zellij-sessionizer
 !bin/.local/bin/zrun
 
 .env-secrets

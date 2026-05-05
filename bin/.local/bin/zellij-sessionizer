@@ -1,0 +1,271 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+default_search_paths=(
+  "$HOME/oss"
+  "$HOME/work"
+  "$HOME/personal"
+  "$HOME/Projects"
+  "$HOME/Code"
+)
+default_specific_paths=(
+  "$HOME/oss/dotfiles"
+  "$HOME/.config/nvim"
+)
+
+SEARCH_PATHS=("${default_search_paths[@]}")
+SPECIFIC_PATHS=("${default_specific_paths[@]}")
+OS_TYPE="${ZELLIJ_SESSIONIZER_OS_TYPE:-$(uname)}"
+
+if [ -n "${ZELLIJ_SESSIONIZER_SEARCH_PATHS:-}" ]; then
+  if [[ "$ZELLIJ_SESSIONIZER_SEARCH_PATHS" == *:* ]]; then
+    IFS=: read -r -a SEARCH_PATHS <<<"$ZELLIJ_SESSIONIZER_SEARCH_PATHS"
+  else
+    read -r -a SEARCH_PATHS <<<"$ZELLIJ_SESSIONIZER_SEARCH_PATHS"
+  fi
+fi
+
+if [ -n "${ZELLIJ_SESSIONIZER_SPECIFIC_PATHS:-}" ]; then
+  if [[ "$ZELLIJ_SESSIONIZER_SPECIFIC_PATHS" == *:* ]]; then
+    IFS=: read -r -a SPECIFIC_PATHS <<<"$ZELLIJ_SESSIONIZER_SPECIFIC_PATHS"
+  else
+    read -r -a SPECIFIC_PATHS <<<"$ZELLIJ_SESSIONIZER_SPECIFIC_PATHS"
+  fi
+fi
+
+usage() {
+  cat <<'EOF'
+Usage:
+  zellij-sessionizer
+  zellij-sessionizer --generate-list
+  zellij-sessionizer --delete DISPLAY_LINE
+  zellij-sessionizer --kill DISPLAY_LINE
+
+Searches common project directories, picks one with fzf, then switches to or
+creates a zellij session named after the selected directory.
+
+Environment:
+  ZELLIJ_SESSIONIZER_SEARCH_PATHS    Space or colon separated root directories
+  ZELLIJ_SESSIONIZER_SPECIFIC_PATHS  Space or colon separated exact directories
+EOF
+}
+
+stat_atime() {
+  local dir="$1"
+
+  if [[ "$OS_TYPE" == "Linux" ]]; then
+    stat -c "%X" "$dir" 2>/dev/null || echo "0"
+  else
+    stat -f "%a" "$dir" 2>/dev/null || echo "0"
+  fi
+}
+
+home_display_path() {
+  local path="$1"
+  printf '%s\n' "${path/#$HOME/~}"
+}
+
+expand_display_path() {
+  local path="$1"
+
+  if [[ "$path" == "~"* ]]; then
+    printf '%s\n' "$HOME${path:1}"
+  else
+    printf '%s\n' "$path"
+  fi
+}
+
+strip_status() {
+  local display_line="$1"
+
+  printf '%s\n' "$display_line" \
+    | sed $'s/ \033\\[[0-9;]*m([^)]*)\033\\[[0-9;]*m$//' \
+    | sed 's/ ([^)]*)$//'
+}
+
+sanitize_session_name() {
+  local raw="$1"
+  local sanitized
+
+  sanitized="$(printf '%s' "$raw" | tr -cs '[:alnum:]_.-' '-' | sed 's/^-//; s/-$//')"
+  if [ -z "$sanitized" ]; then
+    sanitized="session"
+  fi
+  printf '%s\n' "$sanitized"
+}
+
+session_name_for_dir() {
+  sanitize_session_name "$(basename "$1")"
+}
+
+session_name_for_display_line() {
+  local clean_path
+  local full_path
+
+  clean_path="$(strip_status "$1")"
+  full_path="$(expand_display_path "$clean_path")"
+  session_name_for_dir "$full_path"
+}
+
+color() {
+  local code="$1"
+
+  if command -v tput >/dev/null 2>&1 && [ -n "${TERM:-}" ]; then
+    tput setaf "$code" 2>/dev/null || true
+  fi
+}
+
+reset_color() {
+  if command -v tput >/dev/null 2>&1 && [ -n "${TERM:-}" ]; then
+    tput sgr0 2>/dev/null || true
+  fi
+}
+
+session_status() {
+  local session_name="$1"
+  local session_file="$2"
+  local line
+
+  line="$(awk -v name="$session_name" '$1 == name { print; exit }' "$session_file")"
+  if [ -z "$line" ]; then
+    return 0
+  fi
+
+  if [[ "$line" == *"(current)"* ]]; then
+    printf ' %s(current)%s' "$(color 2)" "$(reset_color)"
+  elif [[ "$line" == *"(EXITED"* ]]; then
+    printf ' %s(exited)%s' "$(color 1)" "$(reset_color)"
+  else
+    printf ' %s(active)%s' "$(color 3)" "$(reset_color)"
+  fi
+}
+
+collect_directories() {
+  local dir
+  local search_path
+  local specific_path
+
+  for search_path in "${SEARCH_PATHS[@]}"; do
+    [ -d "$search_path" ] || continue
+    for dir in "$search_path"/*; do
+      [ -d "$dir" ] || continue
+      printf '%s\n' "$dir"
+    done
+  done
+
+  for specific_path in "${SPECIFIC_PATHS[@]}"; do
+    [ -d "$specific_path" ] || continue
+    printf '%s\n' "$specific_path"
+  done
+}
+
+generate_display_list() {
+  local dirs_file
+  local sessions_file
+  local dir
+  local display_name
+  local session_name
+  local atime
+
+  dirs_file="$(mktemp "${TMPDIR:-/tmp}/zellij-sessionizer-dirs.XXXXXXXX")"
+  sessions_file="$(mktemp "${TMPDIR:-/tmp}/zellij-sessionizer-sessions.XXXXXXXX")"
+  trap 'rm -f -- "$dirs_file" "$sessions_file"' RETURN
+
+  collect_directories \
+    | sort -u \
+    | while IFS= read -r dir; do
+      atime="$(stat_atime "$dir")"
+      printf '%s\t%s\n' "$atime" "$dir"
+    done \
+    | sort -nr >"$dirs_file"
+
+  if command -v zellij >/dev/null 2>&1; then
+    zellij list-sessions --no-formatting >"$sessions_file" 2>/dev/null || true
+  fi
+
+  while IFS=$'\t' read -r _ dir; do
+    [ -n "$dir" ] || continue
+    display_name="$(home_display_path "$dir")"
+    session_name="$(session_name_for_dir "$dir")"
+    printf '%s%s\n' "$display_name" "$(session_status "$session_name" "$sessions_file")"
+  done <"$dirs_file"
+}
+
+require_command() {
+  local command_name="$1"
+
+  if ! command -v "$command_name" >/dev/null 2>&1; then
+    printf 'zellij-sessionizer: missing required command: %s\n' "$command_name" >&2
+    exit 127
+  fi
+}
+
+delete_session() {
+  local session_name
+
+  session_name="$(session_name_for_display_line "$1")"
+  [ -n "$session_name" ] || exit 0
+  zellij delete-session --force "$session_name" 2>/dev/null || true
+}
+
+kill_session() {
+  local session_name
+
+  session_name="$(session_name_for_display_line "$1")"
+  [ -n "$session_name" ] || exit 0
+  zellij kill-session "$session_name" 2>/dev/null || true
+}
+
+if [ "${1:-}" = "-h" ] || [ "${1:-}" = "--help" ]; then
+  usage
+  exit 0
+fi
+
+if [ "${1:-}" = "--generate-list" ]; then
+  generate_display_list
+  exit 0
+fi
+
+if [ "${1:-}" = "--delete" ]; then
+  delete_session "${2:-}"
+  exit 0
+fi
+
+if [ "${1:-}" = "--kill" ]; then
+  kill_session "${2:-}"
+  exit 0
+fi
+
+require_command zellij
+require_command fzf
+
+self="$(printf '%q' "$0")"
+selected_display="$(
+  generate_display_list \
+    | fzf --ansi \
+      --prompt="Select project: " \
+      --header="Enter: Select | Ctrl+D: Delete Session | Ctrl+K: Kill Session" \
+      --bind="ctrl-d:execute($self --delete {})+reload($self --generate-list)" \
+      --bind="ctrl-k:execute($self --kill {})+reload($self --generate-list)"
+)" || exit 0
+
+if [ -z "$selected_display" ]; then
+  exit 0
+fi
+
+clean_display="$(strip_status "$selected_display")"
+selected_dir="$(expand_display_path "$clean_display")"
+session_name="$(session_name_for_dir "$selected_dir")"
+
+if [ ! -d "$selected_dir" ]; then
+  printf 'zellij-sessionizer: selected directory does not exist: %s\n' "$selected_dir" >&2
+  exit 66
+fi
+
+if [ -n "${ZELLIJ:-}" ]; then
+  zellij action switch-session --cwd "$selected_dir" "$session_name"
+else
+  cd -- "$selected_dir"
+  zellij attach "$session_name" --create
+fi

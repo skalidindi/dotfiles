@@ -27,9 +27,6 @@ use $jj_completion *
 alias nu-open = open
 alias open = ^open
 
-alias codex = ^zrun codex
-alias claude = ^zrun claude
-
 alias doc = cd ~/Documents
 alias desk = cd ~/Desktop
 
@@ -175,10 +172,10 @@ $env.config.keybindings = (
     $env.config.keybindings?
     | default []
     | append {
-        name: tmux_sessionizer
+        name: zellij_sessionizer
         modifier: control
         keycode: char_f
         mode: [emacs, vi_normal, vi_insert]
-        event: { send: executehostcommand cmd: "tmux-sessionizer" }
+        event: { send: executehostcommand cmd: "zellij-sessionizer" }
     }
 )

@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+config="${1:-$HOME/.ssh/config}"
+bad='Match exec "test -z $NFSSH_DISABLED"'
+good='Match exec "bash -c '\''[[ -z ${NFSSH_DISABLED:-} ]]'\''"'
+
+if [ ! -f "$config" ]; then
+  printf 'fix-nflx-ssh-nushell: file not found: %s\n' "$config" >&2
+  exit 66
+fi
+
+if grep -Fqx "$good" "$config"; then
+  printf 'already fixed: %s\n' "$config"
+  exit 0
+fi
+
+if ! grep -Fqx "$bad" "$config"; then
+  printf 'unsafe NFSSH Match exec line not found: %s\n' "$config" >&2
+  exit 1
+fi
+
+BAD="$bad" GOOD="$good" perl -0pi.bak-nfssh-nushell -e 's/\Q$ENV{BAD}\E/$ENV{GOOD}/g' "$config"
+printf 'patched: %s\nbackup: %s.bak-nfssh-nushell\n' "$config" "$config"

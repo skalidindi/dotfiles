@@ -19,8 +19,6 @@ export PATH=$HOME/go/bin:$PATH
 # Rust
 export PATH="$HOME/.cargo/bin:$PATH"
 
-# Personal bin
-export PATH="$HOME/.local/bin:$PATH"
 export PATH="/usr/local/sbin:$PATH"
 
 # LM Studio CLI (lms)
@@ -47,3 +45,6 @@ export PATH=$HOME/.temporal:$PATH
 # Volta
 export VOLTA_HOME="$HOME/.volta"
 export PATH="$VOLTA_HOME/bin:$PATH"
+
+# Personal bin should win over tool-manager shims for local wrappers.
+export PATH="$HOME/.local/bin:$PATH"
