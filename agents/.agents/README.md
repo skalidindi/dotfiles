@@ -73,3 +73,17 @@ Suggested naming:
 tasks/agent-asset-cleanup.md
 tasks/pi-mode-profile-rollout.md
 ```
+
+## External Skill Sources
+
+Some opt-in skills are installed by `skills.sh` into `~/.agents/skills`. Track
+their source manifest here as `skills.sh.lock.json` instead of treating the
+installed skill folders as the durable source of truth.
+
+The live `~/.agents/.skill-lock.json` is tool-owned runtime state. The tracked
+lock is the portable record of where those third-party skills came from and the
+content hashes that were installed.
+
+Default `core` and `netflix` skills are kept available in the agent-specific
+skill directories. `skills.sh` skills mostly belong in `heavy` unless one earns
+a permanent place in the default profile.

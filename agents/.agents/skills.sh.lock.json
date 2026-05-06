@@ -1,0 +1,126 @@
+{
+  "version": 3,
+  "skills": {
+    "frontend-design": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/anthropics/skills.git",
+      "skillPath": "skills/frontend-design/SKILL.md",
+      "skillFolderHash": "928950704df8a8b885c03de5da626331e6f29cf8",
+      "pluginName": "example-skills",
+      "installedAt": "2026-04-27T16:37:37.138Z",
+      "updatedAt": "2026-04-27T16:37:37.138Z"
+    },
+    "find-skills": {
+      "source": "vercel-labs/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/vercel-labs/skills.git",
+      "skillPath": "skills/find-skills/SKILL.md",
+      "skillFolderHash": "3013fdeb8a11b10b1eb795ec3ae8bfca38f7c26d",
+      "installedAt": "2026-04-27T16:37:40.253Z",
+      "updatedAt": "2026-04-27T16:37:40.253Z"
+    },
+    "grill-me": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/mattpocock/skills.git",
+      "skillPath": "grill-me/SKILL.md",
+      "skillFolderHash": "2a1ad17028306ebe45f0e49703fa28b9b2e7f499",
+      "installedAt": "2026-04-27T16:38:25.458Z",
+      "updatedAt": "2026-04-27T16:44:41.344"
+    },
+    "design-an-interface": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/mattpocock/skills.git",
+      "skillPath": "design-an-interface/SKILL.md",
+      "skillFolderHash": "59d5eca0fd23930d3d3821aa9da507f1bdb8a348",
+      "installedAt": "2026-04-27T16:38:45.507Z",
+      "updatedAt": "2026-04-27T16:38:45.507"
+    },
+    "improve-codebase-architecture": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/mattpocock/skills.git",
+      "skillPath": "improve-codebase-architecture/SKILL.md",
+      "skillFolderHash": "008dfd3cf28adfe7e8e89bdbb8de85a1e70601d7",
+      "installedAt": "2026-04-27T16:39:15.764Z",
+      "updatedAt": "2026-04-27T16:39:15.764"
+    },
+    "request-refactor-plan": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/mattpocock/skills.git",
+      "skillPath": "request-refactor-plan/SKILL.md",
+      "skillFolderHash": "b0617c9cf69ac1e73a6b30f78c82ff81372079fd",
+      "installedAt": "2026-04-27T16:39:27.967Z",
+      "updatedAt": "2026-04-27T16:39:27.967"
+    },
+    "browser-trace": {
+      "source": "browserbase/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/browserbase/skills.git",
+      "skillPath": "skills/browser-trace/SKILL.md",
+      "skillFolderHash": "6fb2478e33ad6e8a658846398c2cc46239095730606c3e5ce60ba81e0fd8821d",
+      "pluginName": "browser-trace",
+      "installedAt": "2026-04-29T03:39:52.487Z",
+      "updatedAt": "2026-04-29T03:39:52.487"
+    },
+    "guide": {
+      "source": "toss/es-toolkit",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/toss/es-toolkit.git",
+      "skillPath": "es-toolkit-plugin/skills/guide/SKILL.md",
+      "skillFolderHash": "9cb4c59272025b49681344b6c624eb445dcecc70cb3e792749d4df68332324c6",
+      "installedAt": "2026-05-02T04:15:54.621Z",
+      "updatedAt": "2026-05-02T04:15:54.621"
+    },
+    "migrate": {
+      "source": "toss/es-toolkit",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/toss/es-toolkit.git",
+      "skillPath": "es-toolkit-plugin/skills/migrate/SKILL.md",
+      "skillFolderHash": "a96e1c90b5648192f21403467d76dfd2eef7a4664c8dd54ff8e501776a99f2d8",
+      "installedAt": "2026-05-02T04:15:54.622Z",
+      "updatedAt": "2026-05-02T04:15:54.622"
+    },
+    "cmux": {
+      "source": "manaflow-ai/cmux",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/manaflow-ai/cmux.git",
+      "skillPath": "skills/cmux/SKILL.md",
+      "skillFolderHash": "4f2c81e86243da0e10eeb332897ef2cca1ae80e57b9b5eaf8dd67674798119eb",
+      "installedAt": "2026-05-04T17:24:59.950Z",
+      "updatedAt": "2026-05-04T17:24:59.950"
+    },
+    "worktrunk": {
+      "source": "max-sixty/worktrunk",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/max-sixty/worktrunk.git",
+      "skillPath": "skills/worktrunk/SKILL.md",
+      "skillFolderHash": "534161671d324436f7c8b136ea4ed84eb64c255e050981fdb94d659aa72a43bd",
+      "pluginName": "worktrunk",
+      "installedAt": "2026-05-04T19:00:23.914Z",
+      "updatedAt": "2026-05-04T19:00:23.914"
+    }
+  },
+  "dismissed": {
+    "findSkillsPrompt": true
+  },
+  "lastSelectedAgents": [
+    "amp",
+    "antigravity",
+    "cline",
+    "codex",
+    "cursor",
+    "deepagents",
+    "dexto",
+    "firebender",
+    "gemini-cli",
+    "github-copilot",
+    "kimi-cli",
+    "opencode",
+    "warp",
+    "claude-code"
+  ]
+}
