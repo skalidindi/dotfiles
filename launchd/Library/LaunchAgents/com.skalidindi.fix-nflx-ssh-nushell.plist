@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "https://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.skalidindi.fix-nflx-ssh-nushell</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>/Users/skalidindi/.local/bin/fix-nflx-ssh-nushell</string>
+    <string>--quiet</string>
+  </array>
+
+  <key>RunAtLoad</key>
+  <true/>
+
+  <key>StartInterval</key>
+  <integer>300</integer>
+
+  <key>WatchPaths</key>
+  <array>
+    <string>/Users/skalidindi/.ssh/config</string>
+  </array>
+
+  <key>StandardOutPath</key>
+  <string>/Users/skalidindi/Library/Logs/fix-nflx-ssh-nushell.log</string>
+
+  <key>StandardErrorPath</key>
+  <string>/Users/skalidindi/Library/Logs/fix-nflx-ssh-nushell.err.log</string>
+</dict>
+</plist>

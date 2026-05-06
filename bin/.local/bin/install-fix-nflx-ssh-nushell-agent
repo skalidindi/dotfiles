@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+label="com.skalidindi.fix-nflx-ssh-nushell"
+domain="gui/$(id -u)"
+plist="$HOME/Library/LaunchAgents/$label.plist"
+
+script_path="${BASH_SOURCE[0]}"
+if [ -L "$script_path" ]; then
+  link_target="$(readlink "$script_path")"
+  case "$link_target" in
+    /*) script_path="$link_target" ;;
+    *) script_path="$(cd "$(dirname "$script_path")" && pwd)/$link_target" ;;
+  esac
+fi
+
+script_dir="$(cd "$(dirname "$script_path")" && /bin/pwd -P)"
+repo_root="$(cd "$script_dir/../../.." && /bin/pwd -P)"
+repo_plist="$repo_root/launchd/Library/LaunchAgents/$label.plist"
+
+if [ ! -f "$repo_plist" ]; then
+  printf 'install-fix-nflx-ssh-nushell-agent: plist not found: %s\n' "$repo_plist" >&2
+  exit 66
+fi
+
+mkdir -p "$HOME/Library/LaunchAgents" "$HOME/Library/Logs"
+ln -sfn "$repo_plist" "$plist"
+
+if launchctl print "$domain/$label" >/dev/null 2>&1; then
+  launchctl bootout "$domain/$label" >/dev/null 2>&1 || true
+fi
+
+launchctl bootstrap "$domain" "$plist"
+launchctl enable "$domain/$label"
+launchctl kickstart -k "$domain/$label"
+"$HOME/.local/bin/fix-nflx-ssh-nushell" --quiet
+
+printf 'loaded: %s\nplist: %s\n' "$label" "$plist"

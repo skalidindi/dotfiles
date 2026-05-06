@@ -18,7 +18,7 @@ fi
 
 # Run GNU Stow for all config directories in the current folder
 echo "Running stow for dotfiles..."
-STOW_DIRS=( claude cmux bash bat bin btop env fastfetch gh ghostty git jj lazygit misc nushell nvim pi tmux yazi zellij zsh )
+STOW_DIRS=( claude cmux bash bat bin btop env fastfetch gh ghostty git jj launchd lazygit misc nushell nvim pi tmux yazi zellij zsh )
 for dir in "${STOW_DIRS[@]}"
 do
   if [[ -d "$dir" ]]; then
@@ -26,6 +26,11 @@ do
     stow -t ~/ -R "$dir"
   fi
 done
+
+if [[ "$(uname -s)" == "Darwin" && -x "$HOME/.local/bin/install-fix-nflx-ssh-nushell-agent" ]]; then
+  echo "Loading NFSSH Nushell LaunchAgent..."
+  "$HOME/.local/bin/install-fix-nflx-ssh-nushell-agent"
+fi
 
 # Check if Brewfile exists and run brew bundle
 if [[ -f Brewfile ]]; then

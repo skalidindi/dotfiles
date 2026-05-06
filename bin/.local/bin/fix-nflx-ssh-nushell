@@ -1,24 +1,48 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+quiet=0
+if [ "${1:-}" = "--quiet" ] || [ "${1:-}" = "-q" ]; then
+  quiet=1
+  shift
+fi
+
 config="${1:-$HOME/.ssh/config}"
 bad='Match exec "test -z $NFSSH_DISABLED"'
 good='Match exec "bash -c '\''[[ -z ${NFSSH_DISABLED:-} ]]'\''"'
 
+log() {
+  if [ "$quiet" -eq 0 ]; then
+    printf '%s\n' "$1"
+  fi
+}
+
+die() {
+  if [ "$quiet" -eq 0 ]; then
+    printf 'fix-nflx-ssh-nushell: %s\n' "$1" >&2
+  fi
+  exit "${2:-1}"
+}
+
 if [ ! -f "$config" ]; then
-  printf 'fix-nflx-ssh-nushell: file not found: %s\n' "$config" >&2
-  exit 66
+  if [ "$quiet" -eq 1 ]; then
+    exit 0
+  fi
+  die "file not found: $config" 66
 fi
 
 if grep -Fqx "$good" "$config"; then
-  printf 'already fixed: %s\n' "$config"
+  log "already fixed: $config"
   exit 0
 fi
 
 if ! grep -Fqx "$bad" "$config"; then
-  printf 'unsafe NFSSH Match exec line not found: %s\n' "$config" >&2
-  exit 1
+  if [ "$quiet" -eq 1 ]; then
+    exit 0
+  fi
+  die "unsafe NFSSH Match exec line not found: $config" 1
 fi
 
 BAD="$bad" GOOD="$good" perl -0pi.bak-nfssh-nushell -e 's/\Q$ENV{BAD}\E/$ENV{GOOD}/g' "$config"
-printf 'patched: %s\nbackup: %s.bak-nfssh-nushell\n' "$config" "$config"
+log "patched: $config"
+log "backup: $config.bak-nfssh-nushell"

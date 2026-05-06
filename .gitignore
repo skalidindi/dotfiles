@@ -35,6 +35,7 @@ bin/.local/*
 bin/.local/bin/*
 !bin/.local/bin/agent-awake
 !bin/.local/bin/fix-nflx-ssh-nushell
+!bin/.local/bin/install-fix-nflx-ssh-nushell-agent
 !bin/.local/bin/zellij-sessionizer
 !bin/.local/bin/zrun
 !bin/.local/share/
