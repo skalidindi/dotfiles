@@ -77,13 +77,20 @@ tasks/pi-mode-profile-rollout.md
 ## External Skill Sources
 
 Some opt-in skills are installed by `skills.sh` into `~/.agents/skills`. Track
-their source manifest here as `skills.sh.lock.json` instead of treating the
+their source manifest here as `skills.sh.sources.json` instead of treating the
 installed skill folders as the durable source of truth.
 
 The live `~/.agents/.skill-lock.json` is tool-owned runtime state. The tracked
-lock is the portable record of where those third-party skills came from and the
-content hashes that were installed.
+sources file records which third-party skills we care about, but intentionally
+does not pin versions. Restores use latest by default.
 
 Default `core` and `netflix` skills are kept available in the agent-specific
 skill directories. `skills.sh` skills mostly belong in `heavy` unless one earns
 a permanent place in the default profile.
+
+Preview or run the restore commands with:
+
+```bash
+restore-skills-sh
+restore-skills-sh --apply
+```

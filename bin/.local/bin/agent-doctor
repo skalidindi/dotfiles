@@ -213,7 +213,7 @@ printf '\nStowed surfaces\n'
 printf '%s\n' '---------------'
 status_shared_agents_dir
 status_path "$HOME/.agents/README.md" "shared agents readme"
-status_path "$HOME/.agents/skills.sh.lock.json" "skills.sh lock"
+status_path "$HOME/.agents/skills.sh.sources.json" "skills.sh sources"
 status_path "$HOME/.codex/AGENTS.md" "codex prompt"
 status_path "$HOME/.claude/CLAUDE.md" "claude prompt"
 status_path "$HOME/.claude/settings.json.tpl" "claude settings template"
@@ -246,8 +246,8 @@ printf 'claude: %s\n' "$(count_files "$HOME/.claude/skills" 'SKILL.md')"
 printf 'cursor: %s\n' "$(count_files "$HOME/.cursor/skills" 'SKILL.md')"
 printf 'pi:     %s\n' "$(count_files "$HOME/.pi/agent/skills" 'SKILL.md')"
 
-if command -v jq >/dev/null 2>&1 && [ -f "$HOME/.agents/skills.sh.lock.json" ]; then
-  printf 'skills.sh lock: %s sources\n' "$(jq '.skills | length' "$HOME/.agents/skills.sh.lock.json" 2>/dev/null || printf '0')"
+if command -v jq >/dev/null 2>&1 && [ -f "$HOME/.agents/skills.sh.sources.json" ]; then
+  printf 'skills.sh sources: %s latest installs\n' "$(jq '.skills | length' "$HOME/.agents/skills.sh.sources.json" 2>/dev/null || printf '0')"
 fi
 
 printf '\nSkill profile diff\n'

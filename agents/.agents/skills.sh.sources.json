@@ -1,0 +1,61 @@
+{
+  "version": 1,
+  "installPolicy": "latest",
+  "skills": [
+    {
+      "name": "frontend-design",
+      "source": "anthropics/skills",
+      "path": "skills/frontend-design"
+    },
+    {
+      "name": "find-skills",
+      "source": "vercel-labs/skills",
+      "path": "skills/find-skills"
+    },
+    {
+      "name": "grill-me",
+      "source": "mattpocock/skills",
+      "path": "grill-me"
+    },
+    {
+      "name": "design-an-interface",
+      "source": "mattpocock/skills",
+      "path": "design-an-interface"
+    },
+    {
+      "name": "improve-codebase-architecture",
+      "source": "mattpocock/skills",
+      "path": "improve-codebase-architecture"
+    },
+    {
+      "name": "request-refactor-plan",
+      "source": "mattpocock/skills",
+      "path": "request-refactor-plan"
+    },
+    {
+      "name": "browser-trace",
+      "source": "browserbase/skills",
+      "path": "skills/browser-trace"
+    },
+    {
+      "name": "guide",
+      "source": "toss/es-toolkit",
+      "path": "es-toolkit-plugin/skills/guide"
+    },
+    {
+      "name": "migrate",
+      "source": "toss/es-toolkit",
+      "path": "es-toolkit-plugin/skills/migrate"
+    },
+    {
+      "name": "cmux",
+      "source": "manaflow-ai/cmux",
+      "path": "skills/cmux"
+    },
+    {
+      "name": "worktrunk",
+      "source": "max-sixty/worktrunk",
+      "path": "skills/worktrunk"
+    }
+  ]
+}

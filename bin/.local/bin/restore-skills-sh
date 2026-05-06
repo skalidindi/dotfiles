@@ -1,0 +1,109 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  cat <<'EOF'
+Usage:
+  restore-skills-sh [--apply] [--manifest PATH]
+
+Print the latest-install commands for skills tracked in
+~/.agents/skills.sh.sources.json. With --apply, run the commands.
+
+The manifest records source repos and skill paths, not pinned versions. This is
+intentional: skills.sh skills are opt-in third-party skills and should restore
+from latest unless one is promoted into the default profile or forked.
+EOF
+}
+
+resolve_script_path() {
+  local source="$1"
+  local dir
+  local link
+
+  while [ -L "$source" ]; do
+    dir="$(cd -P "$(dirname "$source")" && pwd)"
+    link="$(readlink "$source")"
+    case "$link" in
+      /*) source="$link" ;;
+      *) source="$dir/$link" ;;
+    esac
+  done
+
+  cd -P "$(dirname "$source")" && pwd
+}
+
+script_dir="$(resolve_script_path "${BASH_SOURCE[0]}")"
+dotfiles_dir="$(cd "$script_dir/../../.." && pwd)"
+manifest="$dotfiles_dir/agents/.agents/skills.sh.sources.json"
+apply=0
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    --apply)
+      apply=1
+      shift
+      ;;
+    --manifest)
+      if [ "$#" -lt 2 ]; then
+        printf 'restore-skills-sh: --manifest requires a value\n' >&2
+        exit 64
+      fi
+      manifest="$2"
+      shift 2
+      ;;
+    *)
+      printf 'restore-skills-sh: unknown option: %s\n' "$1" >&2
+      usage >&2
+      exit 64
+      ;;
+  esac
+done
+
+if [ ! -f "$manifest" ]; then
+  printf 'restore-skills-sh: manifest not found: %s\n' "$manifest" >&2
+  exit 66
+fi
+
+if ! command -v jq >/dev/null 2>&1; then
+  printf 'restore-skills-sh: jq is required\n' >&2
+  exit 69
+fi
+
+if ! command -v npx >/dev/null 2>&1; then
+  printf 'restore-skills-sh: npx is required\n' >&2
+  exit 69
+fi
+
+installs=()
+while IFS= read -r install_ref; do
+  [ -n "$install_ref" ] && installs+=("$install_ref")
+done < <(
+  jq -r '
+    .skills[]
+    | if (.path // "") == ""
+      then .source
+      else "\(.source)/\(.path)"
+      end
+  ' "$manifest"
+)
+
+if [ "${#installs[@]}" -eq 0 ]; then
+  printf 'restore-skills-sh: no skills listed in %s\n' "$manifest" >&2
+  exit 0
+fi
+
+for install_ref in "${installs[@]}"; do
+  if [ "$apply" -eq 1 ]; then
+    npx skills add "$install_ref"
+  else
+    printf 'npx skills add %q\n' "$install_ref"
+  fi
+done
+
+if [ "$apply" -eq 0 ]; then
+  printf '\nDry run only. Re-run with --apply to install latest skills.\n'
+fi
