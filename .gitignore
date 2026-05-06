@@ -48,7 +48,9 @@ cursor/.cursor/**
 !cursor/.cursor/mcp.json.tpl
 
 # PI Agent
+pi/.pi/agent/agents
 pi/.pi/agent/mcp.json
+pi/.pi/agent/modes
 pi/.pi/agent/settings.json
 pi/.pi/agent/sessions/*
 pi/.pi/agent/auth.json
@@ -60,6 +62,7 @@ bin/.local/*
 bin/.local/bin/*
 !bin/.local/bin/agent-awake
 !bin/.local/bin/agent-doctor
+!bin/.local/bin/agent-mode
 !bin/.local/bin/agent-skill-profile
 !bin/.local/bin/codex
 !bin/.local/bin/fix-nflx-ssh-nushell

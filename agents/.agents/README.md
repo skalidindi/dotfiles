@@ -74,6 +74,17 @@ delegation templates when the active agent supports custom agents/subagents:
 - `audit` - focused security review
 - `index` - local capability router
 
+## Modes
+
+`modes/` contains lightweight prompt guidance for working style:
+
+- `pair` - collaborative, short-turn, interactive mode
+- `auto` - autonomous, deeper-work mode
+
+These are shared prompt assets, not a guarantee that every agent has a native
+mode-switching UI. Use `agent-mode pair` or `agent-mode auto` to print the
+guidance, and use tool-native mode support where available.
+
 ## Task Notes
 
 Use `tasks/` for active, durable notes only. Delete or archive a task note once

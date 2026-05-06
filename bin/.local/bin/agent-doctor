@@ -291,6 +291,13 @@ status_shared_agents_dir
 status_path "$HOME/.agents/README.md" "shared agents readme"
 status_path "$HOME/.agents/skills.sh.sources.json" "skills.sh sources"
 status_path "$HOME/.agents/agents" "shared helper agents"
+status_path "$HOME/.agents/modes" "shared modes"
+status_path "$HOME/.claude/agents" "claude helper agents"
+status_path "$HOME/.codex/agents" "codex helper agents"
+status_path "$HOME/.pi/agent/agents" "pi helper agents"
+status_path "$HOME/.claude/modes" "claude modes"
+status_path "$HOME/.codex/modes" "codex modes"
+status_path "$HOME/.pi/agent/modes" "pi modes"
 status_path "$HOME/.codex/AGENTS.md" "codex prompt"
 status_path "$HOME/.claude/CLAUDE.md" "claude prompt"
 status_path "$HOME/.claude/settings.json.tpl" "claude settings template"
@@ -310,7 +317,7 @@ status_same_file "$dotfiles_dir/agents/.agents/prompts/base.md" "$dotfiles_dir/c
 
 printf '\nCommands\n'
 printf '%s\n' '--------'
-for cmd in zrun agent-awake; do
+for cmd in zrun agent-awake agent-mode; do
   status_command "$cmd"
 done
 status_wrapper_command codex

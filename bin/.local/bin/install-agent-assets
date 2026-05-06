@@ -204,6 +204,31 @@ copy_if_missing() {
   printf 'installed %s\n' "$label"
 }
 
+link_managed_dir() {
+  local source="$1"
+  local target="$2"
+  local label="$3"
+
+  [ -d "$source" ] || return 0
+  mkdir -p "$(dirname "$target")"
+
+  if [ -L "$target" ]; then
+    if [ "$(readlink "$target")" = "$source" ]; then
+      printf 'ok %s\n' "$label"
+      return 0
+    fi
+    rm "$target"
+  elif [ -d "$target" ] && [ -z "$(find "$target" -mindepth 1 -maxdepth 1 -print -quit 2>/dev/null)" ]; then
+    rmdir "$target"
+  elif [ -e "$target" ]; then
+    printf 'kept %s; target exists and is not a managed symlink: %s\n' "$label" "$target" >&2
+    return 0
+  fi
+
+  ln -s "$source" "$target"
+  printf 'linked %s\n' "$label"
+}
+
 script_dir="$(resolve_script_path "${BASH_SOURCE[0]}")"
 dotfiles_dir="$(cd "$script_dir/../../.." && pwd)"
 
@@ -216,6 +241,11 @@ copy_if_changed \
   "$dotfiles_dir/agents/.agents/prompts/base.md" \
   "$dotfiles_dir/codex/.codex/AGENTS.md" \
   "Codex base prompt"
+
+for agent_home in "$HOME/.claude" "$HOME/.codex" "$HOME/.pi/agent"; do
+  link_managed_dir "$dotfiles_dir/agents/.agents/agents" "$agent_home/agents" "$(basename "$agent_home") helper agents"
+  link_managed_dir "$dotfiles_dir/agents/.agents/modes" "$agent_home/modes" "$(basename "$agent_home") modes"
+done
 
 merge_json_with_hook_arrays \
   "$dotfiles_dir/claude/.claude/settings.json.tpl" \
