@@ -72,6 +72,8 @@ bin/.local/bin/*
 bin/.local/share/*
 !bin/.local/share/agent-uv-enforcer/
 !bin/.local/share/agent-uv-enforcer/**
+!bin/.local/share/agent-dangerous-command-guard/
+!bin/.local/share/agent-dangerous-command-guard/**
 
 .env-secrets
 

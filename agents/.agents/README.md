@@ -62,6 +62,18 @@ files such as `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md` should stay in sync
 with it, but they remain explicit files because each tool discovers a different
 filename.
 
+## Helper Agents
+
+`agents/` contains portable helper-agent prompts. They are intentionally
+read-only and are not part of every default prompt. Use them as targeted
+delegation templates when the active agent supports custom agents/subagents:
+
+- `research` - non-local or cross-repo research
+- `critique` - second opinion on plans and risky choices
+- `review` - final review before claiming done
+- `audit` - focused security review
+- `index` - local capability router
+
 ## Task Notes
 
 Use `tasks/` for active, durable notes only. Delete or archive a task note once

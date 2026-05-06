@@ -113,6 +113,63 @@ merge_json_live_wins() {
   printf 'merged %s\n' "$label"
 }
 
+merge_json_with_hook_arrays() {
+  local template="$1"
+  local target="$2"
+  local label="$3"
+  local tmp
+  local merged_canonical
+  local target_canonical
+
+  [ -f "$template" ] || return 0
+  mkdir -p "$(dirname "$target")"
+
+  if [ ! -e "$target" ]; then
+    cp "$template" "$target"
+    printf 'installed %s\n' "$label"
+    return 0
+  fi
+
+  if ! command -v jq >/dev/null 2>&1; then
+    printf 'kept %s; jq unavailable for merge\n' "$label" >&2
+    return 0
+  fi
+
+  tmp="$(mktemp "${TMPDIR:-/tmp}/agent-assets.XXXXXXXX")"
+  if ! jq -s '
+    def hook_union($base; $live):
+      (($base // []) + ($live // []))
+      | unique_by(tostring);
+
+    .[0] as $base
+    | .[1] as $live
+    | ($base * $live)
+    | .hooks = (
+        (($base.hooks // {}) * ($live.hooks // {})) as $merged_hooks
+        | reduce ((($base.hooks // {}) + ($live.hooks // {})) | keys[]) as $event (
+            $merged_hooks;
+            .[$event] = hook_union($base.hooks[$event]; $live.hooks[$event])
+          )
+      )
+  ' "$template" "$target" >"$tmp"; then
+    rm -f "$tmp"
+    printf 'kept %s; merge failed\n' "$label" >&2
+    return 1
+  fi
+
+  merged_canonical="$(jq -S -c . "$tmp" 2>/dev/null || true)"
+  target_canonical="$(jq -S -c . "$target" 2>/dev/null || true)"
+
+  if [ -n "$merged_canonical" ] && [ "$merged_canonical" = "$target_canonical" ]; then
+    rm -f "$tmp"
+    printf 'ok %s\n' "$label"
+    return 0
+  fi
+
+  mv "$tmp" "$target"
+  printf 'merged %s\n' "$label"
+}
+
 copy_if_changed() {
   local source="$1"
   local target="$2"
@@ -160,7 +217,7 @@ copy_if_changed \
   "$dotfiles_dir/codex/.codex/AGENTS.md" \
   "Codex base prompt"
 
-merge_json_live_wins \
+merge_json_with_hook_arrays \
   "$dotfiles_dir/claude/.claude/settings.json.tpl" \
   "$HOME/.claude/settings.json" \
   "Claude settings.json"
@@ -170,7 +227,7 @@ copy_if_missing \
   "$HOME/.codex/config.toml" \
   "Codex config.toml"
 
-merge_json_live_wins \
+merge_json_with_hook_arrays \
   "$dotfiles_dir/codex/.codex/hooks.json.tpl" \
   "$HOME/.codex/hooks.json" \
   "Codex hooks.json"
@@ -180,7 +237,7 @@ merge_json_live_wins \
   "$HOME/.cursor/mcp.json" \
   "Cursor mcp.json"
 
-merge_json_live_wins \
+merge_json_with_hook_arrays \
   "$dotfiles_dir/cursor/.cursor/hooks.json.tpl" \
   "$HOME/.cursor/hooks.json" \
   "Cursor hooks.json"

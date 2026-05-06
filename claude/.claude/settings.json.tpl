@@ -35,6 +35,15 @@
       {
         "hooks": [
           {
+            "command": "$HOME/.local/share/agent-dangerous-command-guard/dangerous-command-guard.py",
+            "type": "command"
+          }
+        ],
+        "matcher": "Bash"
+      },
+      {
+        "hooks": [
+          {
             "command": "$HOME/.local/share/agent-uv-enforcer/uv-hook.py",
             "type": "command"
           }
