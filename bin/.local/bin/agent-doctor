@@ -42,6 +42,17 @@ count_grep() {
   grep -E "$pattern" "$file" 2>/dev/null | wc -l | tr -d ' '
 }
 
+count_codex_mcps() {
+  local file="$1"
+
+  if [ ! -f "$file" ]; then
+    printf '0'
+    return
+  fi
+
+  sed -n 's/^\[mcp_servers\.\([^].]*\).*/\1/p' "$file" | sort -u | wc -l | tr -d ' '
+}
+
 count_lines() {
   local file="$1"
 
@@ -328,7 +339,7 @@ print_skill_profile_status cursor "$HOME/.cursor/skills" "$desired_default"
 
 printf '\nMCP counts\n'
 printf '%s\n' '----------'
-printf 'codex:  %s\n' "$(count_grep "$HOME/.codex/config.toml" '^\[mcp_servers\.')"
+printf 'codex:  %s\n' "$(count_codex_mcps "$HOME/.codex/config.toml")"
 if command -v jq >/dev/null 2>&1 && [ -f "$HOME/.cursor/mcp.json" ]; then
   printf 'cursor: %s\n' "$(jq '.mcpServers | length' "$HOME/.cursor/mcp.json" 2>/dev/null || printf '0')"
 else

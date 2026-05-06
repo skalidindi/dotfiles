@@ -174,8 +174,11 @@ prune_codex_toml() {
     }
     /^\[/ {
       server = ""
-      if (match($0, /^\[mcp_servers\.([^].]+)/, m)) {
-        server = m[1]
+      if ($0 ~ /^\[mcp_servers\./) {
+        server = $0
+        sub(/^\[mcp_servers\./, "", server)
+        sub(/\].*$/, "", server)
+        sub(/\..*$/, "", server)
         skip = !(server in keep)
       } else {
         skip = 0
