@@ -44,6 +44,13 @@ ad hoc lists between Claude, Codex, Pi, and Cursor.
 - `netflix` - Netflix-specific tools and docs layered on top of core.
 - `heavy` - high-cost or special-purpose tools enabled only when useful.
 
+## Prompts
+
+`prompts/base.md` is the shared source for the short global prompt. Agent-native
+files such as `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md` should stay in sync
+with it, but they remain explicit files because each tool discovers a different
+filename.
+
 ## Task Notes
 
 Use `tasks/` for active, durable notes only. Delete or archive a task note once

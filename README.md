@@ -10,6 +10,7 @@ Dotfiles are configuration files in Unix-like systems that begin with a dot (.) 
 
 This repository includes configurations for:
 
+- **agents** - Shared Claude/Codex/Pi/Cursor agent assets and profiles
 - **bash** - Bash shell configuration
 - **bat** - Cat clone with syntax highlighting
 - **bin** - Custom scripts and binaries
@@ -27,6 +28,21 @@ This repository includes configurations for:
 - **Yazi** - Yazi configuration
 - **Zellij** - Zellij configuration
 - **zsh** - Zsh shell configuration
+
+## Agent Setup
+
+Agent assets are split into two layers:
+
+- `stow` owns static files that are safe to symlink, including prompts, skills,
+  profiles, and helper scripts.
+- `install-agent-assets` owns mutable runtime files that should be copied or
+  merged from templates, such as Pi's `settings.json`.
+
+After bootstrap, inspect the live setup with:
+
+```bash
+agent-doctor
+```
 
 ## Prerequisites
 

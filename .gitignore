@@ -17,6 +17,11 @@ Thumbs.db
 
 # Codex
 codex
+!codex/
+codex/*
+!codex/.codex/
+codex/.codex/*
+!codex/.codex/AGENTS.md
 
 # Claude
 claude
