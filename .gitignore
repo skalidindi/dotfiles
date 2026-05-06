@@ -48,6 +48,7 @@ cursor/.cursor/**
 !cursor/.cursor/mcp.json.tpl
 
 # PI Agent
+pi/.pi/agent/mcp.json
 pi/.pi/agent/settings.json
 pi/.pi/agent/sessions/*
 pi/.pi/agent/auth.json

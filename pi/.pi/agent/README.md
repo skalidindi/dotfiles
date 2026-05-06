@@ -16,6 +16,7 @@ local files under the stowed tree, seeded by `install-agent-assets`.
 - `README.md` - this policy.
 - `.gitignore` - Pi-local runtime ignores.
 - `settings.json.tpl` - fresh-machine defaults for `settings.json`.
+- `mcp.json.tpl` - fresh-machine defaults for Pi MCP servers.
 - `keybindings.json` - portable keybindings.
 - `extensions/` and `skills/` - portable Pi behavior that is safe to commit.
 - `git/.gitignore` - keeps Pi-installed git packages out of the repo.
@@ -24,6 +25,7 @@ local files under the stowed tree, seeded by `install-agent-assets`.
 
 - `settings.json` - copied or merged from `settings.json.tpl`, then mutated by
   Pi during normal use.
+- `mcp.json` - copied or merged from `mcp.json.tpl`, then maintained locally.
 - `auth.json`
 - `sessions/`
 - `memory/`

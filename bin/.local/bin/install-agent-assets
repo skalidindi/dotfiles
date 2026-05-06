@@ -185,6 +185,11 @@ merge_json_live_wins \
   "$HOME/.cursor/hooks.json" \
   "Cursor hooks.json"
 
+merge_json_live_wins \
+  "$dotfiles_dir/pi/.pi/agent/mcp.json.tpl" \
+  "$HOME/.pi/agent/mcp.json" \
+  "Pi mcp.json"
+
 copy_or_merge_json \
   "$dotfiles_dir/pi/.pi/agent/settings.json.tpl" \
   "$HOME/.pi/agent/settings.json" \
