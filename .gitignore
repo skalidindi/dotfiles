@@ -59,6 +59,7 @@ bin/.local/*
 bin/.local/bin/*
 !bin/.local/bin/agent-awake
 !bin/.local/bin/agent-doctor
+!bin/.local/bin/codex
 !bin/.local/bin/fix-nflx-ssh-nushell
 !bin/.local/bin/install-agent-assets
 !bin/.local/bin/install-fix-nflx-ssh-nushell-agent
