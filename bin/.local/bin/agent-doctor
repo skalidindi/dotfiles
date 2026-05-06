@@ -70,6 +70,23 @@ write_profile_skills() {
   sort -u "$output" -o "$output"
 }
 
+write_profile_mcps() {
+  local output="$1"
+  shift
+
+  : >"$output"
+  local profile
+  local file
+  for profile in "$@"; do
+    file="$dotfiles_dir/agents/.agents/profiles/${profile}.mcp"
+    if [ -f "$file" ]; then
+      sed '/^[[:space:]]*$/d; /^[[:space:]]*#/d' "$file" >>"$output"
+    fi
+  done
+
+  sort -u "$output" -o "$output"
+}
+
 write_active_skills() {
   local dir="$1"
   local output="$2"
@@ -97,6 +114,52 @@ print_skill_profile_status() {
   missing="$(mktemp "${TMPDIR:-/tmp}/agent-missing.XXXXXXXX")"
 
   write_active_skills "$dir" "$active"
+  comm -13 "$desired" "$active" >"$extras"
+  comm -23 "$desired" "$active" >"$missing"
+
+  printf '%-7s active=%s default=%s extra=%s missing=%s\n' \
+    "$label:" \
+    "$(count_lines "$active")" \
+    "$(count_lines "$desired")" \
+    "$(count_lines "$extras")" \
+    "$(count_lines "$missing")"
+
+  rm -f "$active" "$extras" "$missing"
+}
+
+write_active_codex_mcps() {
+  local file="$1"
+  local output="$2"
+
+  : >"$output"
+  [ -f "$file" ] || return 0
+  sed -n 's/^\[mcp_servers\.\([^].]*\).*/\1/p' "$file" | sort -u >"$output"
+}
+
+write_active_json_mcps() {
+  local file="$1"
+  local output="$2"
+
+  : >"$output"
+  [ -f "$file" ] || return 0
+  jq -r '.mcpServers // {} | keys[]' "$file" | sort -u >"$output"
+}
+
+print_mcp_profile_status() {
+  local label="$1"
+  local type="$2"
+  local file="$3"
+  local desired="$4"
+  local active extras missing
+
+  active="$(mktemp "${TMPDIR:-/tmp}/agent-mcp-active.XXXXXXXX")"
+  extras="$(mktemp "${TMPDIR:-/tmp}/agent-mcp-extras.XXXXXXXX")"
+  missing="$(mktemp "${TMPDIR:-/tmp}/agent-mcp-missing.XXXXXXXX")"
+
+  case "$type" in
+    codex) write_active_codex_mcps "$file" "$active" ;;
+    json) write_active_json_mcps "$file" "$active" ;;
+  esac
   comm -13 "$desired" "$active" >"$extras"
   comm -23 "$desired" "$active" >"$missing"
 
@@ -191,8 +254,10 @@ status_shared_agents_dir() {
 script_dir="$(resolve_script_path "${BASH_SOURCE[0]}")"
 dotfiles_dir="$(cd "$script_dir/../../.." && pwd)"
 desired_default="$(mktemp "${TMPDIR:-/tmp}/agent-desired.XXXXXXXX")"
-trap 'rm -f "$desired_default"' EXIT
+desired_mcp_default="$(mktemp "${TMPDIR:-/tmp}/agent-mcp-desired.XXXXXXXX")"
+trap 'rm -f "$desired_default" "$desired_mcp_default"' EXIT
 write_profile_skills "$desired_default" core netflix
+write_profile_mcps "$desired_mcp_default" core netflix
 
 printf 'agent-doctor\n'
 printf '%s\n\n' '============'
@@ -274,6 +339,17 @@ if command -v jq >/dev/null 2>&1 && [ -f "$HOME/.pi/agent/mcp.json" ]; then
 else
   printf 'pi:     %s\n' "$(count_grep "$HOME/.pi/agent/mcp.json" '^[[:space:]]*"[^"]+"[[:space:]]*:[[:space:]]*\{')"
 fi
+
+printf '\nMCP profile diff\n'
+printf '%s\n' '----------------'
+printf 'profiles: core=%s netflix=%s heavy=%s default(core+netflix)=%s\n' \
+  "$(count_lines "$dotfiles_dir/agents/.agents/profiles/core.mcp")" \
+  "$(count_lines "$dotfiles_dir/agents/.agents/profiles/netflix.mcp")" \
+  "$(count_lines "$dotfiles_dir/agents/.agents/profiles/heavy.mcp")" \
+  "$(count_lines "$desired_mcp_default")"
+print_mcp_profile_status codex codex "$HOME/.codex/config.toml" "$desired_mcp_default"
+print_mcp_profile_status cursor json "$HOME/.cursor/mcp.json" "$desired_mcp_default"
+print_mcp_profile_status pi json "$HOME/.pi/agent/mcp.json" "$desired_mcp_default"
 
 printf '\nRuntime state check\n'
 printf '%s\n' '-------------------'
