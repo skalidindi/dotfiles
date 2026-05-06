@@ -22,9 +22,20 @@ codex/*
 !codex/.codex/
 codex/.codex/*
 !codex/.codex/AGENTS.md
+!codex/.codex/config.toml.tpl
+!codex/.codex/hooks.json.tpl
 
 # Claude
 claude
+!claude/
+claude/*
+!claude/.claude/
+claude/.claude/*
+!claude/.claude/CLAUDE.md
+!claude/.claude/settings.json.tpl
+!claude/.claude/plugins/
+claude/.claude/plugins/*
+!claude/.claude/plugins/config.json
 
 # Cursor
 cursor

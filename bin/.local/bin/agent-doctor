@@ -129,6 +129,9 @@ status_shared_agents_dir
 status_path "$HOME/.agents/README.md" "shared agents readme"
 status_path "$HOME/.codex/AGENTS.md" "codex prompt"
 status_path "$HOME/.claude/CLAUDE.md" "claude prompt"
+status_path "$HOME/.claude/settings.json.tpl" "claude settings template"
+status_path "$HOME/.codex/config.toml.tpl" "codex config template"
+status_path "$HOME/.codex/hooks.json.tpl" "codex hooks template"
 status_path "$HOME/.pi/agent/keybindings.json" "pi keybindings"
 status_path "$HOME/.pi/agent/settings.json.tpl" "pi settings template"
 
