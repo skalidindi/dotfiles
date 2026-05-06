@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+resolve_path() {
+  local source="$1"
+  local dir
+  local link
+
+  while [ -L "$source" ]; do
+    dir="$(cd -P "$(dirname "$source")" && pwd)"
+    link="$(readlink "$source")"
+    case "$link" in
+      /*) source="$link" ;;
+      *) source="$dir/$link" ;;
+    esac
+  done
+
+  dir="$(cd -P "$(dirname "$source")" && pwd)"
+  printf '%s/%s\n' "$dir" "$(basename "$source")"
+}
+
+self="$(resolve_path "${BASH_SOURCE[0]}")"
+real_command=""
+
+while IFS= read -r candidate; do
+  [ -n "$candidate" ] || continue
+  if [ "$(resolve_path "$candidate")" != "$self" ]; then
+    real_command="$candidate"
+    break
+  fi
+done < <(type -a -p newt 2>/dev/null || true)
+
+if [ -z "$real_command" ]; then
+  printf 'newt wrapper: could not find real newt binary on PATH\n' >&2
+  exit 69
+fi
+
+case "${SHELL:-}" in
+  */nu) export SHELL=/bin/zsh ;;
+esac
+
+if [ "${1:-}" = "develop" ]; then
+  newt_tmux_tmp="/tmp/newt-tmux-${UID:-$(id -u)}"
+  mkdir -p "$newt_tmux_tmp"
+  export TMUX_TMPDIR="$newt_tmux_tmp"
+fi
+
+exec "$real_command" "$@"

@@ -65,6 +65,7 @@ bin/.local/bin/*
 !bin/.local/bin/fix-nflx-ssh-nushell
 !bin/.local/bin/install-agent-assets
 !bin/.local/bin/install-fix-nflx-ssh-nushell-agent
+!bin/.local/bin/newt
 !bin/.local/bin/zellij-sessionizer
 !bin/.local/bin/zrun
 !bin/.local/share/
