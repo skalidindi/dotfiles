@@ -27,6 +27,7 @@ cursor
 # PI Agent
 pi/.pi/agent/sessions/*
 pi/.pi/agent/auth.json
+pi/.pi/memory/
 
 # Bin
 bin/.local/*
