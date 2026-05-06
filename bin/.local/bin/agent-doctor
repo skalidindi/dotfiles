@@ -92,6 +92,19 @@ status_same_file() {
   fi
 }
 
+status_shared_agents_dir() {
+  local root="$HOME/.agents"
+  local readme="$root/README.md"
+
+  if [ ! -d "$root" ]; then
+    printf 'miss  %-28s not found\n' "shared agents"
+  elif [ -L "$readme" ]; then
+    printf 'ok    %-28s mixed local dir with stowed assets\n' "shared agents"
+  else
+    printf 'warn  %-28s exists without stowed README.md\n' "shared agents"
+  fi
+}
+
 script_dir="$(resolve_script_path "${BASH_SOURCE[0]}")"
 dotfiles_dir="$(cd "$script_dir/../../.." && pwd)"
 
@@ -112,7 +125,7 @@ fi
 
 printf '\nStowed surfaces\n'
 printf '%s\n' '---------------'
-status_path "$HOME/.agents" "shared agents"
+status_shared_agents_dir
 status_path "$HOME/.agents/README.md" "shared agents readme"
 status_path "$HOME/.codex/AGENTS.md" "codex prompt"
 status_path "$HOME/.claude/CLAUDE.md" "claude prompt"
