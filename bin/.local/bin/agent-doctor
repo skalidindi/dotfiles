@@ -100,8 +100,8 @@ printf '%s\n\n' '============'
 
 printf 'dotfiles: %s\n' "$dotfiles_dir"
 if git -C "$dotfiles_dir" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-  printf 'branch:   %s\n' "$(git -C "$dotfiles_dir" branch --show-current 2>/dev/null || printf 'unknown')"
-  if [ -n "$(git -C "$dotfiles_dir" status --short 2>/dev/null)" ]; then
+  printf 'branch:   %s\n' "$(git -c core.fsmonitor=false -C "$dotfiles_dir" branch --show-current 2>/dev/null || printf 'unknown')"
+  if [ -n "$(git -c core.fsmonitor=false -C "$dotfiles_dir" status --porcelain 2>/dev/null)" ]; then
     printf 'status:   dirty\n'
   else
     printf 'status:   clean\n'
