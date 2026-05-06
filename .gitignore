@@ -24,6 +24,10 @@ claude
 # Cursor
 cursor
 
+# PI Agent
+pi/.pi/agent/sessions/*
+pi/.pi/agent/auth.json
+
 # Bin
 bin/.local/*
 !bin/.local/bin/
@@ -32,6 +36,10 @@ bin/.local/bin/*
 !bin/.local/bin/fix-nflx-ssh-nushell
 !bin/.local/bin/zellij-sessionizer
 !bin/.local/bin/zrun
+!bin/.local/share/
+bin/.local/share/*
+!bin/.local/share/agent-uv-enforcer/
+!bin/.local/share/agent-uv-enforcer/**
 
 .env-secrets
 

@@ -1,0 +1,13 @@
+{
+  "packages": [
+    "git:github.netflix.net/corp/pi-agent",
+    "npm:pi-subagents",
+    "npm:pi-lens",
+    "npm:@samfp/pi-memory",
+    "npm:pi-btw"
+  ],
+  "lastChangelogVersion": "0.73.0",
+  "defaultProvider": "nflx-openai",
+  "defaultModel": "gpt-5.5",
+  "defaultThinkingLevel": "xhigh"
+}
