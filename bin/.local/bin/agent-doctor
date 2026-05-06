@@ -45,11 +45,22 @@ count_grep() {
 status_path() {
   local path="$1"
   local label="$2"
+  local resolved_dir
+  local resolved_path
 
   if [ -L "$path" ]; then
     printf 'ok    %-28s symlink -> %s\n' "$label" "$(readlink "$path")"
   elif [ -e "$path" ]; then
-    printf 'warn  %-28s exists but is not a symlink\n' "$label"
+    resolved_dir="$(cd -P "$(dirname "$path")" 2>/dev/null && pwd || true)"
+    resolved_path="$resolved_dir/$(basename "$path")"
+    case "$resolved_path" in
+      "$dotfiles_dir"/*)
+        printf 'ok    %-28s managed in dotfiles\n' "$label"
+        ;;
+      *)
+        printf 'warn  %-28s exists but is not managed by dotfiles\n' "$label"
+        ;;
+    esac
   else
     printf 'miss  %-28s not found\n' "$label"
   fi
@@ -86,9 +97,11 @@ fi
 printf '\nStowed surfaces\n'
 printf '%s\n' '---------------'
 status_path "$HOME/.agents" "shared agents"
+status_path "$HOME/.agents/README.md" "shared agents readme"
 status_path "$HOME/.codex/AGENTS.md" "codex prompt"
 status_path "$HOME/.claude/CLAUDE.md" "claude prompt"
 status_path "$HOME/.pi/agent/keybindings.json" "pi keybindings"
+status_path "$HOME/.pi/agent/settings.json.tpl" "pi settings template"
 
 printf '\nCommands\n'
 printf '%s\n' '--------'

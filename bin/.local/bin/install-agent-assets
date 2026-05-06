@@ -1,0 +1,86 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+resolve_script_path() {
+  local source="$1"
+  local dir
+  local link
+
+  while [ -L "$source" ]; do
+    dir="$(cd -P "$(dirname "$source")" && pwd)"
+    link="$(readlink "$source")"
+    case "$link" in
+      /*) source="$link" ;;
+      *) source="$dir/$link" ;;
+    esac
+  done
+
+  cd -P "$(dirname "$source")" && pwd
+}
+
+copy_or_merge_json() {
+  local template="$1"
+  local target="$2"
+  local label="$3"
+  local tmp
+  local template_canonical
+  local target_canonical
+
+  [ -f "$template" ] || return 0
+  mkdir -p "$(dirname "$target")"
+
+  if [ ! -e "$target" ]; then
+    cp "$template" "$target"
+    printf 'installed %s\n' "$label"
+    return 0
+  fi
+
+  if ! command -v jq >/dev/null 2>&1; then
+    printf 'kept %s; jq unavailable for merge\n' "$label" >&2
+    return 0
+  fi
+
+  tmp="$(mktemp "${TMPDIR:-/tmp}/agent-assets.XXXXXXXX")"
+  if ! jq -s '
+    def unique_in_order:
+      reduce .[] as $item ([]; if index($item) then . else . + [$item] end);
+
+    .[0] as $base
+    | .[1] as $live
+    | ($base * $live)
+    | .packages = (
+        (($base.packages // []) + ($live.packages // []))
+        | unique_in_order
+      )
+  ' "$template" "$target" >"$tmp"; then
+    rm -f "$tmp"
+    printf 'kept %s; merge failed\n' "$label" >&2
+    return 1
+  fi
+
+  template_canonical="$(jq -S -c . "$tmp" 2>/dev/null || true)"
+  target_canonical="$(jq -S -c . "$target" 2>/dev/null || true)"
+
+  if [ -n "$template_canonical" ] && [ "$template_canonical" = "$target_canonical" ]; then
+    rm -f "$tmp"
+    printf 'ok %s\n' "$label"
+    return 0
+  fi
+
+  mv "$tmp" "$target"
+  printf 'merged %s\n' "$label"
+}
+
+script_dir="$(resolve_script_path "${BASH_SOURCE[0]}")"
+dotfiles_dir="$(cd "$script_dir/../../.." && pwd)"
+
+copy_or_merge_json \
+  "$dotfiles_dir/pi/.pi/agent/settings.json.tpl" \
+  "$HOME/.pi/agent/settings.json" \
+  "Pi settings.json"
+
+if [ -d "$HOME/.agents" ]; then
+  printf 'ok shared agent directory\n'
+else
+  printf 'warn shared agent directory missing; run stow -t "$HOME" -R agents\n' >&2
+fi

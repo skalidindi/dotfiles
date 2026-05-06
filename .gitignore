@@ -25,6 +25,7 @@ claude
 cursor
 
 # PI Agent
+pi/.pi/agent/settings.json
 pi/.pi/agent/sessions/*
 pi/.pi/agent/auth.json
 pi/.pi/memory/
@@ -36,6 +37,7 @@ bin/.local/bin/*
 !bin/.local/bin/agent-awake
 !bin/.local/bin/agent-doctor
 !bin/.local/bin/fix-nflx-ssh-nushell
+!bin/.local/bin/install-agent-assets
 !bin/.local/bin/install-fix-nflx-ssh-nushell-agent
 !bin/.local/bin/zellij-sessionizer
 !bin/.local/bin/zrun

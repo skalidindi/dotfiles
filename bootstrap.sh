@@ -27,6 +27,11 @@ do
   fi
 done
 
+if [[ -x "$HOME/.local/bin/install-agent-assets" ]]; then
+  echo "Installing agent runtime assets..."
+  "$HOME/.local/bin/install-agent-assets"
+fi
+
 if [[ "$(uname -s)" == "Darwin" && -x "$HOME/.local/bin/install-fix-nflx-ssh-nushell-agent" ]]; then
   echo "Loading NFSSH Nushell LaunchAgent..."
   "$HOME/.local/bin/install-fix-nflx-ssh-nushell-agent"

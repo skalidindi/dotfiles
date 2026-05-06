@@ -6,7 +6,6 @@
     "npm:@samfp/pi-memory",
     "npm:pi-btw"
   ],
-  "lastChangelogVersion": "0.73.0",
   "defaultProvider": "nflx-openai",
   "defaultModel": "gpt-5.5",
   "defaultThinkingLevel": "xhigh",
