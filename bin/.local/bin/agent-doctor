@@ -76,6 +76,22 @@ status_command() {
   fi
 }
 
+status_same_file() {
+  local expected="$1"
+  local actual="$2"
+  local label="$3"
+
+  if [ ! -f "$expected" ]; then
+    printf 'miss  %-28s expected file missing\n' "$label"
+  elif [ ! -f "$actual" ]; then
+    printf 'miss  %-28s target file missing\n' "$label"
+  elif cmp -s "$expected" "$actual"; then
+    printf 'ok    %-28s in sync\n' "$label"
+  else
+    printf 'warn  %-28s differs from shared base\n' "$label"
+  fi
+}
+
 script_dir="$(resolve_script_path "${BASH_SOURCE[0]}")"
 dotfiles_dir="$(cd "$script_dir/../../.." && pwd)"
 
@@ -102,6 +118,11 @@ status_path "$HOME/.codex/AGENTS.md" "codex prompt"
 status_path "$HOME/.claude/CLAUDE.md" "claude prompt"
 status_path "$HOME/.pi/agent/keybindings.json" "pi keybindings"
 status_path "$HOME/.pi/agent/settings.json.tpl" "pi settings template"
+
+printf '\nPrompt sync\n'
+printf '%s\n' '-----------'
+status_same_file "$dotfiles_dir/agents/.agents/prompts/base.md" "$dotfiles_dir/claude/.claude/CLAUDE.md" "claude prompt"
+status_same_file "$dotfiles_dir/agents/.agents/prompts/base.md" "$dotfiles_dir/codex/.codex/AGENTS.md" "codex prompt"
 
 printf '\nCommands\n'
 printf '%s\n' '--------'

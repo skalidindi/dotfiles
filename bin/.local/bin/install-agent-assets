@@ -71,8 +71,35 @@ copy_or_merge_json() {
   printf 'merged %s\n' "$label"
 }
 
+copy_if_changed() {
+  local source="$1"
+  local target="$2"
+  local label="$3"
+
+  [ -f "$source" ] || return 0
+  mkdir -p "$(dirname "$target")"
+
+  if [ -f "$target" ] && cmp -s "$source" "$target"; then
+    printf 'ok %s\n' "$label"
+    return 0
+  fi
+
+  cp "$source" "$target"
+  printf 'synced %s\n' "$label"
+}
+
 script_dir="$(resolve_script_path "${BASH_SOURCE[0]}")"
 dotfiles_dir="$(cd "$script_dir/../../.." && pwd)"
+
+copy_if_changed \
+  "$dotfiles_dir/agents/.agents/prompts/base.md" \
+  "$dotfiles_dir/claude/.claude/CLAUDE.md" \
+  "Claude base prompt"
+
+copy_if_changed \
+  "$dotfiles_dir/agents/.agents/prompts/base.md" \
+  "$dotfiles_dir/codex/.codex/AGENTS.md" \
+  "Codex base prompt"
 
 copy_or_merge_json \
   "$dotfiles_dir/pi/.pi/agent/settings.json.tpl" \
