@@ -44,6 +44,19 @@ After bootstrap, inspect the live setup with:
 agent-doctor
 ```
 
+Keep the default skill surface lean with:
+
+```bash
+agent-skill-profile diff --target all
+agent-skill-profile apply --target all --prune core netflix
+```
+
+To temporarily restore the opt-in heavy skill pack:
+
+```bash
+agent-skill-profile apply --target all heavy
+```
+
 ## Prerequisites
 
 - [GNU Stow](https://www.gnu.org/software/stow/) - Symlink manager

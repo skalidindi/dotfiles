@@ -286,3 +286,4 @@ done
 printf '\nNext checks\n'
 printf '%s\n' '-----------'
 printf 'Run this after bootstrap or stow changes. Warnings are not failures; they mark drift to classify.\n'
+printf 'Use agent-skill-profile diff --target all to inspect skill bloat.\n'

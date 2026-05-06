@@ -44,6 +44,17 @@ ad hoc lists between Claude, Codex, Pi, and Cursor.
 - `netflix` - Netflix-specific tools and docs layered on top of core.
 - `heavy` - high-cost or special-purpose tools enabled only when useful.
 
+Use `agent-skill-profile` to inspect or apply those profiles:
+
+```bash
+agent-skill-profile diff --target all
+agent-skill-profile apply --target all --prune core netflix
+agent-skill-profile apply --target all heavy
+```
+
+`--prune` moves extras into `~/.agents/disabled-skills/<target>/<timestamp>/`;
+it does not delete them.
+
 ## Prompts
 
 `prompts/base.md` is the shared source for the short global prompt. Agent-native
