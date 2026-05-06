@@ -168,7 +168,9 @@ chmod 700 "$launcher"
 
 {
   printf 'layout {\n'
-  printf '    pane command="%s"\n' "$(kdl_escape "$launcher")"
+  printf '    pane command="zsh" {\n'
+  printf '        args "-lc" "exec %s"\n' "$(kdl_escape "$(printf '%q' "$launcher")")"
+  printf '    }\n'
   printf '}\n'
 } >"$layout_file"
 

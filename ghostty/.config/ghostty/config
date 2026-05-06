@@ -1,4 +1,4 @@
-theme = catppuccin-macchiato.conf
+theme = Catppuccin Frappe
 
 background-opacity = 0.96
 shell-integration-features = no-cursor,sudo,no-title

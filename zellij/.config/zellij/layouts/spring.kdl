@@ -3,8 +3,8 @@ layout {
         pane split_direction="vertical" {
             pane edit="."
             pane size="35%" {
-                pane command="zsh" {
-                    args "-lc" "git status && zsh"
+                pane command="nu" {
+                    args "-e" "git status"
                 }
             }
         }
@@ -12,18 +12,16 @@ layout {
 
     tab name="app" {
         pane split_direction="vertical" {
-            pane command="zsh" {
-                args "-lc" "./gradlew bootRun"
+            pane command="nu" {
+                args "-c" "./gradlew bootRun"
                 start_suspended true
             }
             pane split_direction="horizontal" size="40%" {
-                pane command="zsh" {
-                    args "-lc" "./gradlew test"
+                pane command="nu" {
+                    args "-c" "./gradlew test"
                     start_suspended true
                 }
-                pane command="zsh" {
-                    args "-lc" "zsh"
-                }
+                pane
             }
         }
     }
