@@ -309,6 +309,7 @@ status_path "$HOME/.pi/agent/keybindings.json" "pi keybindings"
 status_path "$HOME/.pi/agent/mcp.json.tpl" "pi mcp template"
 status_path "$HOME/.pi/agent/settings.json.tpl" "pi settings template"
 status_path "$HOME/.local/share/agent-dangerous-command-guard/dangerous-command-guard.py" "dangerous command guard"
+status_path "$HOME/.pi/agent/extensions/command-guard/index.ts" "pi command guard"
 
 printf '\nPrompt sync\n'
 printf '%s\n' '-----------'
