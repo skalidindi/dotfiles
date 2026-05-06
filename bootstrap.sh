@@ -59,6 +59,7 @@ if command -v npm &>/dev/null; then
   echo "Installing global npm. packages.."
   npm install -g @anthropic-ai/claude-code
   npm install -g @openai/codex
+  npm install -g @mariozechner/pi-coding-agent
 else
   echo "npm is not installed. Please ensure Node.js is installed."
 fi
