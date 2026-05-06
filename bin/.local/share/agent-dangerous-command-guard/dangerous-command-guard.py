@@ -30,6 +30,9 @@ DANGEROUS_PATTERNS: list[tuple[re.Pattern[str], str]] = [
     (re.compile(r"\bchown\s+.*-R\s+.*\s+/(etc|usr|bin|sbin|lib|var)\b"), "chown -R on system path"),
 ]
 
+CD_PREFIX = re.compile(r"^\s*cd\s+\S")
+CD_THEN_OPERATOR = re.compile(r"^\s*cd\s+[^&|;]+\s*(&&|\|\||;)")
+
 
 def get(obj: Any, *path: str) -> Any:
     for key in path:
@@ -152,6 +155,12 @@ def strip_quoted_content(segment: str) -> str:
 
 
 def dangerous_reason(command: str) -> str | None:
+    if CD_PREFIX.search(command) and CD_THEN_OPERATOR.search(command):
+        return (
+            "Compound cd-prefix command blocked. Use an explicit working-directory "
+            "flag such as git -C, npm --prefix, make -C, or cargo --manifest-path"
+        )
+
     for segment in split_commands(command):
         stripped = strip_quoted_content(segment)
         for pattern, description in DANGEROUS_PATTERNS:
