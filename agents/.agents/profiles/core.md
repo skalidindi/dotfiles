@@ -18,6 +18,8 @@ Small default profile for every coding agent.
   - Mermaid and lightweight documentation helpers;
   - source lookup helpers that do not pull in heavy external state.
 
+The canonical skill list for this profile is `core.skills`.
+
 ## Keep Out
 
 - Product-specific skills that only apply to one repo or team.

@@ -19,6 +19,8 @@ Netflix-specific layer applied on top of `core`.
   - JavaScript client context;
   - Java/Python project context.
 
+The canonical skill list for this profile is `netflix.skills`.
+
 ## Keep Scoped
 
 - MCP servers should be configured once per agent from a shared inventory, but

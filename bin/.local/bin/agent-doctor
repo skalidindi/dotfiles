@@ -42,6 +42,74 @@ count_grep() {
   grep -E "$pattern" "$file" 2>/dev/null | wc -l | tr -d ' '
 }
 
+count_lines() {
+  local file="$1"
+
+  if [ ! -f "$file" ]; then
+    printf '0'
+    return
+  fi
+
+  sed '/^[[:space:]]*$/d' "$file" | wc -l | tr -d ' '
+}
+
+write_profile_skills() {
+  local output="$1"
+  shift
+
+  : >"$output"
+  local profile
+  local file
+  for profile in "$@"; do
+    file="$dotfiles_dir/agents/.agents/profiles/${profile}.skills"
+    if [ -f "$file" ]; then
+      sed '/^[[:space:]]*$/d; /^[[:space:]]*#/d' "$file" >>"$output"
+    fi
+  done
+
+  sort -u "$output" -o "$output"
+}
+
+write_active_skills() {
+  local dir="$1"
+  local output="$2"
+
+  : >"$output"
+  if [ ! -d "$dir" ]; then
+    return 0
+  fi
+
+  find "$dir" -maxdepth 2 -name SKILL.md -print 2>/dev/null \
+    | sed "s#^$dir/##; s#/SKILL.md\$##" \
+    | sort -u >"$output"
+}
+
+print_skill_profile_status() {
+  local label="$1"
+  local dir="$2"
+  local desired="$3"
+  local active
+  local extras
+  local missing
+
+  active="$(mktemp "${TMPDIR:-/tmp}/agent-active.XXXXXXXX")"
+  extras="$(mktemp "${TMPDIR:-/tmp}/agent-extras.XXXXXXXX")"
+  missing="$(mktemp "${TMPDIR:-/tmp}/agent-missing.XXXXXXXX")"
+
+  write_active_skills "$dir" "$active"
+  comm -13 "$desired" "$active" >"$extras"
+  comm -23 "$desired" "$active" >"$missing"
+
+  printf '%-7s active=%s default=%s extra=%s missing=%s\n' \
+    "$label:" \
+    "$(count_lines "$active")" \
+    "$(count_lines "$desired")" \
+    "$(count_lines "$extras")" \
+    "$(count_lines "$missing")"
+
+  rm -f "$active" "$extras" "$missing"
+}
+
 status_path() {
   local path="$1"
   local label="$2"
@@ -122,6 +190,9 @@ status_shared_agents_dir() {
 
 script_dir="$(resolve_script_path "${BASH_SOURCE[0]}")"
 dotfiles_dir="$(cd "$script_dir/../../.." && pwd)"
+desired_default="$(mktemp "${TMPDIR:-/tmp}/agent-desired.XXXXXXXX")"
+trap 'rm -f "$desired_default"' EXIT
+write_profile_skills "$desired_default" core netflix
 
 printf 'agent-doctor\n'
 printf '%s\n\n' '============'
@@ -173,6 +244,17 @@ printf 'codex:  %s\n' "$(count_files "$HOME/.codex/skills" 'SKILL.md')"
 printf 'claude: %s\n' "$(count_files "$HOME/.claude/skills" 'SKILL.md')"
 printf 'cursor: %s\n' "$(count_files "$HOME/.cursor/skills" 'SKILL.md')"
 printf 'pi:     %s\n' "$(count_files "$HOME/.pi/agent/skills" 'SKILL.md')"
+
+printf '\nSkill profile diff\n'
+printf '%s\n' '------------------'
+printf 'profiles: core=%s netflix=%s heavy=%s default(core+netflix)=%s\n' \
+  "$(count_lines "$dotfiles_dir/agents/.agents/profiles/core.skills")" \
+  "$(count_lines "$dotfiles_dir/agents/.agents/profiles/netflix.skills")" \
+  "$(count_lines "$dotfiles_dir/agents/.agents/profiles/heavy.skills")" \
+  "$(count_lines "$desired_default")"
+print_skill_profile_status codex "$HOME/.codex/skills" "$desired_default"
+print_skill_profile_status claude "$HOME/.claude/skills" "$desired_default"
+print_skill_profile_status cursor "$HOME/.cursor/skills" "$desired_default"
 
 printf '\nMCP counts\n'
 printf '%s\n' '----------'

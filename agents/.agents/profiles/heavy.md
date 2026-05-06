@@ -16,3 +16,5 @@ Enable these only when the task benefits from them:
 These tools are useful, but they increase context surface, permissions, startup
 noise, or dependency weight. They should be easy to install, easy to discover,
 and absent from the default context until needed.
+
+The canonical skill list for this profile is `heavy.skills`.
