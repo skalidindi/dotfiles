@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+script_bin_dir="$(cd -P "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=../share/agent-state/agent-state.sh
+source "$script_bin_dir/../share/agent-state/agent-state.sh"
+unset script_bin_dir
+
 resolve_script_path() {
   local source="$1"
   local dir
@@ -43,42 +48,19 @@ count_grep() {
 }
 
 count_codex_mcps() {
-  local file="$1"
-
-  if [ ! -f "$file" ]; then
-    printf '0'
-    return
-  fi
-
-  sed -n 's/^\[mcp_servers\.\([^].]*\).*/\1/p' "$file" | sort -u | wc -l | tr -d ' '
+  local tmp
+  tmp="$(mktemp "${TMPDIR:-/tmp}/agent-codex-mcps.XXXXXXXX")"
+  agent_write_active_codex_mcps "$1" "$tmp"
+  agent_count_lines "$tmp"
+  rm -f "$tmp"
 }
 
 count_lines() {
-  local file="$1"
-
-  if [ ! -f "$file" ]; then
-    printf '0'
-    return
-  fi
-
-  sed '/^[[:space:]]*$/d' "$file" | wc -l | tr -d ' '
+  agent_count_lines "$@"
 }
 
 profile_file() {
-  local profile="$1"
-  local suffix="$2"
-  local candidate
-
-  for candidate in \
-    "$HOME/.agents/profiles/${profile}.${suffix}" \
-    "$dotfiles_dir/agents/.agents/profiles/${profile}.${suffix}"; do
-    if [ -f "$candidate" ]; then
-      printf '%s\n' "$candidate"
-      return 0
-    fi
-  done
-
-  return 1
+  agent_profile_file "$dotfiles_dir" "$@"
 }
 
 count_profile_lines() {
@@ -94,35 +76,11 @@ count_profile_lines() {
 }
 
 write_profile_skills() {
-  local output="$1"
-  shift
-
-  : >"$output"
-  local profile
-  local file
-  for profile in "$@"; do
-    if file="$(profile_file "$profile" skills)"; then
-      sed '/^[[:space:]]*$/d; /^[[:space:]]*#/d' "$file" >>"$output"
-    fi
-  done
-
-  sort -u "$output" -o "$output"
+  agent_write_profile_skills "$dotfiles_dir" "$@" || true
 }
 
 write_profile_mcps() {
-  local output="$1"
-  shift
-
-  : >"$output"
-  local profile
-  local file
-  for profile in "$@"; do
-    if file="$(profile_file "$profile" mcp)"; then
-      sed '/^[[:space:]]*$/d; /^[[:space:]]*#/d' "$file" >>"$output"
-    fi
-  done
-
-  sort -u "$output" -o "$output"
+  agent_write_profile_mcps "$dotfiles_dir" "$@" || true
 }
 
 load_default_profiles() {
@@ -130,17 +88,7 @@ load_default_profiles() {
 }
 
 write_active_skills() {
-  local dir="$1"
-  local output="$2"
-
-  : >"$output"
-  if [ ! -d "$dir" ]; then
-    return 0
-  fi
-
-  find "$dir" -maxdepth 2 -name SKILL.md -print 2>/dev/null \
-    | sed "s#^$dir/##; s#/SKILL.md\$##" \
-    | sort -u >"$output"
+  agent_write_active_skills "$@"
 }
 
 print_skill_profile_status() {
@@ -170,21 +118,11 @@ print_skill_profile_status() {
 }
 
 write_active_codex_mcps() {
-  local file="$1"
-  local output="$2"
-
-  : >"$output"
-  [ -f "$file" ] || return 0
-  sed -n 's/^\[mcp_servers\.\([^].]*\).*/\1/p' "$file" | sort -u >"$output"
+  agent_write_active_codex_mcps "$@"
 }
 
 write_active_json_mcps() {
-  local file="$1"
-  local output="$2"
-
-  : >"$output"
-  [ -f "$file" ] || return 0
-  jq -r '.mcpServers // {} | keys[]' "$file" | sort -u >"$output"
+  agent_write_active_json_mcps "$@"
 }
 
 print_mcp_profile_status() {

@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+script_bin_dir="$(cd -P "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=../share/agent-state/agent-state.sh
+source "$script_bin_dir/../share/agent-state/agent-state.sh"
+unset script_bin_dir
+
 usage() {
   cat <<'EOF'
 Usage:
@@ -39,47 +44,18 @@ resolve_script_path() {
 }
 
 count_lines() {
-  local file="$1"
-  if [ ! -f "$file" ]; then
-    printf '0'
-    return
-  fi
-  sed '/^[[:space:]]*$/d' "$file" | wc -l | tr -d ' '
+  agent_count_lines "$@"
 }
 
 profile_file() {
-  local profile="$1"
-  local suffix="$2"
-  local candidate
-
-  for candidate in \
-    "$HOME/.agents/profiles/${profile}.${suffix}" \
-    "$dotfiles_dir/agents/.agents/profiles/${profile}.${suffix}"; do
-    if [ -f "$candidate" ]; then
-      printf '%s\n' "$candidate"
-      return 0
-    fi
-  done
-
-  return 1
+  agent_profile_file "$dotfiles_dir" "$@"
 }
 
 write_profile_mcps() {
-  local output="$1"
-  shift
-
-  : >"$output"
-  local profile
-  local file
-  for profile in "$@"; do
-    if ! file="$(profile_file "$profile" mcp)"; then
-      printf 'agent-mcp-profile: unknown profile: %s\n' "$profile" >&2
-      exit 64
-    fi
-    sed '/^[[:space:]]*$/d; /^[[:space:]]*#/d' "$file" >>"$output"
-  done
-
-  sort -u "$output" -o "$output"
+  if ! agent_write_profile_mcps "$dotfiles_dir" "$@"; then
+    printf 'agent-mcp-profile: failed to resolve profile list\n' >&2
+    exit 64
+  fi
 }
 
 expand_targets() {
@@ -109,22 +85,11 @@ target_file() {
 }
 
 write_active_codex() {
-  local file="$1"
-  local output="$2"
-
-  : >"$output"
-  [ -f "$file" ] || return 0
-
-  sed -n 's/^\[mcp_servers\.\([^].]*\).*/\1/p' "$file" | sort -u >"$output"
+  agent_write_active_codex_mcps "$@"
 }
 
 write_active_json() {
-  local file="$1"
-  local output="$2"
-
-  : >"$output"
-  [ -f "$file" ] || return 0
-  jq -r '.mcpServers // {} | keys[]' "$file" | sort -u >"$output"
+  agent_write_active_json_mcps "$@"
 }
 
 write_active_mcps() {
