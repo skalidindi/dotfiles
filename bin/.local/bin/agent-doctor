@@ -277,18 +277,13 @@ status_path "$HOME/.agents/agents" "shared helper agents"
 status_path "$HOME/.agents/modes" "shared modes"
 status_path "$HOME/.claude/agents" "claude helper agents"
 status_path "$HOME/.codex/agents" "codex helper agents"
-status_path "$HOME/.pi/agent/agents" "pi helper agents"
 status_path "$HOME/.claude/modes" "claude modes"
 status_path "$HOME/.codex/modes" "codex modes"
-status_path "$HOME/.pi/agent/modes" "pi modes"
 status_path "$HOME/.codex/AGENTS.md" "codex prompt"
 status_path "$HOME/.claude/CLAUDE.md" "claude prompt"
 status_path "$HOME/.codex/hooks.json.tpl" "codex hooks template"
 status_path "$HOME/.cursor/hooks.json.tpl" "cursor hooks template"
-status_path "$HOME/.pi/agent/keybindings.json" "pi keybindings"
 status_path "$HOME/.local/share/agent-dangerous-command-guard/dangerous-command-guard.py" "dangerous command guard"
-status_path "$HOME/.pi/agent/extensions/command-guard/index.ts" "pi command guard"
-status_path "$HOME/.pi/agent/extensions/mode/index.ts" "pi mode extension"
 
 printf '\nPrompt sync\n'
 printf '%s\n' '-----------'
@@ -302,14 +297,12 @@ for cmd in zrun agent-awake agent-mode; do
 done
 status_wrapper_command codex
 status_wrapper_command claude
-status_wrapper_command pi
 
 printf '\nSkill counts\n'
 printf '%s\n' '------------'
 printf 'codex:  %s\n' "$(count_files "$HOME/.codex/skills" 'SKILL.md')"
 printf 'claude: %s\n' "$(count_files "$HOME/.claude/skills" 'SKILL.md')"
 printf 'cursor: %s\n' "$(count_files "$HOME/.cursor/skills" 'SKILL.md')"
-printf 'pi:     %s\n' "$(count_files "$HOME/.pi/agent/skills" 'SKILL.md')"
 
 if command -v jq >/dev/null 2>&1 && [ -f "$HOME/.agents/skills.sh.sources.json" ]; then
   printf 'skills.sh sources: %s latest installs\n' "$(jq '.skills | length' "$HOME/.agents/skills.sh.sources.json" 2>/dev/null || printf '0')"
@@ -334,11 +327,6 @@ if command -v jq >/dev/null 2>&1 && [ -f "$HOME/.cursor/mcp.json" ]; then
 else
   printf 'cursor: %s\n' "$(count_grep "$HOME/.cursor/mcp.json" '^[[:space:]]*"[^"]+"[[:space:]]*:[[:space:]]*\{')"
 fi
-if command -v jq >/dev/null 2>&1 && [ -f "$HOME/.pi/agent/mcp.json" ]; then
-  printf 'pi:     %s\n' "$(jq '.mcpServers | length' "$HOME/.pi/agent/mcp.json" 2>/dev/null || printf '0')"
-else
-  printf 'pi:     %s\n' "$(count_grep "$HOME/.pi/agent/mcp.json" '^[[:space:]]*"[^"]+"[[:space:]]*:[[:space:]]*\{')"
-fi
 
 printf '\nMCP profile diff\n'
 printf '%s\n' '----------------'
@@ -349,7 +337,6 @@ printf 'profiles: core=%s heavy=%s default(%s)=%s\n' \
   "$(count_lines "$desired_mcp_default")"
 print_mcp_profile_status codex codex "$HOME/.codex/config.toml" "$desired_mcp_default"
 print_mcp_profile_status cursor json "$HOME/.cursor/mcp.json" "$desired_mcp_default"
-print_mcp_profile_status pi json "$HOME/.pi/agent/mcp.json" "$desired_mcp_default"
 
 printf '\nRuntime state check\n'
 printf '%s\n' '-------------------'
@@ -357,8 +344,7 @@ for path in \
   "$HOME/.codex/auth.json" \
   "$HOME/.codex/google_credentials.json" \
   "$HOME/.claude/client_secrets.json" \
-  "$HOME/.cursor/client_secrets.json" \
-  "$HOME/.pi/agent/auth.json"; do
+  "$HOME/.cursor/client_secrets.json"; do
   if [ -e "$path" ]; then
     printf 'local %-28s present, should not be committed\n' "${path#$HOME/}"
   fi

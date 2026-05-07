@@ -15,7 +15,6 @@ only the relevant catalogs:
 - `~/.codex/skills/`
 - `~/.claude/skills/`
 - `~/.cursor/skills/`
-- `~/.pi/agent/skills/`
 - configured MCP names when needed
 
 Return 1-3 sentences with concrete ids or paths. If no exact match exists,

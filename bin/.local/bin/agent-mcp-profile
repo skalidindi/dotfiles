@@ -16,8 +16,7 @@ Usage:
 Targets:
   codex    ~/.codex/config.toml
   cursor   ~/.cursor/mcp.json
-  pi       ~/.pi/agent/mcp.json
-  all      codex,cursor,pi
+  all      codex,cursor
 
 Default profile is: core.
 
@@ -61,7 +60,7 @@ write_profile_mcps() {
 expand_targets() {
   local raw="$1"
   if [ "$raw" = "all" ]; then
-    printf '%s\n' codex cursor pi
+    printf '%s\n' codex cursor
     return 0
   fi
 
@@ -76,7 +75,6 @@ target_file() {
   case "$1" in
     codex) printf '%s\n' "$HOME/.codex/config.toml" ;;
     cursor) printf '%s\n' "$HOME/.cursor/mcp.json" ;;
-    pi) printf '%s\n' "$HOME/.pi/agent/mcp.json" ;;
     *)
       printf 'agent-mcp-profile: unknown target: %s\n' "$1" >&2
       exit 64
@@ -99,7 +97,7 @@ write_active_mcps() {
 
   case "$target" in
     codex) write_active_codex "$file" "$output" ;;
-    cursor|pi) write_active_json "$file" "$output" ;;
+    cursor) write_active_json "$file" "$output" ;;
   esac
 }
 
@@ -206,7 +204,7 @@ apply_target() {
     codex)
       prune_codex_toml "$file" "$desired" "$tmp"
       ;;
-    cursor|pi)
+    cursor)
       desired_json="$(jq -R -s -c 'split("\n") | map(select(length > 0))' "$desired")"
       prune_json_file "$target" "$file" "$desired_json" "$tmp"
       ;;

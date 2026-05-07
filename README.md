@@ -38,9 +38,9 @@ lists.
 
 ## Repo Layout
 
-- `agents/` - shared Claude, Codex, Cursor, and Pi prompt assets, profiles,
+- `agents/` - shared Claude, Codex, and Cursor prompt assets, profiles,
   helper-agent prompts, modes, and skill source manifests.
-- `claude/`, `codex/`, `cursor/`, `pi/` - tool-specific agent homes,
+- `claude/`, `codex/`, `cursor/` - tool-specific agent homes,
   templates, hooks, keybindings, and portable extensions. Runtime files inside
   these trees are intentionally ignored.
 - `bin/.local/bin/` - local PATH helpers such as `zrun`, `agent-awake`,
@@ -91,10 +91,9 @@ then run the agent commands normally:
 zellij
 codex
 claude
-pi
 ```
 
-Interactive TTY runs of `codex`, `claude`, and `pi` are still wrapped with
+Interactive TTY runs of `codex` and `claude` are still wrapped with
 `agent-awake` so the session can keep running while the laptop is closed.
 Non-interactive invocations run the real command directly.
 

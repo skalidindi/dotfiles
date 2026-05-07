@@ -266,7 +266,7 @@ copy_if_changed \
   "$dotfiles_dir/codex/.codex/AGENTS.md" \
   "Codex base prompt"
 
-for agent_home in "$HOME/.claude" "$HOME/.codex" "$HOME/.pi/agent"; do
+for agent_home in "$HOME/.claude" "$HOME/.codex"; do
   link_managed_dir "$dotfiles_dir/agents/.agents/agents" "$agent_home/agents" "$(basename "$agent_home") helper agents"
   link_managed_dir "$dotfiles_dir/agents/.agents/modes" "$agent_home/modes" "$(basename "$agent_home") modes"
 done

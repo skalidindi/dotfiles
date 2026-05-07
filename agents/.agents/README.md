@@ -1,6 +1,6 @@
 # Shared Agent Assets
 
-This directory is the portable, cross-tool agent layer for Claude, Codex, Pi,
+This directory is the portable, cross-tool agent layer for Claude, Codex,
 Cursor, and future coding agents.
 
 It is managed by GNU Stow through the `agents` package:
@@ -103,7 +103,6 @@ Suggested naming:
 
 ```text
 tasks/agent-asset-cleanup.md
-tasks/pi-mode-profile-rollout.md
 ```
 
 ## External Skill Sources

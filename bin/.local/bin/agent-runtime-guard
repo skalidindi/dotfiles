@@ -50,11 +50,6 @@ runtime_paths=(
   "cursor/.cursor/client_secrets.json"
   "cursor/.cursor/mcp.json"
   "cursor/.cursor/snapshots/example/HEAD"
-  "pi/.pi/agent/auth.json"
-  "pi/.pi/agent/mcp.json"
-  "pi/.pi/agent/settings.json"
-  "pi/.pi/agent/sessions/example/session.jsonl"
-  "pi/.pi/memory/memory.db"
 )
 
 quiet=0

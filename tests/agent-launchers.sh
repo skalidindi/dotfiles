@@ -111,7 +111,7 @@ test_agent_wrapper_reports_missing_real_command() {
     fail "$agent wrapper should explain missing real command"
 }
 
-for agent in codex claude pi; do
+for agent in codex claude; do
   test_agent_wrapper_resolves_real_command_and_calls_agent_awake_for_tty "$agent"
   test_agent_wrapper_runs_real_command_directly_when_not_interactive "$agent"
   test_agent_wrapper_reports_missing_real_command "$agent"

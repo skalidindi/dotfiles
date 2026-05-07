@@ -340,7 +340,7 @@ print_status() {
   fi
 
   printf 'relevant power assertions:\n'
-  pmset -g assertions 2>/dev/null | grep -Ei 'Amphetamine|agent-awake|caffeinate|codex|claude|(^|[^[:alnum:]_-])pi([^[:alnum:]_-]|$)|PreventUserIdleSystemSleep|PreventUserIdleDisplaySleep' | sed 's/^/  /' || printf '  none\n'
+  pmset -g assertions 2>/dev/null | grep -Ei 'Amphetamine|agent-awake|caffeinate|codex|claude|PreventUserIdleSystemSleep|PreventUserIdleDisplaySleep' | sed 's/^/  /' || printf '  none\n'
 }
 
 if [ "${1:-}" = "status" ]; then

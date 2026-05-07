@@ -13,7 +13,7 @@ if ! command -v stow >/dev/null 2>&1; then
 fi
 
 echo "Running stow for dotfiles..."
-stow_dirs=(agents claude cmux bash bin env fastfetch gh ghostty git jj lazygit nushell nvim pi starship tmux yazi zellij zsh)
+stow_dirs=(agents claude cmux bash bin env fastfetch gh ghostty git jj lazygit nushell nvim starship tmux yazi zellij zsh)
 
 for dir in "${stow_dirs[@]}"; do
   if [[ -d "$dir" ]]; then

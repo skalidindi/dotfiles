@@ -44,16 +44,6 @@ cursor/.cursor/**
 !cursor/.cursor/.gitignore
 !cursor/.cursor/hooks.json.tpl
 
-# PI Agent
-pi/.pi/agent/agents
-pi/.pi/agent/mcp.json
-pi/.pi/agent/modes
-pi/.pi/agent/models-netflix.json
-pi/.pi/agent/settings.json
-pi/.pi/agent/sessions/*
-pi/.pi/agent/auth.json
-pi/.pi/memory/
-
 # Bin
 bin/.local/*
 !bin/.local/bin/
@@ -68,7 +58,6 @@ bin/.local/bin/*
 !bin/.local/bin/codex
 !bin/.local/bin/configure-oss-git
 !bin/.local/bin/install-agent-assets
-!bin/.local/bin/pi
 !bin/.local/bin/restore-skills-sh
 !bin/.local/bin/zellij-sessionizer
 !bin/.local/bin/zrun

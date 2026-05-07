@@ -56,7 +56,6 @@ if command -v npm >/dev/null 2>&1; then
   echo "Installing global npm packages..."
   npm install -g @anthropic-ai/claude-code
   npm install -g @openai/codex
-  npm install -g @mariozechner/pi-coding-agent
   npm install -g hunkdiff
   install_hunk_skill
 else
