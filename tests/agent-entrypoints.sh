@@ -41,5 +41,7 @@ assert_line "bash/.aliases" 'alias codex="agent-awake codex"'
 assert_line "bash/.aliases" 'alias claude="agent-awake claude"'
 assert_line "nushell/Library/Application Support/nushell/config.nu" 'alias codex = ^agent-awake codex'
 assert_line "nushell/Library/Application Support/nushell/config.nu" 'alias claude = ^agent-awake claude'
+assert_line "bin/.local/bin/zellij-sessionizer" '    agent-awake zellij attach "$session_name" --create'
+assert_line "nushell/Library/Application Support/nushell/config.nu" '        ^agent-awake zellij attach $session_name --create'
 
 printf 'PASS: agent entrypoint tests\n'

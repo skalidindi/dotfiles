@@ -256,8 +256,9 @@ switch_or_attach() {
   if [ -n "${ZELLIJ:-}" ]; then
     zellij action switch-session --cwd "$selected_dir" "$session_name"
   else
+    require_command agent-awake
     cd -- "$selected_dir"
-    zellij attach "$session_name" --create
+    agent-awake zellij attach "$session_name" --create
   fi
 }
 

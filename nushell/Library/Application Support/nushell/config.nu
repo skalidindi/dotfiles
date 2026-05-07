@@ -181,7 +181,7 @@ def --env zellij_sessionizer [] {
         ^zellij action switch-session --cwd $selected_dir $session_name
     } else {
         cd $selected_dir
-        ^zellij attach $session_name --create
+        ^agent-awake zellij attach $session_name --create
     }
 }
 
