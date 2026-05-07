@@ -1,0 +1,106 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+select_git_config() {
+  local xdg_config="${XDG_CONFIG_HOME:-$HOME/.config}/git/config"
+  local home_config="$HOME/.gitconfig"
+
+  if [[ -f "$home_config" ]] && grep -q '^##### BEGIN METATRON AUTOCONFIG$' "$home_config"; then
+    printf '%s\n' "$home_config"
+    return 0
+  fi
+
+  if [[ -f "$xdg_config" ]] && grep -q '^##### BEGIN METATRON AUTOCONFIG$' "$xdg_config"; then
+    printf '%s\n' "$xdg_config"
+    return 0
+  fi
+
+  if [[ -e "$xdg_config" ]]; then
+    printf '%s\n' "$xdg_config"
+  else
+    printf '%s\n' "$home_config"
+  fi
+}
+
+remove_managed_block() {
+  local source="$1"
+  local dest="$2"
+
+  awk '
+    /^##### BEGIN DOTFILES OSS GIT PROFILE$/ { skip = 1; next }
+    /^##### END DOTFILES OSS GIT PROFILE$/ { skip = 0; next }
+    !skip { print }
+  ' "$source" >"$dest"
+}
+
+insert_managed_block() {
+  local source="$1"
+  local dest="$2"
+
+  awk '
+    function print_block() {
+      print "##### BEGIN DOTFILES OSS GIT PROFILE"
+      print "[include]"
+      print "  path = ~/.config/git/.gitconfig.common"
+      print "[include]"
+      print "  path = ~/.config/git/.gitconfig.oss-laptop"
+      print "##### END DOTFILES OSS GIT PROFILE"
+      inserted = 1
+    }
+
+    {
+      print
+      if ($0 == "##### END METATRON AUTOCONFIG" && !inserted) {
+        print ""
+        print_block()
+      }
+    }
+
+    END {
+      if (!inserted) {
+        print ""
+        print_block()
+      }
+    }
+  ' "$source" >"$dest"
+}
+
+remove_global_oss_identity() {
+  local config="$1"
+
+  if [[ "$(git config --file "$config" --get user.email 2>/dev/null || true)" == "skalidindi8@gmail.com" ]] &&
+     [[ "$(git config --file "$config" --get user.name 2>/dev/null || true)" == "Santosh Kalidindi" ]]; then
+    git config --file "$config" --remove-section user >/dev/null 2>&1 || true
+  fi
+
+  if [[ "$(git config --file "$config" --get commit.signingKey 2>/dev/null || true)" == "5EFA48B9657D7C02" ]]; then
+    git config --file "$config" --unset-all commit.signingKey >/dev/null 2>&1 || true
+  fi
+}
+
+main() {
+  local config
+  local tmp_without_block
+  local tmp_with_block
+
+  config="$(select_git_config)"
+
+  mkdir -p "$(dirname "$config")"
+  touch "$config"
+
+  tmp_without_block="$(mktemp "${TMPDIR:-/tmp}/oss-git-config.XXXXXXXX")"
+  tmp_with_block="$(mktemp "${TMPDIR:-/tmp}/oss-git-config.XXXXXXXX")"
+  trap "rm -f '$tmp_without_block' '$tmp_with_block'" EXIT
+
+  remove_global_oss_identity "$config"
+  remove_managed_block "$config" "$tmp_without_block"
+  insert_managed_block "$tmp_without_block" "$tmp_with_block"
+
+  if ! cmp -s "$tmp_with_block" "$config"; then
+    mv "$tmp_with_block" "$config"
+  fi
+
+  printf 'configured OSS Git profile\nconfig: %s\n' "$config"
+}
+
+main "$@"

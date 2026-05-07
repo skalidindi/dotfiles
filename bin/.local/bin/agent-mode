@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  cat <<'EOF'
+Usage:
+  agent-mode list
+  agent-mode show MODE
+  agent-mode MODE
+
+Print shared mode guidance from ~/.agents/modes. Current modes: pair, auto.
+EOF
+}
+
+mode_dir="${AGENT_MODE_DIR:-$HOME/.agents/modes}"
+command="${1:-list}"
+
+case "$command" in
+  -h|--help)
+    usage
+    ;;
+  list)
+    if [ -d "$mode_dir" ]; then
+      for mode_file in "$mode_dir"/*.md; do
+        [ -f "$mode_file" ] || continue
+        basename "$mode_file" .md
+      done | sort
+    fi
+    ;;
+  show)
+    if [ "$#" -lt 2 ]; then
+      printf 'agent-mode: show requires a mode name\n' >&2
+      exit 64
+    fi
+    if [ ! -f "$mode_dir/$2.md" ]; then
+      printf 'agent-mode: unknown mode: %s\n' "$2" >&2
+      exit 66
+    fi
+    cat "$mode_dir/$2.md"
+    ;;
+  *)
+    if [ ! -f "$mode_dir/$command.md" ]; then
+      printf 'agent-mode: unknown mode: %s\n' "$command" >&2
+      exit 66
+    fi
+    cat "$mode_dir/$command.md"
+    ;;
+esac

@@ -1,0 +1,31 @@
+theme = Catppuccin Frappe
+
+background-opacity = 0.96
+shell-integration-features = no-cursor,sudo,no-title
+cursor-style = block
+adjust-cell-height = 18%
+mouse-hide-while-typing = true
+
+window-decoration = true
+window-padding-balance = true
+window-save-state = always
+macos-titlebar-style=transparent
+window-colorspace = "display-p3"
+split-divider-color = #363a4f
+# background = 1C2021
+
+keybind = global:ctrl+backquote=toggle_quick_terminal
+keybind = shift+enter=text:\n
+
+# split
+keybind = cmd+s>\=new_split:right
+keybind = cmd+s>-=new_split:down
+
+keybind = cmd+s>j=goto_split:bottom
+keybind = cmd+s>k=goto_split:top
+keybind = cmd+s>h=goto_split:left
+keybind = cmd+s>l=goto_split:right
+
+keybind = cmd+s>z=toggle_split_zoom
+
+keybind = cmd+s>e=equalize_splits

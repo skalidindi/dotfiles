@@ -1,0 +1,89 @@
+# Compiled Python files
+*.pyc
+
+# Folder view configuration files
+.DS_Store
+Desktop.ini
+
+# Thumbnail cache files
+._*
+Thumbs.db
+
+# Files that might appear on external disks
+.Spotlight-V100
+.Trashes
+
+*.zwc
+
+# Codex
+codex
+!codex/
+codex/*
+!codex/.codex/
+codex/.codex/**
+!codex/.codex/AGENTS.md
+!codex/.codex/hooks.json.tpl
+
+# Claude
+claude
+!claude/
+claude/*
+!claude/.claude/
+claude/.claude/**
+!claude/.claude/CLAUDE.md
+!claude/.claude/plugins/
+claude/.claude/plugins/**
+!claude/.claude/plugins/config.json
+
+# Cursor
+cursor
+!cursor/
+cursor/*
+!cursor/.cursor/
+cursor/.cursor/**
+!cursor/.cursor/.gitignore
+!cursor/.cursor/hooks.json.tpl
+
+# PI Agent
+pi/.pi/agent/agents
+pi/.pi/agent/mcp.json
+pi/.pi/agent/modes
+pi/.pi/agent/settings.json
+pi/.pi/agent/sessions/*
+pi/.pi/agent/auth.json
+pi/.pi/memory/
+
+# Bin
+bin/.local/*
+!bin/.local/bin/
+bin/.local/bin/*
+!bin/.local/bin/agent-awake
+!bin/.local/bin/agent-doctor
+!bin/.local/bin/agent-mcp-profile
+!bin/.local/bin/agent-mode
+!bin/.local/bin/agent-skill-profile
+!bin/.local/bin/codex
+!bin/.local/bin/configure-oss-git
+!bin/.local/bin/install-agent-assets
+!bin/.local/bin/pi
+!bin/.local/bin/restore-skills-sh
+!bin/.local/bin/zellij-sessionizer
+!bin/.local/bin/zrun
+!bin/.local/share/
+bin/.local/share/*
+!bin/.local/share/agent-uv-enforcer/
+!bin/.local/share/agent-uv-enforcer/**
+!bin/.local/share/agent-dangerous-command-guard/
+!bin/.local/share/agent-dangerous-command-guard/**
+
+.env-secrets
+
+# JJ
+.jj
+
+# Tmux
+tmux/.tmux/plugins/*
+!tmux/.tmux/plugins/tpm
+
+# Zsh
+zsh/_bun

@@ -1,0 +1,326 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  cat <<'EOF'
+Usage:
+  agent-mcp-profile diff [--target TARGET] [PROFILE...]
+  agent-mcp-profile apply [--target TARGET] [--prune] [PROFILE...]
+  agent-mcp-profile list [PROFILE...]
+
+Targets:
+  codex    ~/.codex/config.toml
+  cursor   ~/.cursor/mcp.json
+  pi       ~/.pi/agent/mcp.json
+  all      codex,cursor,pi
+
+Default profile is: core.
+
+With --prune, removed MCP entries are backed up to
+~/.agents/disabled-mcps/<target>/<timestamp>/ before writing the pruned config.
+EOF
+}
+
+resolve_script_path() {
+  local source="$1"
+  local dir
+  local link
+
+  while [ -L "$source" ]; do
+    dir="$(cd -P "$(dirname "$source")" && pwd)"
+    link="$(readlink "$source")"
+    case "$link" in
+      /*) source="$link" ;;
+      *) source="$dir/$link" ;;
+    esac
+  done
+
+  cd -P "$(dirname "$source")" && pwd
+}
+
+count_lines() {
+  local file="$1"
+  if [ ! -f "$file" ]; then
+    printf '0'
+    return
+  fi
+  sed '/^[[:space:]]*$/d' "$file" | wc -l | tr -d ' '
+}
+
+profile_file() {
+  local profile="$1"
+  local suffix="$2"
+  local candidate
+
+  for candidate in \
+    "$HOME/.agents/profiles/${profile}.${suffix}" \
+    "$dotfiles_dir/agents/.agents/profiles/${profile}.${suffix}"; do
+    if [ -f "$candidate" ]; then
+      printf '%s\n' "$candidate"
+      return 0
+    fi
+  done
+
+  return 1
+}
+
+write_profile_mcps() {
+  local output="$1"
+  shift
+
+  : >"$output"
+  local profile
+  local file
+  for profile in "$@"; do
+    if ! file="$(profile_file "$profile" mcp)"; then
+      printf 'agent-mcp-profile: unknown profile: %s\n' "$profile" >&2
+      exit 64
+    fi
+    sed '/^[[:space:]]*$/d; /^[[:space:]]*#/d' "$file" >>"$output"
+  done
+
+  sort -u "$output" -o "$output"
+}
+
+expand_targets() {
+  local raw="$1"
+  if [ "$raw" = "all" ]; then
+    printf '%s\n' codex cursor pi
+    return 0
+  fi
+
+  printf '%s\n' "$raw" | tr ',' '\n' | sed '/^[[:space:]]*$/d'
+}
+
+default_profiles() {
+  profiles=(core)
+}
+
+target_file() {
+  case "$1" in
+    codex) printf '%s\n' "$HOME/.codex/config.toml" ;;
+    cursor) printf '%s\n' "$HOME/.cursor/mcp.json" ;;
+    pi) printf '%s\n' "$HOME/.pi/agent/mcp.json" ;;
+    *)
+      printf 'agent-mcp-profile: unknown target: %s\n' "$1" >&2
+      exit 64
+      ;;
+  esac
+}
+
+write_active_codex() {
+  local file="$1"
+  local output="$2"
+
+  : >"$output"
+  [ -f "$file" ] || return 0
+
+  sed -n 's/^\[mcp_servers\.\([^].]*\).*/\1/p' "$file" | sort -u >"$output"
+}
+
+write_active_json() {
+  local file="$1"
+  local output="$2"
+
+  : >"$output"
+  [ -f "$file" ] || return 0
+  jq -r '.mcpServers // {} | keys[]' "$file" | sort -u >"$output"
+}
+
+write_active_mcps() {
+  local target="$1"
+  local file="$2"
+  local output="$3"
+
+  case "$target" in
+    codex) write_active_codex "$file" "$output" ;;
+    cursor|pi) write_active_json "$file" "$output" ;;
+  esac
+}
+
+print_diff() {
+  local target="$1"
+  local file="$2"
+  local desired="$3"
+  local active extras missing
+
+  active="$(mktemp "${TMPDIR:-/tmp}/agent-mcp-active.XXXXXXXX")"
+  extras="$(mktemp "${TMPDIR:-/tmp}/agent-mcp-extras.XXXXXXXX")"
+  missing="$(mktemp "${TMPDIR:-/tmp}/agent-mcp-missing.XXXXXXXX")"
+
+  write_active_mcps "$target" "$file" "$active"
+  comm -13 "$desired" "$active" >"$extras"
+  comm -23 "$desired" "$active" >"$missing"
+
+  printf '%s: active=%s desired=%s extra=%s missing=%s\n' \
+    "$target" \
+    "$(count_lines "$active")" \
+    "$(count_lines "$desired")" \
+    "$(count_lines "$extras")" \
+    "$(count_lines "$missing")"
+
+  if [ -s "$missing" ]; then
+    sed 's/^/  missing: /' "$missing"
+  fi
+  if [ -s "$extras" ]; then
+    sed 's/^/  extra:   /' "$extras"
+  fi
+
+  rm -f "$active" "$extras" "$missing"
+}
+
+prune_json_file() {
+  local target="$1"
+  local file="$2"
+  local desired_json="$3"
+  local tmp="$4"
+
+  jq --argjson keep "$desired_json" '
+    .mcpServers = ((.mcpServers // {}) | with_entries(select(.key as $k | $keep | index($k))))
+  ' "$file" >"$tmp"
+}
+
+prune_codex_toml() {
+  local file="$1"
+  local desired="$2"
+  local output="$3"
+
+  awk -v keep_file="$desired" '
+    BEGIN {
+      while ((getline line < keep_file) > 0) {
+        keep[line] = 1
+      }
+      skip = 0
+    }
+    /^\[/ {
+      server = ""
+      if ($0 ~ /^\[mcp_servers\./) {
+        server = $0
+        sub(/^\[mcp_servers\./, "", server)
+        sub(/\].*$/, "", server)
+        sub(/\..*$/, "", server)
+        skip = !(server in keep)
+      } else {
+        skip = 0
+      }
+    }
+    !skip { print }
+  ' "$file" >"$output"
+}
+
+apply_target() {
+  local target="$1"
+  local file="$2"
+  local desired="$3"
+  local active extras stamp backup_dir tmp desired_json
+
+  if [ ! -f "$file" ]; then
+    printf '%s: config missing: %s\n' "$target" "$file" >&2
+    return 1
+  fi
+
+  active="$(mktemp "${TMPDIR:-/tmp}/agent-mcp-active.XXXXXXXX")"
+  extras="$(mktemp "${TMPDIR:-/tmp}/agent-mcp-extras.XXXXXXXX")"
+  write_active_mcps "$target" "$file" "$active"
+  comm -13 "$desired" "$active" >"$extras"
+
+  if [ "$prune" != "1" ]; then
+    print_diff "$target" "$file" "$desired"
+    rm -f "$active" "$extras"
+    return 0
+  fi
+
+  stamp="$(date +%Y%m%d-%H%M%S)"
+  backup_dir="$HOME/.agents/disabled-mcps/$target/$stamp"
+  mkdir -p "$backup_dir"
+  cp "$file" "$backup_dir/original.$(basename "$file")"
+  cp "$extras" "$backup_dir/removed-mcps.txt"
+
+  tmp="$(mktemp "${TMPDIR:-/tmp}/agent-mcp-config.XXXXXXXX")"
+  case "$target" in
+    codex)
+      prune_codex_toml "$file" "$desired" "$tmp"
+      ;;
+    cursor|pi)
+      desired_json="$(jq -R -s -c 'split("\n") | map(select(length > 0))' "$desired")"
+      prune_json_file "$target" "$file" "$desired_json" "$tmp"
+      ;;
+  esac
+
+  mv "$tmp" "$file"
+  printf '%s: pruned %s MCP entries (backup: %s)\n' "$target" "$(count_lines "$extras")" "$backup_dir"
+
+  rm -f "$active" "$extras"
+}
+
+script_dir="$(resolve_script_path "${BASH_SOURCE[0]}")"
+dotfiles_dir="$(cd "$script_dir/../../.." && pwd)"
+
+command="${1:-}"
+if [ -z "$command" ]; then
+  usage >&2
+  exit 64
+fi
+shift
+
+target_spec="all"
+prune=0
+profiles=()
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    --target)
+      if [ "$#" -lt 2 ]; then
+        printf 'agent-mcp-profile: --target requires a value\n' >&2
+        exit 64
+      fi
+      target_spec="$2"
+      shift 2
+      ;;
+    --prune)
+      prune=1
+      shift
+      ;;
+    -*)
+      printf 'agent-mcp-profile: unknown option: %s\n' "$1" >&2
+      exit 64
+      ;;
+    *)
+      profiles+=("$1")
+      shift
+      ;;
+  esac
+done
+
+if [ "${#profiles[@]}" -eq 0 ]; then
+  default_profiles
+fi
+
+desired="$(mktemp "${TMPDIR:-/tmp}/agent-mcp-desired.XXXXXXXX")"
+trap 'rm -f "$desired"' EXIT
+write_profile_mcps "$desired" "${profiles[@]}"
+
+case "$command" in
+  list)
+    cat "$desired"
+    ;;
+  diff)
+    while IFS= read -r target; do
+      print_diff "$target" "$(target_file "$target")" "$desired"
+    done < <(expand_targets "$target_spec")
+    ;;
+  apply)
+    while IFS= read -r target; do
+      apply_target "$target" "$(target_file "$target")" "$desired"
+    done < <(expand_targets "$target_spec")
+    ;;
+  *)
+    printf 'agent-mcp-profile: unknown command: %s\n' "$command" >&2
+    usage >&2
+    exit 64
+    ;;
+esac

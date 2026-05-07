@@ -1,0 +1,2 @@
+[includeIf "gitdir:~/oss/"]
+  path = ~/.config/git/.gitconfig.oss-base

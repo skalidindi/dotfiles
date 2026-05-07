@@ -1,0 +1,20 @@
+{
+  "$schema": "https://raw.githubusercontent.com/manaflow-ai/cmux/main/web/data/cmux.schema.json",
+  "schemaVersion": 1,
+
+  "app": {
+    "appearance": "dark",
+    "commandPaletteSearchesAllSurfaces": true
+  },
+
+  "sidebarAppearance": {
+    "darkModeTintColor": "#1e2030",
+    "tintOpacity": 0.22
+  },
+
+  "workspaceColors": {
+    "indicatorStyle": "washRail",
+    "selectionColor": "#363a4f",
+    "notificationBadgeColor": "#f5a97f"
+  }
+}

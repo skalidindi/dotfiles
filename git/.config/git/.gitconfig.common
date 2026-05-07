@@ -1,0 +1,208 @@
+[alias]
+  # Add
+  a = add --all
+  ai = add -i
+
+  # List aliases.
+	aliases = config --get-regexp alias
+
+  # Blame ignore white space and detech lines moved and all commits
+  bla = blame -w -C -C -C
+
+  # Branch
+  b = branch
+  ba = branch -a
+  bd = branch -d
+	bdd = branch -D
+  br = branch -r
+  bc = rev-parse --abbrev-ref HEAD
+	bu = !git rev-parse --abbrev-ref --symbolic-full-name "@{u}"
+	bs = !git-branch-status
+
+  # Clone
+  cl = clone
+	cld = clone --depth 1
+	clg = !sh -c 'git clone https://github.com/$1 $(basename $1)' -
+	clgp = !sh -c 'git clone git@github.com:$1 $(basename $1)' -
+	clgu = !sh -c 'git clone git@github.com:$(git config --get user.username)/$1 $1' -
+
+  # Commit
+  c = commit
+  ca = commit -a
+  cam = commit -am
+	cm = commit -m
+  cem = commit --allow-empty -m
+	cd = commit --amend
+	cad = commit -a --amend
+	ced = commit --allow-empty --amend
+
+  # Checkout
+  co = checkout
+
+  # List contributors with number of commits.
+	contributors = shortlog --summary --numbered
+
+  # Remove branches that have already been merged with main.
+	# a.k.a. ‘delete merged’
+	dm = "git branch --merged | grep -v '\\*' | xargs -n 1 git branch -d"
+
+  # Make Empty commit
+  empty = "git commit --allow-empty"
+
+	# View abbreviated SHA, description, and history graph of the latest 20 commits.
+	l = log --pretty=oneline -n 20 --graph --abbrev-commit
+
+  # Pull
+  pl = pull
+	pb = pull --rebase
+
+  # Push
+  ps = push
+  psf = push -f --force-with-lease
+  psu = push -u
+	pst = push --tags
+  pso = push origin
+	psao = push --all origin
+	psfo = push -f origin
+	psuo = push -u origin
+
+  # Rebase
+  rb = rebase
+	rba = rebase --abort
+	rbc = rebase --continue
+	rbi = rebase --interactive
+	rbs = rebase --skip
+
+	remotes = remote --verbose # List remotes
+
+  # Reset
+  re = reset
+	rh = reset HEAD
+	reh = reset --hard
+	rem = reset --mixed
+	res = reset --soft
+	rehh = reset --hard HEAD
+	remh = reset --mixed HEAD
+	resh = reset --soft HEAD
+	rehom = reset --hard origin/master
+
+  # Stash
+  sta = stash --all
+  stc = stash clear
+  std = stash drop
+  stl = stash list
+  stp = stash pop
+  stpu = stash push
+  stw = stash show
+
+  s = switch
+
+	tags = tag -l # Show verbose output about tags, branches or remotes
+
+  undo = reset --soft HEAD^
+
+  wdiff = diff --word-diff #w diff
+
+	whoami = config user.email # Show the user email for the current repository.
+
+[apply]
+  whitespace = fix # Detect whitespace errors when applying a patch
+
+[blame]
+  coloring = highlightRecent
+  date = relative
+
+[branch]
+  autoSetupRebase = always
+	sort = -committerdate # Show most recently changed branches first.
+
+[column]
+  ui = auto
+
+[core]
+  autocrlf = input  # keep newlines as in input
+  compression = 9
+  editor = 'nvim'
+  fsmonitor = true
+  pager = delta
+  preloadindex = true
+  whitespace = error # treat incorrect whitespace as errors
+
+[color]
+  # Use colors in Git commands that are capable of colored output when
+  # outputting to the terminal. (This is the default setting in Git ≥ 1.8.4.)
+  ui = true
+  status = auto
+
+
+[color "decorate"]
+	added = "green normal"
+	changed = "yellow normal"
+
+[color "status"]
+	added = "green normal"
+	changed = "yellow normal"
+
+[delta]
+  dark = true
+  line-numbers = true
+  navigate = true # use n and N to move between diff sections
+  side-by-side = true
+
+[diff]
+	colorMoved = default
+	renames = copies
+
+[fetch]
+  prune = true
+  writeCommitGraph = true
+
+[help]
+  autoCorrect = 1 # Automatically correct and execute mistyped commands
+
+[init]
+	defaultBranch = main
+
+[interactive]
+  diffFilter = delta --color-only
+  singlekey = true
+
+[log]
+  abbrevCommit = true
+  graphColors = "blue, yellow, cyan, magenta, green, red"
+
+[merge]
+  conflictStyle = zdiff3
+	log = true # Include summaries of merged commits in newly created merge commit messages
+
+[pull]
+  rebase = true
+
+[push]
+  autoSetupRemote = true
+  default = current
+	followTags = true
+
+[rebase]
+  autoSquash = true
+  autoStash = true
+  missingCommitsCheck = warn
+
+[rerere]
+	enabled = 1
+	autoUpdate = 1
+
+[status]
+  branch = true
+  showStash = true
+  showUntrackedFiles = all # show individual untracked files
+
+[tag]
+  sort = -taggerdate
+
+# URL shortcuts
+[url "git@github.com:skalidindi/"]
+  insteadOf = "sk:"
+
+[url "git@github.com:"]
+  insteadOf = "gh:"

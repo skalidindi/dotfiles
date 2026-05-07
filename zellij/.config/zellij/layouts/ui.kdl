@@ -1,0 +1,35 @@
+layout {
+    tab name="code" {
+        pane split_direction="vertical" {
+            pane edit="."
+            pane size="35%" {
+                pane command="nu" {
+                    args "-e" "git status"
+                }
+            }
+        }
+    }
+
+    tab name="dev" {
+        pane split_direction="vertical" {
+            pane command="nu" {
+                args "-c" "npm run dev"
+                start_suspended true
+            }
+            pane split_direction="horizontal" size="40%" {
+                pane command="nu" {
+                    args "-c" "npm test"
+                    start_suspended true
+                }
+                pane command="nu" {
+                    args "-c" "npm run lint"
+                    start_suspended true
+                }
+            }
+        }
+    }
+
+    tab name="shell" {
+        pane
+    }
+}

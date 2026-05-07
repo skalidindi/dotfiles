@@ -1,0 +1,32 @@
+layout {
+    tab name="code" {
+        pane split_direction="vertical" {
+            pane edit="."
+            pane size="35%" {
+                pane command="nu" {
+                    args "-e" "git status"
+                }
+            }
+        }
+    }
+
+    tab name="app" {
+        pane split_direction="vertical" {
+            pane command="nu" {
+                args "-c" "./gradlew bootRun"
+                start_suspended true
+            }
+            pane split_direction="horizontal" size="40%" {
+                pane command="nu" {
+                    args "-c" "./gradlew test"
+                    start_suspended true
+                }
+                pane
+            }
+        }
+    }
+
+    tab name="shell" {
+        pane
+    }
+}

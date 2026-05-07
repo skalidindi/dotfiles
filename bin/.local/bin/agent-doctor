@@ -1,0 +1,432 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+resolve_script_path() {
+  local source="$1"
+  local dir
+  local link
+
+  while [ -L "$source" ]; do
+    dir="$(cd -P "$(dirname "$source")" && pwd)"
+    link="$(readlink "$source")"
+    case "$link" in
+      /*) source="$link" ;;
+      *) source="$dir/$link" ;;
+    esac
+  done
+
+  cd -P "$(dirname "$source")" && pwd
+}
+
+count_files() {
+  local dir="$1"
+  local pattern="$2"
+
+  if [ ! -d "$dir" ]; then
+    printf '0'
+    return
+  fi
+
+  find "$dir" -name "$pattern" -type f 2>/dev/null | wc -l | tr -d ' '
+}
+
+count_grep() {
+  local file="$1"
+  local pattern="$2"
+
+  if [ ! -f "$file" ]; then
+    printf '0'
+    return
+  fi
+
+  grep -E "$pattern" "$file" 2>/dev/null | wc -l | tr -d ' '
+}
+
+count_codex_mcps() {
+  local file="$1"
+
+  if [ ! -f "$file" ]; then
+    printf '0'
+    return
+  fi
+
+  sed -n 's/^\[mcp_servers\.\([^].]*\).*/\1/p' "$file" | sort -u | wc -l | tr -d ' '
+}
+
+count_lines() {
+  local file="$1"
+
+  if [ ! -f "$file" ]; then
+    printf '0'
+    return
+  fi
+
+  sed '/^[[:space:]]*$/d' "$file" | wc -l | tr -d ' '
+}
+
+profile_file() {
+  local profile="$1"
+  local suffix="$2"
+  local candidate
+
+  for candidate in \
+    "$HOME/.agents/profiles/${profile}.${suffix}" \
+    "$dotfiles_dir/agents/.agents/profiles/${profile}.${suffix}"; do
+    if [ -f "$candidate" ]; then
+      printf '%s\n' "$candidate"
+      return 0
+    fi
+  done
+
+  return 1
+}
+
+count_profile_lines() {
+  local profile="$1"
+  local suffix="$2"
+  local file
+
+  if file="$(profile_file "$profile" "$suffix")"; then
+    count_lines "$file"
+  else
+    printf '0'
+  fi
+}
+
+write_profile_skills() {
+  local output="$1"
+  shift
+
+  : >"$output"
+  local profile
+  local file
+  for profile in "$@"; do
+    if file="$(profile_file "$profile" skills)"; then
+      sed '/^[[:space:]]*$/d; /^[[:space:]]*#/d' "$file" >>"$output"
+    fi
+  done
+
+  sort -u "$output" -o "$output"
+}
+
+write_profile_mcps() {
+  local output="$1"
+  shift
+
+  : >"$output"
+  local profile
+  local file
+  for profile in "$@"; do
+    if file="$(profile_file "$profile" mcp)"; then
+      sed '/^[[:space:]]*$/d; /^[[:space:]]*#/d' "$file" >>"$output"
+    fi
+  done
+
+  sort -u "$output" -o "$output"
+}
+
+load_default_profiles() {
+  active_profiles=(core)
+}
+
+write_active_skills() {
+  local dir="$1"
+  local output="$2"
+
+  : >"$output"
+  if [ ! -d "$dir" ]; then
+    return 0
+  fi
+
+  find "$dir" -maxdepth 2 -name SKILL.md -print 2>/dev/null \
+    | sed "s#^$dir/##; s#/SKILL.md\$##" \
+    | sort -u >"$output"
+}
+
+print_skill_profile_status() {
+  local label="$1"
+  local dir="$2"
+  local desired="$3"
+  local active
+  local extras
+  local missing
+
+  active="$(mktemp "${TMPDIR:-/tmp}/agent-active.XXXXXXXX")"
+  extras="$(mktemp "${TMPDIR:-/tmp}/agent-extras.XXXXXXXX")"
+  missing="$(mktemp "${TMPDIR:-/tmp}/agent-missing.XXXXXXXX")"
+
+  write_active_skills "$dir" "$active"
+  comm -13 "$desired" "$active" >"$extras"
+  comm -23 "$desired" "$active" >"$missing"
+
+  printf '%-7s active=%s default=%s extra=%s missing=%s\n' \
+    "$label:" \
+    "$(count_lines "$active")" \
+    "$(count_lines "$desired")" \
+    "$(count_lines "$extras")" \
+    "$(count_lines "$missing")"
+
+  rm -f "$active" "$extras" "$missing"
+}
+
+write_active_codex_mcps() {
+  local file="$1"
+  local output="$2"
+
+  : >"$output"
+  [ -f "$file" ] || return 0
+  sed -n 's/^\[mcp_servers\.\([^].]*\).*/\1/p' "$file" | sort -u >"$output"
+}
+
+write_active_json_mcps() {
+  local file="$1"
+  local output="$2"
+
+  : >"$output"
+  [ -f "$file" ] || return 0
+  jq -r '.mcpServers // {} | keys[]' "$file" | sort -u >"$output"
+}
+
+print_mcp_profile_status() {
+  local label="$1"
+  local type="$2"
+  local file="$3"
+  local desired="$4"
+  local active extras missing
+
+  active="$(mktemp "${TMPDIR:-/tmp}/agent-mcp-active.XXXXXXXX")"
+  extras="$(mktemp "${TMPDIR:-/tmp}/agent-mcp-extras.XXXXXXXX")"
+  missing="$(mktemp "${TMPDIR:-/tmp}/agent-mcp-missing.XXXXXXXX")"
+
+  case "$type" in
+    codex) write_active_codex_mcps "$file" "$active" ;;
+    json) write_active_json_mcps "$file" "$active" ;;
+  esac
+  comm -13 "$desired" "$active" >"$extras"
+  comm -23 "$desired" "$active" >"$missing"
+
+  printf '%-7s active=%s default=%s extra=%s missing=%s\n' \
+    "$label:" \
+    "$(count_lines "$active")" \
+    "$(count_lines "$desired")" \
+    "$(count_lines "$extras")" \
+    "$(count_lines "$missing")"
+
+  rm -f "$active" "$extras" "$missing"
+}
+
+status_path() {
+  local path="$1"
+  local label="$2"
+  local resolved_dir
+  local resolved_path
+
+  if [ -L "$path" ]; then
+    printf 'ok    %-28s symlink -> %s\n' "$label" "$(readlink "$path")"
+  elif [ -e "$path" ]; then
+    resolved_dir="$(cd -P "$(dirname "$path")" 2>/dev/null && pwd || true)"
+    resolved_path="$resolved_dir/$(basename "$path")"
+    case "$resolved_path" in
+      "$dotfiles_dir"/*)
+        printf 'ok    %-28s managed in dotfiles\n' "$label"
+        ;;
+      *)
+        printf 'warn  %-28s exists but is not managed by dotfiles\n' "$label"
+        ;;
+    esac
+  else
+    printf 'miss  %-28s not found\n' "$label"
+  fi
+}
+
+status_runtime_path() {
+  local path="$1"
+  local label="$2"
+
+  if [ -e "$path" ]; then
+    printf 'ok    %-28s local runtime asset\n' "$label"
+  else
+    printf 'miss  %-28s not found\n' "$label"
+  fi
+}
+
+status_command() {
+  local name="$1"
+
+  if command -v "$name" >/dev/null 2>&1; then
+    printf 'ok    %-28s %s\n' "$name" "$(command -v "$name")"
+  else
+    printf 'miss  %-28s not on PATH\n' "$name"
+  fi
+}
+
+status_wrapper_command() {
+  local name="$1"
+  local path
+  local expected_dir="$dotfiles_dir/bin/.local/bin"
+
+  path="$(command -v "$name" 2>/dev/null || true)"
+  if [ -z "$path" ]; then
+    printf 'miss  %-28s not on PATH\n' "$name"
+  elif [ "$(dirname "$path")" = "$HOME/.local/bin" ] || [ "$(dirname "$path")" = "$expected_dir" ]; then
+    printf 'ok    %-28s %s\n' "$name" "$path"
+  else
+    printf 'warn  %-28s %s (not dotfiles wrapper)\n' "$name" "$path"
+  fi
+}
+
+status_same_file() {
+  local expected="$1"
+  local actual="$2"
+  local label="$3"
+
+  if [ ! -f "$expected" ]; then
+    printf 'miss  %-28s expected file missing\n' "$label"
+  elif [ ! -f "$actual" ]; then
+    printf 'miss  %-28s target file missing\n' "$label"
+  elif cmp -s "$expected" "$actual"; then
+    printf 'ok    %-28s in sync\n' "$label"
+  else
+    printf 'warn  %-28s differs from shared base\n' "$label"
+  fi
+}
+
+status_shared_agents_dir() {
+  local root="$HOME/.agents"
+  local readme="$root/README.md"
+
+  if [ ! -d "$root" ]; then
+    printf 'miss  %-28s not found\n' "shared agents"
+  elif [ -L "$readme" ]; then
+    printf 'ok    %-28s mixed local dir with stowed assets\n' "shared agents"
+  else
+    printf 'warn  %-28s exists without stowed README.md\n' "shared agents"
+  fi
+}
+
+script_dir="$(resolve_script_path "${BASH_SOURCE[0]}")"
+dotfiles_dir="$(cd "$script_dir/../../.." && pwd)"
+desired_default="$(mktemp "${TMPDIR:-/tmp}/agent-desired.XXXXXXXX")"
+desired_mcp_default="$(mktemp "${TMPDIR:-/tmp}/agent-mcp-desired.XXXXXXXX")"
+trap 'rm -f "$desired_default" "$desired_mcp_default"' EXIT
+active_profiles=()
+load_default_profiles
+profile_label="$(IFS=+; printf '%s' "${active_profiles[*]}")"
+write_profile_skills "$desired_default" "${active_profiles[@]}"
+write_profile_mcps "$desired_mcp_default" "${active_profiles[@]}"
+
+printf 'agent-doctor\n'
+printf '%s\n\n' '============'
+
+printf 'dotfiles: %s\n' "$dotfiles_dir"
+if git -C "$dotfiles_dir" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  printf 'branch:   %s\n' "$(git -c core.fsmonitor=false -C "$dotfiles_dir" branch --show-current 2>/dev/null || printf 'unknown')"
+  if [ -n "$(git -c core.fsmonitor=false -C "$dotfiles_dir" status --porcelain 2>/dev/null)" ]; then
+    printf 'status:   dirty\n'
+  else
+    printf 'status:   clean\n'
+  fi
+else
+  printf 'branch:   not a git worktree\n'
+fi
+
+printf '\nStowed surfaces\n'
+printf '%s\n' '---------------'
+status_shared_agents_dir
+status_path "$HOME/.agents/README.md" "shared agents readme"
+status_path "$HOME/.agents/skills.sh.sources.json" "skills.sh sources"
+status_path "$HOME/.agents/agents" "shared helper agents"
+status_path "$HOME/.agents/modes" "shared modes"
+status_path "$HOME/.claude/agents" "claude helper agents"
+status_path "$HOME/.codex/agents" "codex helper agents"
+status_path "$HOME/.pi/agent/agents" "pi helper agents"
+status_path "$HOME/.claude/modes" "claude modes"
+status_path "$HOME/.codex/modes" "codex modes"
+status_path "$HOME/.pi/agent/modes" "pi modes"
+status_path "$HOME/.codex/AGENTS.md" "codex prompt"
+status_path "$HOME/.claude/CLAUDE.md" "claude prompt"
+status_path "$HOME/.codex/hooks.json.tpl" "codex hooks template"
+status_path "$HOME/.cursor/hooks.json.tpl" "cursor hooks template"
+status_path "$HOME/.pi/agent/keybindings.json" "pi keybindings"
+status_path "$HOME/.local/share/agent-dangerous-command-guard/dangerous-command-guard.py" "dangerous command guard"
+status_path "$HOME/.pi/agent/extensions/command-guard/index.ts" "pi command guard"
+status_path "$HOME/.pi/agent/extensions/mode/index.ts" "pi mode extension"
+
+printf '\nPrompt sync\n'
+printf '%s\n' '-----------'
+status_same_file "$dotfiles_dir/agents/.agents/prompts/base.md" "$dotfiles_dir/claude/.claude/CLAUDE.md" "claude prompt"
+status_same_file "$dotfiles_dir/agents/.agents/prompts/base.md" "$dotfiles_dir/codex/.codex/AGENTS.md" "codex prompt"
+
+printf '\nCommands\n'
+printf '%s\n' '--------'
+for cmd in zrun agent-awake agent-mode; do
+  status_command "$cmd"
+done
+status_wrapper_command codex
+status_command claude
+status_wrapper_command pi
+
+printf '\nSkill counts\n'
+printf '%s\n' '------------'
+printf 'codex:  %s\n' "$(count_files "$HOME/.codex/skills" 'SKILL.md')"
+printf 'claude: %s\n' "$(count_files "$HOME/.claude/skills" 'SKILL.md')"
+printf 'cursor: %s\n' "$(count_files "$HOME/.cursor/skills" 'SKILL.md')"
+printf 'pi:     %s\n' "$(count_files "$HOME/.pi/agent/skills" 'SKILL.md')"
+
+if command -v jq >/dev/null 2>&1 && [ -f "$HOME/.agents/skills.sh.sources.json" ]; then
+  printf 'skills.sh sources: %s latest installs\n' "$(jq '.skills | length' "$HOME/.agents/skills.sh.sources.json" 2>/dev/null || printf '0')"
+fi
+
+printf '\nSkill profile diff\n'
+printf '%s\n' '------------------'
+printf 'profiles: core=%s heavy=%s default(%s)=%s\n' \
+  "$(count_profile_lines core skills)" \
+  "$(count_profile_lines heavy skills)" \
+  "$profile_label" \
+  "$(count_lines "$desired_default")"
+print_skill_profile_status codex "$HOME/.codex/skills" "$desired_default"
+print_skill_profile_status claude "$HOME/.claude/skills" "$desired_default"
+print_skill_profile_status cursor "$HOME/.cursor/skills" "$desired_default"
+
+printf '\nMCP counts\n'
+printf '%s\n' '----------'
+printf 'codex:  %s\n' "$(count_codex_mcps "$HOME/.codex/config.toml")"
+if command -v jq >/dev/null 2>&1 && [ -f "$HOME/.cursor/mcp.json" ]; then
+  printf 'cursor: %s\n' "$(jq '.mcpServers | length' "$HOME/.cursor/mcp.json" 2>/dev/null || printf '0')"
+else
+  printf 'cursor: %s\n' "$(count_grep "$HOME/.cursor/mcp.json" '^[[:space:]]*"[^"]+"[[:space:]]*:[[:space:]]*\{')"
+fi
+if command -v jq >/dev/null 2>&1 && [ -f "$HOME/.pi/agent/mcp.json" ]; then
+  printf 'pi:     %s\n' "$(jq '.mcpServers | length' "$HOME/.pi/agent/mcp.json" 2>/dev/null || printf '0')"
+else
+  printf 'pi:     %s\n' "$(count_grep "$HOME/.pi/agent/mcp.json" '^[[:space:]]*"[^"]+"[[:space:]]*:[[:space:]]*\{')"
+fi
+
+printf '\nMCP profile diff\n'
+printf '%s\n' '----------------'
+printf 'profiles: core=%s heavy=%s default(%s)=%s\n' \
+  "$(count_profile_lines core mcp)" \
+  "$(count_profile_lines heavy mcp)" \
+  "$profile_label" \
+  "$(count_lines "$desired_mcp_default")"
+print_mcp_profile_status codex codex "$HOME/.codex/config.toml" "$desired_mcp_default"
+print_mcp_profile_status cursor json "$HOME/.cursor/mcp.json" "$desired_mcp_default"
+print_mcp_profile_status pi json "$HOME/.pi/agent/mcp.json" "$desired_mcp_default"
+
+printf '\nRuntime state check\n'
+printf '%s\n' '-------------------'
+for path in \
+  "$HOME/.codex/auth.json" \
+  "$HOME/.codex/google_credentials.json" \
+  "$HOME/.claude/client_secrets.json" \
+  "$HOME/.cursor/client_secrets.json" \
+  "$HOME/.pi/agent/auth.json"; do
+  if [ -e "$path" ]; then
+    printf 'local %-28s present, should not be committed\n' "${path#$HOME/}"
+  fi
+done
+
+printf '\nNext checks\n'
+printf '%s\n' '-----------'
+printf 'Run this after bootstrap or stow changes. Warnings are not failures; they mark drift to classify.\n'
+printf 'Use agent-skill-profile diff --target all to inspect skill bloat.\n'
