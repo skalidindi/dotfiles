@@ -39,6 +39,8 @@ usage() {
 Usage:
   zellij-sessionizer
   zellij-sessionizer --generate-list
+  zellij-sessionizer --select-dir
+  zellij-sessionizer --session-name-for-dir DIR
   zellij-sessionizer --delete DISPLAY_LINE
   zellij-sessionizer --kill DISPLAY_LINE
 
@@ -217,6 +219,48 @@ kill_session() {
   zellij kill-session "$session_name" 2>/dev/null || true
 }
 
+select_dir() {
+  local self
+  local selected_display
+  local clean_display
+
+  require_command fzf
+
+  self="$(printf '%q' "$0")"
+  selected_display="$(
+    generate_display_list \
+      | fzf --ansi \
+        --prompt="Select project: " \
+        --header="Enter: Select | Ctrl+D: Delete Session | Ctrl+K: Kill Session" \
+        --bind="ctrl-d:execute($self --delete {})+reload($self --generate-list)" \
+        --bind="ctrl-k:execute($self --kill {})+reload($self --generate-list)"
+  )" || exit 0
+
+  [ -n "$selected_display" ] || exit 0
+
+  clean_display="$(strip_status "$selected_display")"
+  expand_display_path "$clean_display"
+}
+
+switch_or_attach() {
+  local selected_dir="$1"
+  local session_name
+
+  session_name="$(session_name_for_dir "$selected_dir")"
+
+  if [ ! -d "$selected_dir" ]; then
+    printf 'zellij-sessionizer: selected directory does not exist: %s\n' "$selected_dir" >&2
+    exit 66
+  fi
+
+  if [ -n "${ZELLIJ:-}" ]; then
+    zellij action switch-session --cwd "$selected_dir" "$session_name"
+  else
+    cd -- "$selected_dir"
+    zellij attach "$session_name" --create
+  fi
+}
+
 if [ "${1:-}" = "-h" ] || [ "${1:-}" = "--help" ]; then
   usage
   exit 0
@@ -224,6 +268,16 @@ fi
 
 if [ "${1:-}" = "--generate-list" ]; then
   generate_display_list
+  exit 0
+fi
+
+if [ "${1:-}" = "--select-dir" ]; then
+  select_dir
+  exit 0
+fi
+
+if [ "${1:-}" = "--session-name-for-dir" ]; then
+  session_name_for_dir "${2:-}"
   exit 0
 fi
 
@@ -238,34 +292,6 @@ if [ "${1:-}" = "--kill" ]; then
 fi
 
 require_command zellij
-require_command fzf
-
-self="$(printf '%q' "$0")"
-selected_display="$(
-  generate_display_list \
-    | fzf --ansi \
-      --prompt="Select project: " \
-      --header="Enter: Select | Ctrl+D: Delete Session | Ctrl+K: Kill Session" \
-      --bind="ctrl-d:execute($self --delete {})+reload($self --generate-list)" \
-      --bind="ctrl-k:execute($self --kill {})+reload($self --generate-list)"
-)" || exit 0
-
-if [ -z "$selected_display" ]; then
-  exit 0
-fi
-
-clean_display="$(strip_status "$selected_display")"
-selected_dir="$(expand_display_path "$clean_display")"
-session_name="$(session_name_for_dir "$selected_dir")"
-
-if [ ! -d "$selected_dir" ]; then
-  printf 'zellij-sessionizer: selected directory does not exist: %s\n' "$selected_dir" >&2
-  exit 66
-fi
-
-if [ -n "${ZELLIJ:-}" ]; then
-  zellij action switch-session --cwd "$selected_dir" "$session_name"
-else
-  cd -- "$selected_dir"
-  zellij attach "$session_name" --create
-fi
+selected_dir="$(select_dir)"
+[ -n "$selected_dir" ] || exit 0
+switch_or_attach "$selected_dir"

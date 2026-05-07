@@ -159,6 +159,29 @@ def --env y [...args: string] {
     rm -f $tmp
 }
 
+def --env zellij_sessionizer [] {
+    let selection = (^zellij-sessionizer --select-dir | complete)
+
+    if $selection.exit_code != 0 {
+        return
+    }
+
+    let selected_dir = ($selection.stdout | str trim)
+
+    if ($selected_dir | is-empty) {
+        return
+    }
+
+    let session_name = (^zellij-sessionizer --session-name-for-dir $selected_dir | str trim)
+
+    if ($env.ZELLIJ? | is-not-empty) {
+        ^zellij action switch-session --cwd $selected_dir $session_name
+    } else {
+        cd $selected_dir
+        ^zellij attach $session_name --create
+    }
+}
+
 $env.config.keybindings = (
     $env.config.keybindings?
     | default []
@@ -167,6 +190,6 @@ $env.config.keybindings = (
         modifier: control
         keycode: char_f
         mode: [emacs, vi_normal, vi_insert]
-        event: { send: executehostcommand cmd: "zellij-sessionizer" }
+        event: { send: executehostcommand cmd: "zellij_sessionizer" }
     }
 )
