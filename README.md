@@ -29,6 +29,10 @@ launcher commands, prompt sync, profile drift, and obvious runtime-state leaks.
 - decrypts `env/.env-secrets.gpg` into the ignored local `env/.env-secrets`
   file when the encrypted file is present.
 
+Bootstrap behavior is split into numbered scripts under `installers/`. Use
+`./bootstrap.sh --list` to inspect the exact run order, or run a single
+installer directly when only one slice changed.
+
 Re-run `./bootstrap.sh` after changing stowed config, helper scripts, or package
 lists.
 
