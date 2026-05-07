@@ -38,6 +38,9 @@ alias vim = nvim
 alias vi = nvim
 alias cat = ^bat --style=plain
 
+alias codex = ^agent-awake codex
+alias claude = ^agent-awake claude
+
 alias g = ^git
 alias ga = ^git add
 alias gca = ^git commit -a

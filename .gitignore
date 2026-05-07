@@ -54,8 +54,6 @@ bin/.local/bin/*
 !bin/.local/bin/agent-mode
 !bin/.local/bin/agent-runtime-guard
 !bin/.local/bin/agent-skill-profile
-!bin/.local/bin/claude
-!bin/.local/bin/codex
 !bin/.local/bin/configure-oss-git
 !bin/.local/bin/install-agent-assets
 !bin/.local/bin/restore-skills-sh

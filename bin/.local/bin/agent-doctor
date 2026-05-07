@@ -198,21 +198,6 @@ status_command() {
   fi
 }
 
-status_wrapper_command() {
-  local name="$1"
-  local path
-  local expected_dir="$dotfiles_dir/bin/.local/bin"
-
-  path="$(command -v "$name" 2>/dev/null || true)"
-  if [ -z "$path" ]; then
-    printf 'miss  %-28s not on PATH\n' "$name"
-  elif [ "$(dirname "$path")" = "$HOME/.local/bin" ] || [ "$(dirname "$path")" = "$expected_dir" ]; then
-    printf 'ok    %-28s %s\n' "$name" "$path"
-  else
-    printf 'warn  %-28s %s (not dotfiles wrapper)\n' "$name" "$path"
-  fi
-}
-
 status_same_file() {
   local expected="$1"
   local actual="$2"
@@ -295,8 +280,8 @@ printf '%s\n' '--------'
 for cmd in zrun agent-awake agent-mode; do
   status_command "$cmd"
 done
-status_wrapper_command codex
-status_wrapper_command claude
+status_command codex
+status_command claude
 
 printf '\nSkill counts\n'
 printf '%s\n' '------------'

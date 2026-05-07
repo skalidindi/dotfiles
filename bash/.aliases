@@ -42,6 +42,10 @@ alias get_ip="ipconfig getifaddr en0 | pbcopy"
 
 alias cat="bat --style=plain"
 
+# Agent CLIs stay installer-managed; interactive shells add awake behavior.
+alias codex="agent-awake codex"
+alias claude="agent-awake claude"
+
 # Tmux Sessionizer
 bindkey -s "^f" "tmux-sessionizer\n"
 

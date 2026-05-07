@@ -44,7 +44,7 @@ lists.
   templates, hooks, keybindings, and portable extensions. Runtime files inside
   these trees are intentionally ignored.
 - `bin/.local/bin/` - local PATH helpers such as `zrun`, `agent-awake`,
-  `agent-doctor`, `agent-skill-profile`, and agent wrapper commands.
+  `agent-doctor`, and `agent-skill-profile`.
 - `bash/`, `zsh/`, `nushell/`, `starship/` - shell configuration and prompt
   setup.
 - `git/`, `jj/`, `gh/`, `lazygit/` - source-control configuration.
@@ -93,9 +93,10 @@ codex
 claude
 ```
 
-Interactive TTY runs of `codex` and `claude` are still wrapped with
-`agent-awake` so the session can keep running while the laptop is closed.
-Non-interactive invocations run the real command directly.
+Interactive shells alias `codex` and `claude` through `agent-awake`, so the
+session can keep running while the laptop is closed without tracking wrapper
+files in `~/.local/bin`. Non-interactive invocations and installer-managed
+binaries stay untouched.
 
 ## Secrets And Runtime State
 
