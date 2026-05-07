@@ -363,7 +363,7 @@ for cmd in zrun agent-awake agent-mode; do
   status_command "$cmd"
 done
 status_wrapper_command codex
-status_command claude
+status_wrapper_command claude
 status_wrapper_command pi
 
 printf '\nSkill counts\n'
