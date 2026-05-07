@@ -77,6 +77,7 @@ Useful checks and maintenance commands:
 
 ```bash
 agent-doctor
+agent-runtime-guard
 install-agent-assets
 agent-skill-profile diff --target all
 agent-skill-profile apply --target all --prune core

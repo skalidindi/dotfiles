@@ -364,6 +364,14 @@ for path in \
   fi
 done
 
+if command -v agent-runtime-guard >/dev/null 2>&1; then
+  if agent-runtime-guard --quiet; then
+    printf 'ok    %-28s ignored and untracked\n' "runtime guard"
+  else
+    printf 'warn  %-28s run agent-runtime-guard\n' "runtime guard"
+  fi
+fi
+
 printf '\nNext checks\n'
 printf '%s\n' '-----------'
 printf 'Run this after bootstrap or stow changes. Warnings are not failures; they mark drift to classify.\n'

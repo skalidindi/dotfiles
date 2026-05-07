@@ -1,0 +1,114 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  cat <<'EOF'
+Usage:
+  agent-runtime-guard [--quiet]
+  agent-runtime-guard --list
+
+Verify representative agent runtime files are ignored and not tracked.
+EOF
+}
+
+resolve_script_path() {
+  local source="$1"
+  local dir
+  local link
+
+  while [ -L "$source" ]; do
+    dir="$(cd -P "$(dirname "$source")" && pwd)"
+    link="$(readlink "$source")"
+    case "$link" in
+      /*) source="$link" ;;
+      *) source="$dir/$link" ;;
+    esac
+  done
+
+  cd -P "$(dirname "$source")" && pwd
+}
+
+runtime_paths=(
+  "env/.env-secrets"
+  "bin/.local/bin/agent"
+  "bin/.local/bin/agent-beach"
+  "bin/.local/bin/cursor-agent"
+  "bin/.local/bin/python3.14"
+  "bin/.local/bin/ruff"
+  "bin/.local/bin/ty"
+  "claude/.claude/client_secrets.json"
+  "claude/.claude/history.jsonl"
+  "claude/.claude/settings.local.json"
+  "claude/.claude/backups/example.json"
+  "codex/.codex/auth.json"
+  "codex/.codex/google_credentials.json"
+  "codex/.codex/history.jsonl"
+  "codex/.codex/model-catalog.json"
+  "codex/.codex/sessions/example.jsonl"
+  "codex/.codex/logs_2.sqlite"
+  "codex/.codex/state_5.sqlite"
+  "cursor/.cursor/client_secrets.json"
+  "cursor/.cursor/mcp.json"
+  "cursor/.cursor/snapshots/example/HEAD"
+  "pi/.pi/agent/auth.json"
+  "pi/.pi/agent/mcp.json"
+  "pi/.pi/agent/settings.json"
+  "pi/.pi/agent/sessions/example/session.jsonl"
+  "pi/.pi/memory/memory.db"
+)
+
+quiet=0
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    --list)
+      printf '%s\n' "${runtime_paths[@]}"
+      exit 0
+      ;;
+    --quiet)
+      quiet=1
+      shift
+      ;;
+    *)
+      printf 'agent-runtime-guard: unknown option: %s\n' "$1" >&2
+      usage >&2
+      exit 64
+      ;;
+  esac
+done
+
+script_dir="$(resolve_script_path "${BASH_SOURCE[0]}")"
+dotfiles_dir="${AGENT_RUNTIME_GUARD_ROOT:-$(cd "$script_dir/../../.." && pwd)}"
+
+if ! git -C "$dotfiles_dir" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  printf 'agent-runtime-guard: not a git worktree: %s\n' "$dotfiles_dir" >&2
+  exit 69
+fi
+
+failures=0
+for path in "${runtime_paths[@]}"; do
+  if git -C "$dotfiles_dir" ls-files --error-unmatch "$path" >/dev/null 2>&1; then
+    [ "$quiet" -eq 1 ] || printf 'FAIL tracked runtime path: %s\n' "$path"
+    failures=$((failures + 1))
+    continue
+  fi
+
+  if ! git -C "$dotfiles_dir" check-ignore -q --no-index "$path"; then
+    [ "$quiet" -eq 1 ] || printf 'FAIL unignored runtime path: %s\n' "$path"
+    failures=$((failures + 1))
+    continue
+  fi
+
+  [ "$quiet" -eq 1 ] || printf 'ok   %s\n' "$path"
+done
+
+if [ "$failures" -gt 0 ]; then
+  [ "$quiet" -eq 1 ] || printf 'runtime guard failed: %s path(s)\n' "$failures" >&2
+  exit 1
+fi
+
+[ "$quiet" -eq 1 ] || printf 'runtime guard passed: %s path(s)\n' "${#runtime_paths[@]}"
