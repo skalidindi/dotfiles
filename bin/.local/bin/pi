@@ -35,4 +35,16 @@ if [ -z "$real_command" ]; then
   exit 69
 fi
 
-exec zrun "$real_command" "$@"
+if [ ! -t 0 ] || [ ! -t 1 ]; then
+  exec "$real_command" "$@"
+fi
+
+if [ "${AGENT_AWAKE_DISABLE:-0}" = "1" ] || [ -n "${AGENT_AWAKE_ACTIVE:-}" ]; then
+  exec "$real_command" "$@"
+fi
+
+if command -v agent-awake >/dev/null 2>&1; then
+  exec agent-awake "$real_command" "$@"
+fi
+
+exec "$real_command" "$@"

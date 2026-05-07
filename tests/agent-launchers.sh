@@ -24,7 +24,18 @@ SH
   chmod +x "$path"
 }
 
-test_agent_wrapper_resolves_real_command_and_calls_zrun() {
+write_fake_agent_awake() {
+  local path="$1"
+  cat >"$path" <<'SH'
+#!/usr/bin/env bash
+printf 'agent-awake:'
+printf ' %s' "$@"
+printf '\n'
+SH
+  chmod +x "$path"
+}
+
+test_agent_wrapper_resolves_real_command_and_calls_agent_awake_for_tty() {
   local agent="$1"
   local sandbox wrappers real output
 
@@ -37,19 +48,44 @@ test_agent_wrapper_resolves_real_command_and_calls_zrun() {
   cp "$root_dir/bin/.local/bin/$agent" "$wrappers/$agent"
   chmod +x "$wrappers/$agent"
   write_fake_real_agent "$real/$agent"
+  write_fake_agent_awake "$wrappers/agent-awake"
 
-  cat >"$wrappers/zrun" <<'SH'
+  cat >"$sandbox/run-agent" <<SH
 #!/usr/bin/env bash
-printf 'zrun:'
-printf ' %s' "$@"
-printf '\n'
+unset AGENT_AWAKE_ACTIVE AGENT_AWAKE_DISABLE
+PATH="$wrappers:$real:/usr/bin:/bin" exec "$wrappers/$agent" --version
 SH
-  chmod +x "$wrappers/zrun"
+  chmod +x "$sandbox/run-agent"
+
+  set +e
+  output="$(script -q /dev/null "$sandbox/run-agent" 2>&1)"
+  set -e
+
+  [[ "$output" == *"agent-awake: $real/$agent --version"* ]] ||
+    fail "$agent wrapper should call agent-awake with the real command for TTY runs; got: $output"
+}
+
+test_agent_wrapper_runs_real_command_directly_when_not_interactive() {
+  local agent="$1"
+  local sandbox wrappers real output
+
+  sandbox="$(make_sandbox)"
+  trap 'rm -rf "$sandbox"' RETURN
+  wrappers="$sandbox/wrappers"
+  real="$sandbox/real"
+  mkdir -p "$wrappers" "$real"
+
+  cp "$root_dir/bin/.local/bin/$agent" "$wrappers/$agent"
+  chmod +x "$wrappers/$agent"
+  write_fake_real_agent "$real/$agent"
+  write_fake_agent_awake "$wrappers/agent-awake"
 
   output="$(PATH="$wrappers:$real:/usr/bin:/bin" "$wrappers/$agent" --version 2>&1)"
 
-  [[ "$output" == "zrun: $real/$agent --version" ]] ||
-    fail "$agent wrapper should call zrun with the real command; got: $output"
+  [[ "$output" == *"real-agent:$real/$agent"* ]] ||
+    fail "$agent wrapper should run the real command directly without a TTY; got: $output"
+  [[ "$output" == *"args: --version"* ]] ||
+    fail "$agent wrapper should preserve args when running directly; got: $output"
 }
 
 test_agent_wrapper_reports_missing_real_command() {
@@ -76,7 +112,8 @@ test_agent_wrapper_reports_missing_real_command() {
 }
 
 for agent in codex claude pi; do
-  test_agent_wrapper_resolves_real_command_and_calls_zrun "$agent"
+  test_agent_wrapper_resolves_real_command_and_calls_agent_awake_for_tty "$agent"
+  test_agent_wrapper_runs_real_command_directly_when_not_interactive "$agent"
   test_agent_wrapper_reports_missing_real_command "$agent"
 done
 

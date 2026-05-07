@@ -84,18 +84,19 @@ agent-skill-profile apply --target all --prune core
 agent-skill-profile apply --target all heavy
 ```
 
-Run long-lived interactive agents through `zrun`:
+For long-lived interactive agents, start or attach a zellij session manually,
+then run the agent commands normally:
 
 ```bash
-zrun codex
-zrun claude
-zrun pi
-zrun --list
-zrun --attach
+zellij
+codex
+claude
+pi
 ```
 
-Interactive `codex`, `claude`, and `pi` runs are wrapped with `agent-awake`
-outside Zellij so the session can keep running while the laptop is closed.
+Interactive TTY runs of `codex`, `claude`, and `pi` are still wrapped with
+`agent-awake` so the session can keep running while the laptop is closed.
+Non-interactive invocations run the real command directly.
 
 ## Secrets And Runtime State
 
