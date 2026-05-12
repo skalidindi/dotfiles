@@ -24,9 +24,6 @@ fpath+=("~/.zsh.d")
 # Starship
 eval "$(starship init zsh)"
 
-# Atuin
-eval "$(atuin init zsh)"
-
 # Zoxide
 eval "$(zoxide init zsh)"
 

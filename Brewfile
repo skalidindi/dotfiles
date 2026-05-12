@@ -46,7 +46,6 @@ cask "yaak"
 cask "zen"
 
 # Homebrew formulae
-brew "atuin"
 brew "awscli"
 brew "bat"
 brew "btop"

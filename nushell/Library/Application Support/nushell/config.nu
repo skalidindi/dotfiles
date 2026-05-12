@@ -15,12 +15,10 @@ $env.config.history = (
 )
 
 const starship_init = ($nu.default-config-dir | path join "vendor/starship.nu")
-const atuin_init = ($nu.default-config-dir | path join "vendor/atuin.nu")
 const zoxide_init = ($nu.default-config-dir | path join "vendor/zoxide.nu")
 const jj_completion = ($nu.default-config-dir | path join "completions/jj.nu")
 
 source $starship_init
-source $atuin_init
 source $zoxide_init
 use $jj_completion *
 
