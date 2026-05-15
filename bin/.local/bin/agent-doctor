@@ -277,7 +277,7 @@ status_same_file "$dotfiles_dir/agents/.agents/prompts/base.md" "$dotfiles_dir/c
 
 printf '\nCommands\n'
 printf '%s\n' '--------'
-for cmd in zrun agent-awake agent-mode; do
+for cmd in zrun agent-mode; do
   status_command "$cmd"
 done
 status_command codex

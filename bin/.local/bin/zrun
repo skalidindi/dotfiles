@@ -8,8 +8,8 @@ Usage:
   zrun --list
   zrun --attach [SESSION]
 
-Run COMMAND inside a new zellij session. Interactive codex/claude/pi runs are
-wrapped with agent-awake. If already inside zellij, COMMAND is executed directly.
+Run COMMAND inside a new zellij session. If already inside zellij, COMMAND is
+executed directly.
 EOF
 }
 
@@ -119,16 +119,6 @@ original_command_name="$(basename "$1")"
 
 if [ ! -t 0 ] || [ ! -t 1 ]; then
   exec "$@"
-fi
-
-if [ "${AGENT_AWAKE_DISABLE:-0}" != "1" ] && [ -z "${AGENT_AWAKE_ACTIVE:-}" ]; then
-  case "$original_command_name" in
-    claude|codex|pi)
-      if command -v agent-awake >/dev/null 2>&1; then
-        set -- agent-awake "$@"
-      fi
-      ;;
-  esac
 fi
 
 if [ -n "${ZELLIJ:-}" ]; then

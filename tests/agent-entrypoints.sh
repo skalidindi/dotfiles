@@ -24,6 +24,14 @@ assert_not_allowlisted() {
   fi
 }
 
+assert_not_present() {
+  local path="$1"
+
+  if [ -e "$root_dir/$path" ]; then
+    fail "$path should not exist"
+  fi
+}
+
 assert_line() {
   local file="$1"
   local line="$2"
@@ -37,11 +45,11 @@ assert_not_tracked "bin/.local/bin/claude"
 assert_not_allowlisted "bin/.local/bin/codex"
 assert_not_allowlisted "bin/.local/bin/claude"
 
-assert_line "bash/.aliases" 'alias codex="agent-awake codex"'
-assert_line "bash/.aliases" 'alias claude="agent-awake claude"'
-assert_line "nushell/Library/Application Support/nushell/config.nu" 'alias codex = ^agent-awake codex'
-assert_line "nushell/Library/Application Support/nushell/config.nu" 'alias claude = ^agent-awake claude'
-assert_line "bin/.local/bin/zellij-sessionizer" '    agent-awake zellij attach "$session_name" --create'
-assert_line "nushell/Library/Application Support/nushell/config.nu" '        ^agent-awake zellij attach $session_name --create'
+removed_awake_path="bin/.local/bin/agent-""awake"
+assert_not_present "$removed_awake_path"
+assert_not_allowlisted "$removed_awake_path"
+
+assert_line "bin/.local/bin/zellij-sessionizer" '    zellij attach "$session_name" --create'
+assert_line "nushell/Library/Application Support/nushell/config.nu" '        ^zellij attach $session_name --create'
 
 printf 'PASS: agent entrypoint tests\n'

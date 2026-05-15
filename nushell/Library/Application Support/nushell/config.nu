@@ -36,9 +36,6 @@ alias vim = nvim
 alias vi = nvim
 alias cat = ^bat --style=plain
 
-alias codex = ^agent-awake codex
-alias claude = ^agent-awake claude
-
 alias g = ^git
 alias ga = ^git add
 alias gca = ^git commit -a
@@ -179,7 +176,7 @@ def --env zellij_sessionizer [] {
         ^zellij action switch-session --cwd $selected_dir $session_name
     } else {
         cd $selected_dir
-        ^agent-awake zellij attach $session_name --create
+        ^zellij attach $session_name --create
     }
 }
 

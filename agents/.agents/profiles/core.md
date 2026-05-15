@@ -6,8 +6,6 @@ Small default profile for every coding agent.
 
 - Shared base prompt: direct collaboration, evidence-first claims, scope
   discipline, read-before-edit, and risk-scaled verification.
-- `agent-awake` launcher workflow for long-running Claude/Codex sessions on
-  local macOS; zellij session management stays manual.
 - Minimal safety hooks:
   - block direct `python`/`pip`/`poetry` in favor of `uv`;
   - warn or block destructive shell commands before they run;

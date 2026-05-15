@@ -43,8 +43,8 @@ lists.
 - `claude/`, `codex/`, `cursor/` - tool-specific agent homes,
   templates, hooks, keybindings, and portable extensions. Runtime files inside
   these trees are intentionally ignored.
-- `bin/.local/bin/` - local PATH helpers such as `zrun`, `agent-awake`,
-  `agent-doctor`, and `agent-skill-profile`.
+- `bin/.local/bin/` - local PATH helpers such as `zrun`, `agent-doctor`, and
+  `agent-skill-profile`.
 - `bash/`, `zsh/`, `nushell/`, `starship/` - shell configuration and prompt
   setup.
 - `git/`, `jj/`, `gh/`, `lazygit/` - source-control configuration.
@@ -93,10 +93,8 @@ codex
 claude
 ```
 
-Interactive shells alias `codex` and `claude` through `agent-awake`, so the
-session can keep running while the laptop is closed without tracking wrapper
-files in `~/.local/bin`. Non-interactive invocations and installer-managed
-binaries stay untouched.
+Agent CLIs resolve to installer-managed binaries; this repo does not track
+wrapper files or shell aliases for `codex` and `claude`.
 
 ## Secrets And Runtime State
 

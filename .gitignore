@@ -48,7 +48,6 @@ cursor/.cursor/**
 bin/.local/*
 !bin/.local/bin/
 bin/.local/bin/*
-!bin/.local/bin/agent-awake
 !bin/.local/bin/agent-doctor
 !bin/.local/bin/agent-mcp-profile
 !bin/.local/bin/agent-mode
