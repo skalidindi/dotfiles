@@ -82,6 +82,7 @@ if (which brew | is-not-empty) {
 }
 
 prepend-path ($nu.home-dir | path join "Library/Application Support/Coursier/bin")
+prepend-path ($nu.home-dir | path join "Library/Application Support/JetBrains/Toolbox/scripts")
 prepend-path ($nu.home-dir | path join "istio-1.25.2/bin")
 prepend-path ($nu.home-dir | path join "go/bin")
 prepend-path ($nu.home-dir | path join ".cargo/bin")

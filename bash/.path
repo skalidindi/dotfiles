@@ -10,6 +10,9 @@ export PATH=$PYTHON_HOME/bin:$PATH
 # Coursier
 export PATH="$HOME/Library/Application Support/Coursier/bin:$PATH"
 
+# JetBrains Toolbox scripts
+export PATH="$HOME/Library/Application Support/JetBrains/Toolbox/scripts:$PATH"
+
 # Istio
 export PATH=$HOME/istio-1.25.2/bin:$PATH
 
