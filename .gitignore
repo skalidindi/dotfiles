@@ -23,6 +23,9 @@ codex/*
 codex/.codex/**
 !codex/.codex/AGENTS.md
 !codex/.codex/hooks.json.tpl
+!codex/.codex/skills/
+!codex/.codex/skills/workflow-audit/
+!codex/.codex/skills/workflow-audit/**
 
 # Claude
 claude
@@ -34,6 +37,9 @@ claude/.claude/**
 !claude/.claude/plugins/
 claude/.claude/plugins/**
 !claude/.claude/plugins/config.json
+!claude/.claude/skills/
+!claude/.claude/skills/workflow-audit/
+!claude/.claude/skills/workflow-audit/**
 
 # Cursor
 cursor
