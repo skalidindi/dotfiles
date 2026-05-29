@@ -112,3 +112,7 @@ prepend-path ($nu.home-dir | path join ".antigravity/antigravity/bin")
 load-simple-env ($nu.home-dir | path join ".env-secrets")
 
 prefer-path ($nu.home-dir | path join ".local/bin")
+
+# >>> XP ENV BEGIN >>>
+prepend-path ($nu.home-dir | path join "xp-env/bin")
+# <<< XP ENV END <<<

@@ -22,8 +22,9 @@ source $starship_init
 source $zoxide_init
 use $jj_completion *
 
-alias nu-open = open
-alias open = ^open
+# keep nushell's builtin `open` (used by vendor autoloads like wt.nu, and `def y`);
+# launch macOS apps/URLs with `oo`
+alias oo = ^open
 
 alias doc = cd ~/Documents
 alias desk = cd ~/Desktop
