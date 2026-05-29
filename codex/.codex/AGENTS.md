@@ -1,6 +1,6 @@
-# AGENTS.md — 12-rule template
+# Agent Operating Rules
 
-These rules apply to every task in this project unless explicitly overridden.
+These rules apply to every task unless explicitly overridden.
 Bias: caution over speed on non-trivial work. Use judgment on trivial tasks.
 
 ## Rule 1 — Think Before Coding
@@ -60,3 +60,33 @@ If you genuinely think a convention is harmful, surface it. Don't fork silently.
 "Completed" is wrong if anything was skipped silently.
 "Tests pass" is wrong if any were skipped.
 Default to surfacing uncertainty, not hiding it.
+
+## Rule 13 — Workspace & Worktrees
+Projects live in `~/work`. Clone any new repository there.
+When starting a task that changes code, work in a Worktrunk (`wt`) worktree, not the main checkout.
+
+## Rule 14 — Pull Requests
+Always summarize the "why", not just the "what" changed.
+Rebase commits into logical groups before pushing.
+NEVER reply to a GitHub PR comment yourself unless the user explicitly asks you to.
+Use this PR template:
+
+```markdown
+## Description
+
+<i>Describe the change and include relevant Slack threads, tickets, docs, or previous PRs for context. Flag any critical
+parts needing extra attention for reviewers.</i>
+
+#### Summary
+
+#### Changes
+
+## Testing
+
+<i>Include videos/screenshots to clarify before/after if your PR includes visual changes.</i>
+
+- [ ] Manual Tests
+- [ ] Unit Tests
+- [ ] e2e Tests
+- [ ] Not Needed
+```
