@@ -52,6 +52,9 @@ export SDKMAN_DIR="$HOME/.sdkman"
 # bun completions
 [ -s "/Users/skalidindi/oss/dotfiles/zsh/_bun" ] && source "/Users/skalidindi/oss/dotfiles/zsh/_bun"
 
+# User-local bin (also exposes the Obsidian CLI: ~/.local/bin/obsidian-cli)
+export PATH="$HOME/.local/bin:$PATH"
+
 # LM Studio CLI (lms)
 export PATH="$PATH:/Users/skalidindi/.lmstudio/bin"
 
