@@ -97,6 +97,8 @@ prepend-path ($env.BUN_INSTALL | path join "bin")
 $env.CODEX_HOME = ($nu.home-dir | path join ".codex")
 $env.OPENAI_API_KEY = ($env.OPENAI_API_KEY? | default "dummy")
 
+prepend-path ($nu.home-dir | path join ".nub/bin")
+
 prepend-path ($nu.home-dir | path join ".npm-global/bin")
 
 hide-env -i FNM_ARCH FNM_COREPACK_ENABLED FNM_DIR FNM_LOGLEVEL FNM_MULTISHELL_PATH FNM_NODE_DIST_MIRROR FNM_RESOLVE_ENGINES FNM_VERSION_FILE_STRATEGY PNPM_HOME
