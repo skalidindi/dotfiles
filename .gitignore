@@ -59,7 +59,6 @@ bin/.local/*
 !bin/.local/bin/
 bin/.local/bin/*
 !bin/.local/bin/agent-doctor
-!bin/.local/bin/agent-mcp-profile
 !bin/.local/bin/agent-mode
 !bin/.local/bin/agent-runtime-guard
 !bin/.local/bin/agent-skill-profile

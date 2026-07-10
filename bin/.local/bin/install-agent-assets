@@ -258,12 +258,12 @@ dotfiles_dir="$(cd "$script_dir/../../.." && pwd)"
 
 copy_if_changed \
   "$dotfiles_dir/agents/.agents/prompts/base.md" \
-  "$dotfiles_dir/claude/.claude/CLAUDE.md" \
+  "$HOME/.claude/CLAUDE.md" \
   "Claude base prompt"
 
 copy_if_changed \
   "$dotfiles_dir/agents/.agents/prompts/base.md" \
-  "$dotfiles_dir/codex/.codex/AGENTS.md" \
+  "$HOME/.codex/AGENTS.md" \
   "Codex base prompt"
 
 for agent_home in "$HOME/.claude" "$HOME/.codex"; do
@@ -285,4 +285,10 @@ if [ -d "$HOME/.agents" ]; then
   printf 'ok shared agent directory\n'
 else
   printf 'warn shared agent directory missing; run stow -t "$HOME" -R agents\n' >&2
+fi
+
+# A private work overlay may refine the portable base prompt. The optional
+# renderer keeps an OSS bootstrap current without making OSS depend on work.
+if [ -x "$HOME/.local/bin/render-work-agent-prompts" ]; then
+  "$HOME/.local/bin/render-work-agent-prompts"
 fi

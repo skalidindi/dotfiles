@@ -13,7 +13,9 @@ if ! command -v stow >/dev/null 2>&1; then
 fi
 
 echo "Running stow for dotfiles..."
-stow_dirs=(agents claude cmux bash bin env fastfetch gh ghostty git herdr jj lazygit nushell nvim starship tmux yazi zellij zsh)
+# Claude and Codex homes are mutable runtime directories. Their portable assets are
+# applied by install-agent-assets; do not stow either whole home directory.
+stow_dirs=(agents cmux bash bin env fastfetch gh ghostty git herdr jj lazygit nushell nvim starship tmux yazi zellij zsh)
 
 for dir in "${stow_dirs[@]}"; do
   if [[ -d "$dir" ]]; then
