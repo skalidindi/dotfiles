@@ -28,8 +28,6 @@ for entry in \
   "$HOME/.agents/README.md:shared agents readme" \
   "$HOME/.agents/prompts/base.md:base prompt" \
   "$HOME/.agents/profiles/core.skills:core skill profile" \
-  "$HOME/.agents/modes/pair.md:pair mode" \
-  "$HOME/.agents/modes/auto.md:auto mode" \
   "$HOME/.claude/CLAUDE.md:claude prompt" \
   "$HOME/.codex/AGENTS.md:codex prompt"; do
   path="${entry%%:*}"
@@ -38,7 +36,7 @@ for entry in \
 done
 
 printf '\nCommands\n--------\n'
-for command in agent-mode agent-skill-profile codex claude pi; do
+for command in agent-skill-profile codex claude pi; do
   status_command "$command"
 done
 

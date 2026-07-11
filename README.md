@@ -38,8 +38,8 @@ lists.
 
 ## Repo Layout
 
-- `agents/` - shared Claude, Codex, and Cursor prompt assets, profiles,
-  helper-agent prompts, modes, and skill source manifests.
+- `agents/` - shared Claude, Codex, and Cursor prompt assets, profiles, task
+  notes, and skill source manifests.
 - `claude/`, `codex/`, `cursor/` - tool-specific agent homes,
   templates, hooks, keybindings, and portable extensions. Runtime files inside
   these trees are intentionally ignored.
