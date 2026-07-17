@@ -55,6 +55,26 @@ alias gu = ^git pull
 
 alias lg = ^lazygit
 
+# Netflix agent launchers exec binaries whose process names are not stable.
+# Scope herdr's documented hint to each agent process and its descendants.
+def --wrapped claude [...args] {
+    with-env { HERDR_AGENT: "claude" } {
+        ^claude ...$args
+    }
+}
+
+def --wrapped codex [...args] {
+    with-env { HERDR_AGENT: "codex" } {
+        ^codex ...$args
+    }
+}
+
+def --wrapped pi [...args] {
+    with-env { HERDR_AGENT: "pi" } {
+        ^pi ...$args
+    }
+}
+
 def --wrapped sh [...args] {
     with-env { SHELL: "/bin/zsh" } {
         ^zsh -fc ($args | str join " ")
