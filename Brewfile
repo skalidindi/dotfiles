@@ -2,7 +2,6 @@
 tap "oven-sh/bun"
 tap "sourcegraph/src-cli"
 tap "tw93/tap"
-tap "withgraphite/tap"
 
 # Homebrew Cask applications
 cask "1password"
@@ -49,6 +48,7 @@ cask "visual-studio-code"
 cask "whatsapp"
 
 # Homebrew formulae
+brew "agavra/tap/tuicr"
 brew "ansible"
 brew "antidote"
 brew "awscli"
@@ -109,4 +109,3 @@ brew "zoxide"
 brew "zsh"
 brew "oven-sh/bun/bun"
 brew "tw93/tap/mole"
-brew "withgraphite/tap/graphite"

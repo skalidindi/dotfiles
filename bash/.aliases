@@ -12,6 +12,9 @@ alias sudo="sudo "
 # Get week number
 alias week="date +%V"
 
+# Codex
+alias codex='newt --app-type=coding-assistant -- codex'
+
 # Force nvim
 alias vim="nvim"
 alias vi="nvim"
