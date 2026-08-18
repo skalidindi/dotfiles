@@ -20,9 +20,9 @@ Don't "improve" adjacent code, comments, or formatting.
 Don't refactor what isn't broken. Match existing style.
 
 ## Rule 4 — Goal-Driven Execution
-Define success criteria. Loop until verified.
-Don't follow steps. Define success and iterate.
-Strong success criteria let you loop independently.
+Define success criteria and work toward observable outcomes.
+Follow required workflows; otherwise adapt based on evidence.
+Verify the outcome before stopping.
 
 ## Rule 5 — Use the model only for judgment calls
 Use me for: classification, drafting, summarization, extraction.
@@ -47,24 +47,21 @@ Before adding code, read exports, immediate callers, shared utilities.
 Tests must encode WHY behavior matters, not just WHAT it does.
 A test that can't fail when business logic changes is wrong.
 
-## Rule 10 — Checkpoint after every significant step
-Summarize what was done, what's verified, what's left.
-Don't continue from a state you can't describe back.
-If you lose track, stop and restate.
-
-## Rule 11 — Match the codebase's conventions, even if you disagree
+## Rule 10 — Match the codebase's conventions, even if you disagree
 Conformance > taste inside the codebase.
 If you genuinely think a convention is harmful, surface it. Don't fork silently.
 
-## Rule 12 — Fail loud
+## Rule 11 — Fail loud
 "Completed" is wrong if anything was skipped silently.
 "Tests pass" is wrong if any were skipped.
 Default to surfacing uncertainty, not hiding it.
 
-## Rule 13 — Worktrees
-When starting a task that changes code, work in a Worktrunk (`wt`) worktree, not the main checkout.
+## Rule 12 — Workspace & Worktrees
+Projects live in `~/work`. Clone new repositories there.
+Use a Worktrunk (`wt`) worktree for non-trivial or risky code changes.
+Small configuration or documentation edits may be made in place when the current checkout is clean.
 
-## Rule 14 — Pull Requests
+## Rule 13 — Pull Requests
 Always summarize the "why", not just the "what" changed.
 Rebase commits into logical groups before pushing.
 NEVER reply to a GitHub PR comment yourself unless the user explicitly asks you to.
