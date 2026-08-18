@@ -111,7 +111,7 @@ prepend-path ($env.VOLTA_HOME | path join "bin")
 
 prepend-path ($nu.home-dir | path join ".antigravity/antigravity/bin")
 
-load-simple-env ($nu.home-dir | path join ".env-secrets")
+source ($nu.home-dir | path join ".env-secrets")
 
 prefer-path ($nu.home-dir | path join ".local/bin")
 
