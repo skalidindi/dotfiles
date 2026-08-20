@@ -35,18 +35,19 @@ install_linux_nushell_config() {
   local config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/nushell"
   local config_target="$config_dir/config.nu"
   local config_source="$repo_root/nushell/Library/Application Support/nushell/config.nu"
+  local completions_target="$config_dir/completions"
+  local completions_source="$repo_root/nushell/Library/Application Support/nushell/completions"
   local backup_path="$config_target.work-generated.bak"
 
   [[ "$(uname -s)" == "Linux" ]] || return 0
 
   mkdir -p "$config_dir"
   if [[ -L "$config_target" ]]; then
-    [[ "$(readlink "$config_target")" == "$config_source" ]] && return 0
-    printf 'existing Nushell config symlink is not managed by dotfiles: %s\n' "$config_target" >&2
-    return 1
-  fi
-
-  if [[ -e "$config_target" ]]; then
+    if [[ "$(readlink "$config_target")" != "$config_source" ]]; then
+      printf 'existing Nushell config symlink is not managed by dotfiles: %s\n' "$config_target" >&2
+      return 1
+    fi
+  elif [[ -e "$config_target" ]]; then
     if ! grep -Fqx '# >>> work-dotfiles generated vendor scripts >>>' "$config_target"; then
       printf 'existing Nushell config is not a generated Work config: %s\n' "$config_target" >&2
       return 1
@@ -56,9 +57,14 @@ install_linux_nushell_config() {
       return 1
     fi
     mv "$config_target" "$backup_path"
+    ln -s "$config_source" "$config_target"
+  else
+    ln -s "$config_source" "$config_target"
   fi
 
-  ln -s "$config_source" "$config_target"
+  if [[ ! -e "$completions_target" && ! -L "$completions_target" ]]; then
+    ln -s "$completions_source" "$completions_target"
+  fi
 }
 
 install_linux_nushell_config

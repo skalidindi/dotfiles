@@ -23,12 +23,17 @@ HOME="$sandbox/home" PATH="$sandbox/bin:/usr/bin:/bin" bash "$root_dir/installer
 target="$sandbox/home/.config/nushell/config.nu"
 backup="$target.work-generated.bak"
 source="$root_dir/nushell/Library/Application Support/nushell/config.nu"
+completions_source="$root_dir/nushell/Library/Application Support/nushell/completions"
 [[ -L "$target" && "$(readlink "$target")" == "$source" ]] || {
   printf 'FAIL: Linux config should link to the OSS Nushell config\n' >&2
   exit 1
 }
 [[ -f "$backup" ]] || {
   printf 'FAIL: generated Work config should be backed up\n' >&2
+  exit 1
+}
+[[ -L "$sandbox/home/.config/nushell/completions" && "$(readlink "$sandbox/home/.config/nushell/completions")" == "$completions_source" ]] || {
+  printf 'FAIL: Linux completions should link to the OSS Nushell completions\n' >&2
   exit 1
 }
 
