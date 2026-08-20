@@ -180,3 +180,10 @@ def --env y [...args: string] {
 
     rm -f $tmp
 }
+
+# >>> work-dotfiles generated vendor scripts >>>
+source vendor/00-homebrew.nu
+source vendor/starship.nu
+source vendor/zoxide.nu
+source vendor/worktrunk.nu
+# <<< work-dotfiles generated vendor scripts <<<
