@@ -57,6 +57,27 @@ alias gu = ^git pull
 
 alias lg = ^lazygit
 
+# Agent launchers can exec versioned binaries, which prevents Herdr from
+# recognizing them by process name. Keep its documented hint scoped to each
+# launcher instead of exporting it for the entire shell.
+def --wrapped claude [...args] {
+    with-env { HERDR_AGENT: "claude" } {
+        ^claude ...$args
+    }
+}
+
+def --wrapped codex [...args] {
+    with-env { HERDR_AGENT: "codex" } {
+        ^codex ...$args
+    }
+}
+
+def --wrapped pi [...args] {
+    with-env { HERDR_AGENT: "pi" } {
+        ^pi ...$args
+    }
+}
+
 def --wrapped sh [...args] {
     with-env { SHELL: "/bin/zsh" } {
         ^zsh -fc ($args | str join " ")
