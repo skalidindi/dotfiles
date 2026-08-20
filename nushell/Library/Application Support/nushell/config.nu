@@ -22,6 +22,11 @@ source $starship_init
 source $zoxide_init
 use $jj_completion *
 
+let work_nushell_overlay = ($env.HOME | path join ".config" "dotfiles" "shell" "work.nu")
+if ($work_nushell_overlay | path exists) {
+    source $work_nushell_overlay
+}
+
 # keep nushell's builtin `open` (used by vendor autoloads like wt.nu, and `def y`);
 # launch macOS apps/URLs with `oo`
 alias oo = ^open
