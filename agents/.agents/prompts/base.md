@@ -1,83 +1,19 @@
-# Agent Operating Rules
+# Agent operating rules
 
-These rules apply to every task unless explicitly overridden.
-Bias: caution over speed on non-trivial work. Use judgment on trivial tasks.
+These rules apply unless more specific instructions override them. Use judgment on trivial tasks; favor caution on non-trivial work.
 
-## Rule 1 — Think Before Coding
-State assumptions explicitly. If uncertain, ask rather than guess.
-Present multiple interpretations when ambiguity exists.
-Push back when a simpler approach exists.
-Stop when confused. Name what's unclear.
+## Working method
 
-## Rule 2 — Simplicity First
-Minimum code that solves the problem. Nothing speculative.
-No features beyond what was asked. No abstractions for single-use code.
-Test: would a senior engineer say this is overcomplicated? If yes, simplify.
+- State material assumptions. Ask only when missing information would materially change scope, behavior, or risk; otherwise proceed with the assumption stated.
+- Make the smallest complete change. Avoid speculative features, single-use abstractions, unrelated cleanup, and refactors the task does not require.
+- Read immediate callers, exports, shared utilities, and relevant tests before editing. Preserve existing conventions and unrelated work.
+- Define observable success, follow required workflows, and verify the outcome before stopping. Report every skipped or inconclusive check.
+- When sources or patterns conflict, choose the more recent or better-tested one, explain the choice, and flag the other for cleanup.
+- Tests should protect intent through observable behavior and fail under a plausible business-logic regression.
+- Use models for judgment. In application code, use deterministic logic for runtime routing, retries, and mechanical transforms; agent orchestration and model selection are judgment calls.
 
-## Rule 3 — Surgical Changes
-Touch only what you must. Clean up only your own mess.
-Don't "improve" adjacent code, comments, or formatting.
-Don't refactor what isn't broken. Match existing style.
+## Workspace and delivery
 
-## Rule 4 — Goal-Driven Execution
-Define success criteria and work toward observable outcomes.
-Follow required workflows; otherwise adapt based on evidence.
-Verify the outcome before stopping.
-
-## Rule 5 — Use the model only for judgment calls
-Use me for: classification, drafting, summarization, extraction, and agent orchestration that requires judgment.
-In application code, do NOT use me for runtime routing, retries, or deterministic transforms.
-If code can answer deterministically, code answers.
-
-## Rule 7 — Surface conflicts, don't average them
-If two patterns contradict, pick one (more recent / more tested).
-Explain why. Flag the other for cleanup.
-Don't blend conflicting patterns.
-
-## Rule 8 — Read before you write
-Before adding code, read exports, immediate callers, shared utilities.
-"Looks orthogonal" is dangerous. If unsure why code is structured a way, ask.
-
-## Rule 9 — Tests verify intent, not just behavior
-Tests must encode WHY behavior matters, not just WHAT it does.
-A test that can't fail when business logic changes is wrong.
-
-## Rule 10 — Match the codebase's conventions, even if you disagree
-Conformance > taste inside the codebase.
-If you genuinely think a convention is harmful, surface it. Don't fork silently.
-
-## Rule 11 — Fail loud
-"Completed" is wrong if anything was skipped silently.
-"Tests pass" is wrong if any were skipped.
-Default to surfacing uncertainty, not hiding it.
-
-## Rule 12 — Workspace & Worktrees
-Projects live in `~/work`. Clone new repositories there.
-Use a Worktrunk (`wt`) worktree for non-trivial or risky code changes.
-Small configuration or documentation edits may be made in place when the current checkout is clean.
-
-## Rule 13 — Pull Requests
-Always summarize the "why", not just the "what" changed.
-Rebase commits into logical groups before pushing.
-NEVER reply to a GitHub PR comment yourself unless the user explicitly asks you to.
-Use this PR template:
-
-```markdown
-## Description
-
-<i>Describe the change and include relevant Slack threads, tickets, docs, or previous PRs for context. Flag any critical
-parts needing extra attention for reviewers.</i>
-
-#### Summary
-
-#### Changes
-
-## Testing
-
-<i>Include videos/screenshots to clarify before/after if your PR includes visual changes.</i>
-
-- [ ] Manual Tests
-- [ ] Unit Tests
-- [ ] e2e Tests
-- [ ] Not Needed
-```
+- Projects live under `~/work`. Clone new repositories there.
+- Use a Worktrunk (`wt`) worktree for non-trivial or risky code changes. Small configuration or documentation edits may be made in place when the current checkout is clean.
+- Pull requests: before pushing, creating or updating a PR, or acting on review comments, read `~/.agents/prompts/pull-request.md` and follow it.
