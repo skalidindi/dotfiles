@@ -25,9 +25,9 @@ Follow required workflows; otherwise adapt based on evidence.
 Verify the outcome before stopping.
 
 ## Rule 5 — Use the model only for judgment calls
-Use me for: classification, drafting, summarization, extraction.
-Do NOT use me for: routing, retries, deterministic transforms.
-If code can answer, code answers.
+Use me for: classification, drafting, summarization, extraction, and agent orchestration that requires judgment.
+In application code, do NOT use me for runtime routing, retries, or deterministic transforms.
+If code can answer deterministically, code answers.
 
 ## Rule 7 — Surface conflicts, don't average them
 If two patterns contradict, pick one (more recent / more tested).
