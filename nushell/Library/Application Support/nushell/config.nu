@@ -72,6 +72,59 @@ def --wrapped codex [...args] {
     }
 }
 
+def codex-pr-netflix [] {
+    let state = ($nu.home-dir | path join ".codex" ".codex-global-state.json")
+    if not ($state | path exists) {
+        error make { msg: $"Codex state file not found: ($state)" }
+    }
+
+    let running = (^osascript -e 'application id "com.openai.codex" is running' | str trim)
+    if $running == "true" {
+        let quit = (
+            ^osascript -e 'tell application id "com.openai.codex" to quit'
+            | complete
+        )
+        if $quit.exit_code != 0 {
+            error make { msg: $"Failed to quit Codex: ($quit.stderr | str trim)" }
+        }
+
+        mut attempts = 0
+        while $attempts < 50 {
+            let still_running = (^osascript -e 'application id "com.openai.codex" is running' | str trim)
+            if $still_running != "true" {
+                break
+            }
+            sleep 100ms
+            $attempts += 1
+        }
+
+        let still_running = (^osascript -e 'application id "com.openai.codex" is running' | str trim)
+        if $still_running == "true" {
+            error make { msg: "Codex did not quit within 5 seconds" }
+        }
+    }
+
+    let stamp = (date now | format date "%Y%m%d-%H%M%S")
+    let backup = $"($state).bak-($stamp)"
+    let updated = (
+        ^jq '."electron-persisted-atom-state"."pull-request-last-account" = {"hostId":"local","hostname":"github.netflix.net","login":"skalidindi"}' $state
+        | complete
+    )
+
+    if $updated.exit_code != 0 {
+        error make { msg: $"Failed to update Codex state: ($updated.stderr | str trim)" }
+    }
+
+    cp $state $backup
+    $updated.stdout | save --force $"($state).new"
+    mv --force $"($state).new" $state
+
+    ^open -a ChatGPT
+    print $"Configured Codex Pull requests for github.netflix.net and reopened Codex. Backup: ($backup)"
+}
+
+alias cpr = codex-pr-netflix
+
 def --wrapped pi [...args] {
     with-env { HERDR_AGENT: "pi" } {
         ^pi ...$args

@@ -3,9 +3,34 @@
   "installPolicy": "latest",
   "skills": [
     {
-      "name": "frontend-design",
-      "source": "anthropics/skills",
-      "path": "skills/frontend-design"
+      "name": "blast-radius",
+      "source": "cursor/plugins",
+      "path": "pstack/skills/blast-radius"
+    },
+    {
+      "name": "code-review",
+      "source": "mattpocock/skills",
+      "path": "skills/engineering/code-review"
+    },
+    {
+      "name": "codebase-design",
+      "source": "mattpocock/skills",
+      "path": "skills/engineering/codebase-design"
+    },
+    {
+      "name": "deslop",
+      "source": "cursor/plugins",
+      "path": "cursor-team-kit/skills/deslop"
+    },
+    {
+      "name": "diagnosing-bugs",
+      "source": "mattpocock/skills",
+      "path": "skills/engineering/diagnosing-bugs"
+    },
+    {
+      "name": "domain-modeling",
+      "source": "mattpocock/skills",
+      "path": "skills/engineering/domain-modeling"
     },
     {
       "name": "find-skills",
@@ -13,49 +38,124 @@
       "path": "skills/find-skills"
     },
     {
-      "name": "grill-me",
-      "source": "mattpocock/skills",
-      "path": "grill-me"
+      "name": "fix-merge-conflicts",
+      "source": "cursor/plugins",
+      "path": "cursor-team-kit/skills/fix-merge-conflicts"
     },
     {
-      "name": "design-an-interface",
+      "name": "frontend-design",
+      "source": "anthropics/skills",
+      "path": "skills/frontend-design"
+    },
+    {
+      "name": "frontend-slides",
+      "source": "zarazhangrui/frontend-slides",
+      "path": ""
+    },
+    {
+      "name": "gh-stack",
+      "source": "github/gh-stack",
+      "path": "skills/gh-stack"
+    },
+    {
+      "name": "grilling",
       "source": "mattpocock/skills",
-      "path": "design-an-interface"
+      "path": "skills/productivity/grilling"
+    },
+    {
+      "name": "handoff",
+      "source": "mattpocock/skills",
+      "path": "skills/productivity/handoff"
+    },
+    {
+      "name": "implement",
+      "source": "mattpocock/skills",
+      "path": "skills/engineering/implement"
     },
     {
       "name": "improve-codebase-architecture",
       "source": "mattpocock/skills",
-      "path": "improve-codebase-architecture"
+      "path": "skills/engineering/improve-codebase-architecture"
     },
     {
-      "name": "request-refactor-plan",
+      "name": "loop-on-ci",
+      "source": "cursor/plugins",
+      "path": "cursor-team-kit/skills/loop-on-ci"
+    },
+    {
+      "name": "make-pr-easy-to-review",
+      "source": "cursor/plugins",
+      "path": "cursor-team-kit/skills/make-pr-easy-to-review"
+    },
+    {
+      "name": "prototype",
       "source": "mattpocock/skills",
-      "path": "request-refactor-plan"
+      "path": "skills/engineering/prototype"
     },
     {
-      "name": "browser-trace",
-      "source": "browserbase/skills",
-      "path": "skills/browser-trace"
+      "name": "research",
+      "source": "mattpocock/skills",
+      "path": "skills/engineering/research"
     },
     {
-      "name": "guide",
-      "source": "toss/es-toolkit",
-      "path": "es-toolkit-plugin/skills/guide"
+      "name": "resolving-merge-conflicts",
+      "source": "mattpocock/skills",
+      "path": "skills/engineering/resolving-merge-conflicts"
     },
     {
-      "name": "migrate",
-      "source": "toss/es-toolkit",
-      "path": "es-toolkit-plugin/skills/migrate"
+      "name": "show-me",
+      "source": "humanlayer/skills",
+      "path": "plugins/show-me/skills/show-me"
     },
     {
-      "name": "cmux",
-      "source": "manaflow-ai/cmux",
-      "path": "skills/cmux"
+      "name": "tdd",
+      "source": "mattpocock/skills",
+      "path": "skills/engineering/tdd"
+    },
+    {
+      "name": "teach",
+      "source": "mattpocock/skills",
+      "path": "skills/productivity/teach"
+    },
+    {
+      "name": "to-spec",
+      "source": "mattpocock/skills",
+      "path": "skills/engineering/to-spec"
+    },
+    {
+      "name": "typescript-best-practices",
+      "source": "cursor/plugins",
+      "path": "pstack/skills/typescript-best-practices"
+    },
+    {
+      "name": "unslop",
+      "source": "cursor/plugins",
+      "path": "pstack/skills/unslop"
+    },
+    {
+      "name": "wait-what",
+      "source": "mattpocock/skills",
+      "path": "skills/productivity/wait-what"
+    },
+    {
+      "name": "wayfinder",
+      "source": "mattpocock/skills",
+      "path": "skills/engineering/wayfinder"
+    },
+    {
+      "name": "wizard",
+      "source": "mattpocock/skills",
+      "path": "skills/engineering/wizard"
     },
     {
       "name": "worktrunk",
       "source": "max-sixty/worktrunk",
       "path": "skills/worktrunk"
+    },
+    {
+      "name": "writing-for-agents",
+      "source": "mattpocock/skills",
+      "path": "skills/productivity/writing-for-agents"
     }
   ]
 }
