@@ -32,10 +32,6 @@ eval "$(starship init zsh)"
 # Zoxide
 eval "$(zoxide init zsh)"
 
-# Bun
-eval "$(bun completions zsh)"
-[ -s "~/.bun/_bun" ] && source "~/.bun/_bun"
-
 # JJ
 autoload -U compinit
 compinit
@@ -53,9 +49,6 @@ export SDKMAN_DIR="$HOME/.sdkman"
 
 # Generated for envman. Do not edit.
 [ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"
-
-# bun completions
-[ -s "/Users/skalidindi/oss/dotfiles/zsh/_bun" ] && source "/Users/skalidindi/oss/dotfiles/zsh/_bun"
 
 # User-local bin (also exposes the Obsidian CLI: ~/.local/bin/obsidian-cli)
 export PATH="$HOME/.local/bin:$PATH"

@@ -1,5 +1,4 @@
 # Homebrew taps
-tap "oven-sh/bun"
 tap "sourcegraph/src-cli"
 tap "tw93/tap"
 
@@ -106,5 +105,4 @@ brew "yt-dlp"
 brew "zellij"
 brew "zoxide"
 brew "zsh"
-brew "oven-sh/bun/bun"
 brew "tw93/tap/mole"
