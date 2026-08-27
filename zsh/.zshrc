@@ -1,6 +1,9 @@
 # Navigation in tmux works better with this
 bindkey -e
 
+# Keep tools that execute $SHELL -c on the POSIX-compatible login shell.
+export SHELL=/bin/zsh
+
 # Keep local completion definitions available before plugins initialize.
 fpath=("$HOME/.zsh.d" $fpath)
 
