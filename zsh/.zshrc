@@ -1,34 +1,32 @@
 # Navigation in tmux works better with this
 bindkey -e
 
-# Plugins may register completions while they load.
-autoload -U compinit
-compinit
+# Keep local completion definitions available before plugins initialize.
+fpath=("$HOME/.zsh.d" $fpath)
 
-# Match the Nushell history size while keeping zsh's native history format.
+# ez-compinit initializes completions at the first prompt and reuses the dump
+# for 20 hours, which keeps new shells responsive without losing completions.
+zstyle ':plugin:ez-compinit' 'use-cache' 'yes'
+
+# Keep a larger persistent history while retaining zsh's native history format.
 export HISTFILE="$HOME/.zsh_history"
 export SAVEHIST=32768
 setopt APPEND_HISTORY HIST_IGNORE_DUPS
 
-# Download antidote, if it's not there yet.
-if [ ! -d "${ZDOTDIR:-$HOME}/.antidote" ]; then
-  echo "Antidote not found. Cloning Antidote..."
-  git clone --depth=1 https://github.com/mattmc3/antidote.git "${ZDOTDIR:-$HOME}/.antidote"
+# Source antidote at the start of your .zshrc file.
+if [[ -r /opt/homebrew/opt/antidote/share/antidote/antidote.zsh ]]; then
+  source /opt/homebrew/opt/antidote/share/antidote/antidote.zsh
+elif [[ -r /usr/local/opt/antidote/share/antidote/antidote.zsh ]]; then
+  source /usr/local/opt/antidote/share/antidote/antidote.zsh
 fi
 
-eval $(/opt/homebrew/bin/brew shellenv)
-
-# Source antidote at the start of your .zshrc file.
-source $(brew --prefix)/opt/antidote/share/antidote/antidote.zsh
-
 # Load Plugins from .zsh_plugins.txt
-antidote load
+if [[ "$TERM" != dumb ]] && (( $+functions[antidote] )); then
+  antidote load
+fi
 
 # Execute bash_profile
 source ~/.bash_profile
-
-# Update function path
-fpath+=("~/.zsh.d")
 
 # Starship
 export STARSHIP_CACHE="${STARSHIP_CACHE:-$HOME/Library/Caches/starship}"
@@ -44,24 +42,17 @@ eval "$(zoxide init zsh)"
 # Load API keys
 source ~/.env-secrets
 
-# THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
-export SDKMAN_DIR="$HOME/.sdkman"
-[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
-
 # Generated for envman. Do not edit.
 [ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"
-
-# User-local bin (also exposes the Obsidian CLI: ~/.local/bin/obsidian-cli)
-export PATH="$HOME/.local/bin:$PATH"
-
-# LM Studio CLI (lms)
-export PATH="$PATH:/Users/skalidindi/.lmstudio/bin"
-
 
 # Added by Antigravity
 export PATH="/Users/skalidindi/.antigravity/antigravity/bin:$PATH"
 
-if command -v wt >/dev/null 2>&1; then eval "$(command wt config shell init zsh)"; fi
+if (( $+commands[wt] )) && (( $+functions[zsh-defer] )); then
+  zsh-defer -c 'eval "$(command wt config shell init zsh)"'
+elif (( $+commands[wt] )); then
+  eval "$(command wt config shell init zsh)"
+fi
 # >>> XP ENV BEGIN >>>
 export PATH="/Users/skalidindi/xp-env/bin:$PATH"
 # <<< XP ENV END <<<

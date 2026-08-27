@@ -28,10 +28,6 @@ export PATH="/usr/local/bin:$PATH"
 # LM Studio CLI (lms)
 export PATH="$PATH:/Users/skalidindi/.lmstudio/bin"
 
-# bun
-export BUN_INSTALL="$HOME/.bun"
-export PATH="$BUN_INSTALL/bin:$PATH"
-
 # npm
 export PATH=~/.npm-global/bin:$PATH
 
