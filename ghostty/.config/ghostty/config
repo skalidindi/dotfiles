@@ -2,6 +2,7 @@ theme = Catppuccin Frappe
 
 background-opacity = 0.96
 shell-integration-features = no-cursor,sudo,no-title
+command = /bin/zsh
 cursor-style = block
 adjust-cell-height = 18%
 mouse-hide-while-typing = true
