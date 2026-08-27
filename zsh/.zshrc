@@ -38,9 +38,6 @@ eval "$(starship init zsh)"
 # Zoxide
 eval "$(zoxide init zsh)"
 
-# JJ
-source <(jj util completion zsh)
-
 # Rust
 . "$HOME/.cargo/env"
 

@@ -47,7 +47,7 @@ lists.
   `agent-skill-profile`.
 - `bash/`, `zsh/`, `starship/` - shell configuration and prompt
   setup.
-- `git/`, `jj/`, `gh/`, `lazygit/` - source-control configuration.
+- `git/`, `gh/`, `lazygit/` - source-control configuration.
 - `nvim/`, `tmux/`, `zellij/`, `ghostty/`, `yazi/` - editor, terminal,
   multiplexer, and file-manager configuration.
 - `Brewfile` - Homebrew packages managed by bootstrap.
