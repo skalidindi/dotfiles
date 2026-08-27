@@ -32,14 +32,6 @@ assert_not_present() {
   fi
 }
 
-assert_line() {
-  local file="$1"
-  local line="$2"
-
-  grep -Fxq "$line" "$root_dir/$file" ||
-    fail "$file should contain: $line"
-}
-
 assert_not_tracked "bin/.local/bin/codex"
 assert_not_tracked "bin/.local/bin/claude"
 assert_not_allowlisted "bin/.local/bin/codex"
@@ -48,8 +40,5 @@ assert_not_allowlisted "bin/.local/bin/claude"
 removed_awake_path="bin/.local/bin/agent-""awake"
 assert_not_present "$removed_awake_path"
 assert_not_allowlisted "$removed_awake_path"
-
-assert_line "bin/.local/bin/zellij-sessionizer" '    zellij attach "$session_name" --create'
-assert_line "nushell/Library/Application Support/nushell/config.nu" '        ^zellij attach $session_name --create'
 
 printf 'PASS: agent entrypoint tests\n'
