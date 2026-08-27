@@ -45,7 +45,7 @@ lists.
   these trees are intentionally ignored.
 - `bin/.local/bin/` - local PATH helpers such as `zrun`, `agent-doctor`, and
   `agent-skill-profile`.
-- `bash/`, `zsh/`, `nushell/`, `starship/` - shell configuration and prompt
+- `bash/`, `zsh/`, `starship/` - shell configuration and prompt
   setup.
 - `git/`, `jj/`, `gh/`, `lazygit/` - source-control configuration.
 - `nvim/`, `tmux/`, `zellij/`, `ghostty/`, `yazi/` - editor, terminal,
@@ -65,7 +65,7 @@ stow -t "$HOME" -R --no-folding agents
 ```
 
 `bootstrap.sh` uses `--no-folding` for packages where preserving a mixed local
-directory matters, such as `agents`, `git`, and `nushell`.
+directory matters, such as `agents`, `git`, and `worktrunk`.
 
 ## Agent Workflow
 

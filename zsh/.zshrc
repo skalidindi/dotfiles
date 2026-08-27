@@ -1,6 +1,11 @@
 # Navigation in tmux works better with this
 bindkey -e
 
+# Match the Nushell history size while keeping zsh's native history format.
+export HISTFILE="$HOME/.zsh_history"
+export SAVEHIST=32768
+setopt APPEND_HISTORY HIST_IGNORE_DUPS
+
 # Download antidote, if it's not there yet.
 if [ ! -d "${ZDOTDIR:-$HOME}/.antidote" ]; then
   echo "Antidote not found. Cloning Antidote..."

@@ -1,5 +1,88 @@
 #!/usr/bin/env bash
 
+# Keep agent identity scoped to the process that is launched.
+claude() {
+  HERDR_AGENT=claude command claude "$@"
+}
+
+codex() {
+  HERDR_AGENT=codex newt --app-type=coding-assistant -- codex "$@"
+}
+
+pi() {
+  HERDR_AGENT=pi command pi "$@"
+}
+
+path-list() {
+  printf '%s\n' "$PATH" | tr ':' '\n'
+}
+
+c() {
+  command pbcopy
+}
+
+v() {
+  local file
+  file="$(command fd --type f --hidden --exclude .git | command fzf --preview 'bat --style numbers,changes --color=always {}')"
+  if [[ -n "$file" ]]; then
+    command nvim "$file"
+  fi
+}
+
+reset_vpn() {
+  local pid
+  pid="$(command pgrep -f dsAccessService | command head -n 1)"
+  if [[ -n "$pid" ]]; then
+    command sudo kill -SEGV "$pid"
+  fi
+  command sudo route delete pcs.flxvpn.net
+}
+
+codex_pr_netflix() {
+  local state="$HOME/.codex/.codex-global-state.json"
+  local stamp backup updated attempts still_running
+
+  if [[ ! -f "$state" ]]; then
+    printf 'Codex state file not found: %s\n' "$state" >&2
+    return 1
+  fi
+
+  if [[ "$(command osascript -e 'application id "com.openai.codex" is running')" == true ]]; then
+    if ! command osascript -e 'tell application id "com.openai.codex" to quit'; then
+      printf '%s\n' 'Failed to quit Codex' >&2
+      return 1
+    fi
+
+    attempts=0
+    while (( attempts < 50 )); do
+      still_running="$(command osascript -e 'application id "com.openai.codex" is running')"
+      [[ "$still_running" != true ]] && break
+      command sleep 0.1
+      ((attempts++))
+    done
+
+    still_running="$(command osascript -e 'application id "com.openai.codex" is running')"
+    if [[ "$still_running" == true ]]; then
+      printf '%s\n' 'Codex did not quit within 5 seconds' >&2
+      return 1
+    fi
+  fi
+
+  stamp="$(command date +%Y%m%d-%H%M%S)"
+  backup="${state}.bak-${stamp}"
+  if ! updated="$(command jq '."electron-persisted-atom-state"."pull-request-last-account" = {"hostId":"local","hostname":"github.netflix.net","login":"skalidindi"}' "$state")"; then
+    printf '%s\n' 'Failed to update Codex state' >&2
+    return 1
+  fi
+
+  command cp "$state" "$backup" || return 1
+  printf '%s\n' "$updated" > "${state}.new" || return 1
+  command mv -f "${state}.new" "$state" || return 1
+
+  command open -a ChatGPT
+  printf 'Configured Codex Pull requests for github.netflix.net and reopened Codex. Backup: %s\n' "$backup"
+}
+
 # Create a .tar.gz archive, using `zopfli`, `pigz` or `gzip` for compression
 function targz() {
 	local tmpFile="${@%/}.tar";

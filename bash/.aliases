@@ -5,15 +5,17 @@ alias ls="command eza --icons"
 alias la="command eza --icons -a"
 alias ll="ls --long --header --git"
 alias lt="ls --tree --level=4 -I=.git --git-ignore"
+alias oo="open"
+alias doc="cd ~/Documents"
+alias desk="cd ~/Desktop"
+alias cpr="codex_pr_netflix"
+alias codex-pr-netflix="codex_pr_netflix"
 
 # Enable aliases to be sudo’ed
 alias sudo="sudo "
 
 # Get week number
 alias week="date +%V"
-
-# Codex
-alias codex='newt --app-type=coding-assistant -- codex'
 
 # Force nvim
 alias vim="nvim"

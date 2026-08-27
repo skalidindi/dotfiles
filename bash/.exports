@@ -4,6 +4,9 @@
 export EDITOR='nvim';
 export VISUAL='nvim';
 
+# Keep agent state in the standard Codex home.
+export CODEX_HOME="$HOME/.codex";
+
 # Enable persistent REPL history for `node`.
 export NODE_REPL_HISTORY=~/.node_history;
 # Allow 32³ entries; the default is 1000.
