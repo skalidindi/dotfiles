@@ -1,6 +1,10 @@
 # Navigation in tmux works better with this
 bindkey -e
 
+# Plugins may register completions while they load.
+autoload -U compinit
+compinit
+
 # Match the Nushell history size while keeping zsh's native history format.
 export HISTFILE="$HOME/.zsh_history"
 export SAVEHIST=32768
@@ -27,14 +31,14 @@ source ~/.bash_profile
 fpath+=("~/.zsh.d")
 
 # Starship
+export STARSHIP_CACHE="${STARSHIP_CACHE:-$HOME/Library/Caches/starship}"
+mkdir -p "$STARSHIP_CACHE"
 eval "$(starship init zsh)"
 
 # Zoxide
 eval "$(zoxide init zsh)"
 
 # JJ
-autoload -U compinit
-compinit
 source <(jj util completion zsh)
 
 # Rust
