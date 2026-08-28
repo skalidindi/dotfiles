@@ -48,7 +48,7 @@ Expected: the check exits 0 because Nix is not installed and the flake does not 
 
 - [ ] **Step 2: Write the minimal flake**
 
-Create `flake.nix` with a single `nixpkgs` input and explicit systems `aarch64-darwin` and `x86_64-darwin`. Define one shared package list containing `bat`, `curl`, `eza`, `fd`, `fzf`, `git`, `git-delta`, `jq`, `neovim`, `nodejs`, `python3`, `ripgrep`, `rustc`, `cargo`, `starship`, `stow`, `tree-sitter`, `uv`, `wget`, `yazi`, `zellij`, and `zoxide`. Expose that list through `devShells.<system>.default` using `pkgs.mkShell` and add a shell check that evaluates the shell derivation.
+Create `flake.nix` with a single `nixpkgs` input and explicit systems `aarch64-darwin` and `x86_64-darwin`. Define one shared package list containing `bat`, `curl`, `eza`, `fd`, `fzf`, `git`, `delta`, `jq`, `neovim`, `nodejs`, `python3`, `ripgrep`, `rustc`, `cargo`, `starship`, `stow`, `tree-sitter`, `uv`, `wget`, `yazi`, `zellij`, and `zoxide`. Expose that list through `devShells.<system>.default` using `pkgs.mkShell` and add a shell check that evaluates the shell derivation.
 
 - [ ] **Step 3: Generate the lockfile**
 

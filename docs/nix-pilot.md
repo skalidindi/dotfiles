@@ -8,15 +8,17 @@ Homebrew applications, and Netflix Work overlay remain authoritative.
 
 Install Nix using the official macOS installer and complete its daemon setup.
 This repository does not install Nix or change system state for you. The
-current laptop does not have `nix` installed.
+installer adds the Nix profile hook to new shells; reopen your terminal before
+running the commands below if `nix` is not yet on `PATH`.
 
 ## Try the pilot
 
 From the repository root:
 
 ```bash
-nix flake check
-nix develop
+nix_args=(--extra-experimental-features 'nix-command flakes')
+nix "${nix_args[@]}" flake check
+nix "${nix_args[@]}" develop
 ```
 
 Inside the development shell, the flake provides the OSS command-line tools

@@ -25,7 +25,7 @@
               fd
               fzf
               git
-              git-delta
+              delta
               jq
               neovim
               nodejs

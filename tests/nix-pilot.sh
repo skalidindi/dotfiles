@@ -4,6 +4,14 @@ set -euo pipefail
 root_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
 cd "$root_dir"
 
+# Non-interactive shells do not always read the system startup file where the
+# macOS daemon installer adds Nix's profile hook. Discover the standard daemon
+# profile directly so this test works from scripts and CI as well as terminals.
+if ! command -v nix >/dev/null 2>&1 && [[ -x /nix/var/nix/profiles/default/bin/nix ]]; then
+  PATH="/nix/var/nix/profiles/default/bin:$PATH"
+  export PATH
+fi
+
 if ! command -v nix >/dev/null 2>&1; then
   printf '%s\n' 'SKIP: Nix is not installed; install it manually before running the OSS pilot.'
   exit 77
@@ -14,7 +22,8 @@ if [[ ! -f flake.nix || ! -f flake.lock ]]; then
   exit 1
 fi
 
-nix flake check
+nix_args=(--extra-experimental-features 'nix-command flakes')
+nix "${nix_args[@]}" flake check
 
 expected_commands=(
   bat
@@ -41,7 +50,7 @@ expected_commands=(
   zoxide
 )
 
-nix develop --command bash -lc '
+nix "${nix_args[@]}" develop --command bash -lc '
   set -euo pipefail
   for command_name in "$@"; do
     command -v "$command_name" >/dev/null || {
