@@ -1,7 +1,7 @@
 {
   description = "Opt-in OSS development environment for dotfiles";
 
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-26.05-darwin";
 
   outputs = { self, nixpkgs, ... }:
     let
