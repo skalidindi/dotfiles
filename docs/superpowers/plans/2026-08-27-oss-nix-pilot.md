@@ -32,7 +32,7 @@
 - Produces `checks.<system>.default` that evaluates the same shell package set.
 - Does not produce activation modules, home-manager configurations, or system mutations.
 
-- [ ] **Step 1: Define the failing prerequisite check**
+- [x] **Step 1: Define the failing prerequisite check**
 
 Run:
 
@@ -46,11 +46,11 @@ fi
 
 Expected: the check exits 0 because Nix is not installed and the flake does not exist yet. This records the current prerequisite without invoking an installer.
 
-- [ ] **Step 2: Write the minimal flake**
+- [x] **Step 2: Write the minimal flake**
 
 Create `flake.nix` with a single `nixpkgs` input and explicit systems `aarch64-darwin` and `x86_64-darwin`. Define one shared package list containing `bat`, `curl`, `eza`, `fd`, `fzf`, `git`, `delta`, `jq`, `neovim`, `nodejs`, `python3`, `ripgrep`, `rustc`, `cargo`, `starship`, `stow`, `tree-sitter`, `uv`, `wget`, `yazi`, `zellij`, and `zoxide`. Expose that list through `devShells.<system>.default` using `pkgs.mkShell` and add a shell check that evaluates the shell derivation.
 
-- [ ] **Step 3: Generate the lockfile**
+- [x] **Step 3: Generate the lockfile**
 
 Run:
 
@@ -60,7 +60,7 @@ nix flake lock
 
 Expected: Nix writes `flake.lock` with the exact resolved `nixpkgs` revision. If Nix is unavailable, record the command as blocked and do not hand-write lock data.
 
-- [ ] **Step 4: Verify evaluation**
+- [x] **Step 4: Verify evaluation**
 
 Run:
 
@@ -70,7 +70,7 @@ nix flake check
 
 Expected: exit 0 with no activation, package installation, or home-directory changes.
 
-- [ ] **Step 5: Commit the flake slice**
+- [x] **Step 5: Commit the flake slice**
 
 ```bash
 git add flake.nix flake.lock
@@ -87,11 +87,11 @@ git commit -m "feat: add OSS Nix development flake"
 - Exit 77 with a human-readable prerequisite message when `nix` is absent.
 - Never invoke `nix profile install`, `darwin-rebuild`, `home-manager`, `sudo`, `brew`, or `stow`.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create the test with `set -euo pipefail`. If `nix` is absent, print `SKIP: Nix is not installed; install it manually before running the OSS pilot` and exit 77. If present, run `nix flake check` and then `nix develop --command bash -lc 'command -v ...'` for every command in the flake package set.
 
-- [ ] **Step 2: Run the test**
+- [x] **Step 2: Run the test**
 
 Run:
 
@@ -101,11 +101,11 @@ bash tests/nix-pilot.sh
 
 Expected on this machine: exit 77 with the prerequisite message because `nix` is not installed. Any other exit is a test defect to fix before continuing.
 
-- [ ] **Step 3: Re-run after Task 1**
+- [x] **Step 3: Re-run after Task 1**
 
 Run the same command. Expected: exit 0 when Nix is available; otherwise the same explicit exit 77 prerequisite result.
 
-- [ ] **Step 4: Commit the test**
+- [x] **Step 4: Commit the test**
 
 ```bash
 git add tests/nix-pilot.sh
@@ -122,11 +122,11 @@ git commit -m "test: validate OSS Nix pilot shell"
 - States that this pilot is opt-in and does not replace the current bootstrap.
 - States the clean-machine, ownership, offline-store, and rollback checks required before adding Home Manager or nix-darwin.
 
-- [ ] **Step 1: Write the documentation**
+- [x] **Step 1: Write the documentation**
 
 Include a concise package ownership table, the exact commands above, the fact that Nix is currently absent on this laptop, and the manual boundaries for Apple ID, MDM, Work authentication, GUI applications, and secrets. Explain that no Nix-managed path may overlap a Stow-managed path.
 
-- [ ] **Step 2: Validate documentation references**
+- [x] **Step 2: Validate documentation references**
 
 Run:
 
@@ -137,7 +137,7 @@ git diff --check
 
 Expected: every required command and ownership boundary appears, and Git reports no whitespace errors.
 
-- [ ] **Step 3: Commit the documentation**
+- [x] **Step 3: Commit the documentation**
 
 ```bash
 git add docs/nix-pilot.md
@@ -149,7 +149,7 @@ git commit -m "docs: explain OSS Nix pilot"
 **Files:**
 - Read-only verification of all changed and preserved paths.
 
-- [ ] **Step 1: Confirm the changed-file boundary**
+- [x] **Step 1: Confirm the changed-file boundary**
 
 Run:
 
@@ -160,7 +160,7 @@ git diff HEAD~3 --name-status
 
 Expected: only `flake.nix`, `flake.lock` if generated, `tests/nix-pilot.sh`, and `docs/nix-pilot.md` are introduced by this plan. The pre-existing untracked audit note remains untracked and unchanged.
 
-- [ ] **Step 2: Run existing OSS tests**
+- [x] **Step 2: Run existing OSS tests**
 
 Run each existing test independently so a pre-existing failure cannot hide later results:
 
@@ -172,7 +172,7 @@ done
 
 Expected: no newly introduced failure. Existing baseline failures in `tests/agent-entrypoints.sh` and `tests/nushell-config.sh` remain separately reported.
 
-- [ ] **Step 3: Run the Nix pilot test**
+- [x] **Step 3: Run the Nix pilot test**
 
 ```bash
 bash tests/nix-pilot.sh
@@ -180,6 +180,6 @@ bash tests/nix-pilot.sh
 
 Expected: exit 0 with Nix installed, or the documented exit 77 prerequisite result without Nix.
 
-- [ ] **Step 4: Record the verification result**
+- [x] **Step 4: Record the verification result**
 
 Append the commands, exit codes, and any Nix-prerequisite block to the task ledger under `.superpowers/sdd/2026-08-27-oss-nix-pilot/progress.md`. Do not claim full pilot completion while `nix flake check` has not run successfully.
