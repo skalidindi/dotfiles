@@ -4,6 +4,98 @@ set -euo pipefail
 root_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
 nix_bin="/nix/var/nix/profiles/default/bin/nix"
 
+fail() {
+  printf 'FAIL: %s\n' "$1" >&2
+  exit 1
+}
+
+for module in files packages programs; do
+  [[ -f "$root_dir/home-manager/modules/$module.nix" ]] ||
+    fail "Home Manager should define a focused $module module"
+done
+
+[[ ! -e "$root_dir/home-manager/oss.nix" ]] ||
+  fail "the monolithic Home Manager module should be removed"
+
+host_module="$root_dir/home-manager/hosts/skalidindi.nix"
+shared_modules="$root_dir/home-manager/modules"
+
+for identity_setting in \
+  'home.username' \
+  'home.homeDirectory = "/Users/${config.home.username}"' \
+  'Santosh Kalidindi' \
+  'skalidindi8@gmail.com' \
+  '5EFA48B9657D7C02' \
+  'git/.gitconfig.oss-base' \
+  'git/.gitconfig.oss-laptop' \
+  'includeIf'; do
+  grep -Fq "$identity_setting" "$host_module" ||
+    fail "the host module should own $identity_setting"
+done
+
+for forbidden_identity in \
+  'home.username' \
+  '/Users/' \
+  'Santosh Kalidindi' \
+  'skalidindi8@gmail.com' \
+  '5EFA48B9657D7C02' \
+  'git/.gitconfig.oss-laptop'; do
+  if grep -RFq "$forbidden_identity" "$shared_modules"; then
+    fail "shared modules should not own $forbidden_identity"
+  fi
+done
+
+[[ ! -e "$root_dir/config/git/.gitconfig.oss-base" ]] ||
+  fail "personal Git identity should be declared by the host module"
+[[ ! -e "$root_dir/config/git/.gitconfig.oss-laptop" ]] ||
+  fail "the laptop Git include should be declared by the host module"
+
+files_module="$shared_modules/files.nix"
+programs_module="$shared_modules/programs.nix"
+packages_module="$shared_modules/packages.nix"
+
+grep -Fq '../../config/' "$files_module" ||
+  fail "static Home Manager sources should come from config/"
+grep -Fq '../../scripts/bin/' "$files_module" ||
+  fail "managed helpers should come from scripts/bin/"
+grep -Fq '../../config/' "$programs_module" ||
+  fail "program configuration should come from config/"
+
+for legacy_source in '../agents/' '../bash/' '../bin/' '../git/' '../nvim/' '../tmux/'; do
+  if grep -RFq "$legacy_source" "$shared_modules"; then
+    fail "shared modules should not reference legacy source $legacy_source"
+  fi
+done
+
+grep -Fq 'git/.gitconfig.common' "$files_module" ||
+  fail "the files module should own the common Git configuration"
+grep -Fq 'git/ignore' "$files_module" ||
+  fail "the files module should own the global Git ignore file"
+grep -Fq 'programs.tmux' "$programs_module" ||
+  fail "the programs module should own tmux configuration and plugins"
+grep -Fq 'nvimLazyLock' "$programs_module" ||
+  fail "the programs module should preserve Neovim lazy-lock seeding"
+grep -Fq 'baseNameOf path != "lazy-lock.json"' "$programs_module" ||
+  fail "the managed Neovim tree should leave lazy-lock.json writable"
+grep -Fq 'if [ ! -e "$lock" ]' "$programs_module" ||
+  fail "Neovim lazy-lock seeding should remain first-install-only"
+grep -Fq 'pkgs.neovim' "$packages_module" ||
+  fail "the packages module should retain Neovim ownership"
+
+for helper in agent-doctor agent-runtime-guard configure-oss-git install-agent-assets restore-skills-sh zrun; do
+  grep -Fq ".local/bin/$helper" "$files_module" ||
+    fail "the files module should own the $helper helper"
+done
+
+for module in hosts/skalidindi modules/files modules/packages modules/programs; do
+  grep -Fq "./home-manager/$module.nix" "$root_dir/flake.nix" ||
+    fail "the flake should import $module.nix"
+done
+
+if grep -Eq '(^|[[:space:]])devShells[[:space:]]*=' "$root_dir/flake.nix"; then
+  fail "the flake should not expose development shells"
+fi
+
 if [[ ! -x "$nix_bin" ]]; then
   printf 'SKIP: Nix is not installed\n'
   exit 77
@@ -11,59 +103,16 @@ fi
 
 nix_args=(--extra-experimental-features 'nix-command flakes')
 
-"$nix_bin" "${nix_args[@]}" eval --raw "$root_dir#homeConfigurations.oss.activationPackage.drvPath" >/dev/null
-"$nix_bin" "${nix_args[@]}" eval --raw "$root_dir#homeConfigurations.\"oss-x86_64-darwin\".activationPackage.drvPath" >/dev/null
-"$nix_bin" "${nix_args[@]}" eval --raw "$root_dir#packages.aarch64-darwin.home-manager.name" >/dev/null
+target_names="$("$nix_bin" "${nix_args[@]}" eval --raw "$root_dir#homeConfigurations" \
+  --apply 'configs: builtins.concatStringsSep "," (builtins.attrNames configs)')"
+[[ "$target_names" == 'oss-aarch64-darwin,oss-x86_64-darwin' ]] ||
+  fail "Home Manager should expose only explicit Apple Silicon and Intel targets"
 
-grep -Fq 'home-manager' "$root_dir/flake.nix" || {
-  printf 'FAIL: flake should declare Home Manager\n' >&2
-  exit 1
-}
+"$nix_bin" "${nix_args[@]}" eval --raw \
+  "$root_dir#homeConfigurations.\"oss-aarch64-darwin\".activationPackage.drvPath" >/dev/null
+"$nix_bin" "${nix_args[@]}" eval --raw \
+  "$root_dir#homeConfigurations.\"oss-x86_64-darwin\".activationPackage.drvPath" >/dev/null
+"$nix_bin" "${nix_args[@]}" eval --raw \
+  "$root_dir#packages.aarch64-darwin.home-manager.name" >/dev/null
 
-grep -Fq 'starship.toml' "$root_dir/home-manager/oss.nix" || {
-  printf 'FAIL: Home Manager should own the Starship config\n' >&2
-  exit 1
-}
-
-for config_dir in zellij yazi fastfetch ghostty lazygit herdr worktrunk; do
-  grep -Fq "${config_dir}" "$root_dir/home-manager/oss.nix" || {
-    printf 'FAIL: Home Manager should own the %s config\n' "$config_dir" >&2
-    exit 1
-  }
-done
-
-for home_file in .aliases .bash_profile .exports .functions .path .zshrc .zsh_plugins.txt .agents/README.md .agents/prompts/base.md git/.gitconfig.common; do
-  grep -Fq "$home_file" "$root_dir/home-manager/oss.nix" || {
-    printf 'FAIL: Home Manager should own the %s file\n' "$home_file" >&2
-    exit 1
-  }
-done
-
-grep -Fq 'home.username' "$root_dir/home-manager/hosts/skalidindi.nix" || {
-  printf 'FAIL: account identity should live in a host module\n' >&2
-  exit 1
-}
-
-if grep -Fq 'home.username' "$root_dir/home-manager/oss.nix"; then
-  printf 'FAIL: shared OSS module should not hardcode an account identity\n' >&2
-  exit 1
-fi
-
-grep -Fq 'programs.tmux' "$root_dir/home-manager/oss.nix" || {
-  printf 'FAIL: Home Manager should own tmux configuration and plugins\n' >&2
-  exit 1
-}
-
-grep -Fq 'pkgs.neovim' "$root_dir/home-manager/oss.nix" || {
-  printf 'FAIL: Home Manager should install Neovim\n' >&2
-  exit 1
-}
-
-for helper in agent-doctor agent-runtime-guard configure-oss-git install-agent-assets restore-skills-sh zrun; do
-  grep -Fq ".local/bin/$helper" "$root_dir/home-manager/oss.nix" || {
-    printf 'FAIL: Home Manager should own the %s helper\n' "$helper" >&2
-    exit 1
-  }
-done
-
-printf 'PASS: Home Manager tests\n'
+printf 'PASS: Home Manager modules, identity boundary, and explicit targets\n'
