@@ -162,4 +162,28 @@ fi
 [[ "$(cat "$command_log")" == 'brew update' ]] ||
   fail "update should not continue after a failed brew update"
 
+: >"$command_log"
+if HOME="$sandbox/home" \
+  PATH="$sandbox/bin:/usr/bin:/bin" \
+  BOOTSTRAP_COMMAND_LOG="$command_log" \
+  FAKE_ARCH=arm64 \
+  FAKE_FAILURE=brew-upgrade \
+  "$root_dir/scripts/update" >/dev/null 2>&1; then
+  fail "update should stop when brew upgrade fails"
+fi
+[[ "$(cat "$command_log")" == $'brew update\nbrew upgrade' ]] ||
+  fail "update should not bootstrap after a failed brew upgrade"
+
+: >"$command_log"
+if HOME="$sandbox/home" \
+  PATH="$sandbox/bin:/usr/bin:/bin" \
+  BOOTSTRAP_COMMAND_LOG="$command_log" \
+  FAKE_ARCH=arm64 \
+  FAKE_FAILURE=nix-flake \
+  "$root_dir/scripts/update" >/dev/null 2>&1; then
+  fail "update should stop when nix flake update fails"
+fi
+[[ "$(cat "$command_log")" == $'brew update\nbrew upgrade\nnix flake update' ]] ||
+  fail "update should not bootstrap after a failed nix flake update"
+
 printf 'PASS: bootstrap and update commands select supported targets and stop on failure\n'
