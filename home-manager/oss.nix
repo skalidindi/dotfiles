@@ -1,4 +1,4 @@
-{ ... }:
+{ lib, pkgs, ... }:
 
 {
   home.stateVersion = "25.11";
@@ -127,4 +127,119 @@
     source = ../git/.config/git/template;
     force = true;
   };
+
+  programs.tmux = {
+    enable = true;
+    prefix = "C-Space";
+    keyMode = "vi";
+    mouse = true;
+    extraConfig = builtins.readFile ../tmux/.config/tmux/tmux.conf;
+    plugins = with pkgs.tmuxPlugins; [
+      sensible
+      yank
+      resurrect
+      continuum
+      dracula
+      vim-tmux-navigator
+    ];
+  };
+
+  home.packages = [ pkgs.neovim ];
+
+  home.file.".config/nvim/.gitignore" = {
+    source = ../nvim/.config/nvim/.gitignore;
+    force = true;
+  };
+
+  home.file.".config/nvim/.neoconf.json" = {
+    source = ../nvim/.config/nvim/.neoconf.json;
+    force = true;
+  };
+
+  home.file.".config/nvim/init.lua" = {
+    source = ../nvim/.config/nvim/init.lua;
+    force = true;
+  };
+
+  home.file.".config/nvim/lazyvim.json" = {
+    source = ../nvim/.config/nvim/lazyvim.json;
+    force = true;
+  };
+
+  home.file.".config/nvim/LICENSE" = {
+    source = ../nvim/.config/nvim/LICENSE;
+    force = true;
+  };
+
+  home.file.".config/nvim/README.md" = {
+    source = ../nvim/.config/nvim/README.md;
+    force = true;
+  };
+
+  home.file.".config/nvim/stylua.toml" = {
+    source = ../nvim/.config/nvim/stylua.toml;
+    force = true;
+  };
+
+  home.file.".config/nvim/lua/config/autocmds.lua" = {
+    source = ../nvim/.config/nvim/lua/config/autocmds.lua;
+    force = true;
+  };
+
+  home.file.".config/nvim/lua/config/keymaps.lua" = {
+    source = ../nvim/.config/nvim/lua/config/keymaps.lua;
+    force = true;
+  };
+
+  home.file.".config/nvim/lua/config/lazy.lua" = {
+    source = ../nvim/.config/nvim/lua/config/lazy.lua;
+    force = true;
+  };
+
+  home.file.".config/nvim/lua/config/options.lua" = {
+    source = ../nvim/.config/nvim/lua/config/options.lua;
+    force = true;
+  };
+
+  home.file.".config/nvim/lua/plugins/bufferline.lua" = {
+    source = ../nvim/.config/nvim/lua/plugins/bufferline.lua;
+    force = true;
+  };
+
+  home.file.".config/nvim/lua/plugins/colorscheme.lua" = {
+    source = ../nvim/.config/nvim/lua/plugins/colorscheme.lua;
+    force = true;
+  };
+
+  home.file.".config/nvim/lua/plugins/dashboard.lua" = {
+    source = ../nvim/.config/nvim/lua/plugins/dashboard.lua;
+    force = true;
+  };
+
+  home.file.".config/nvim/lua/plugins/helpview.lua" = {
+    source = ../nvim/.config/nvim/lua/plugins/helpview.lua;
+    force = true;
+  };
+
+  home.file.".config/nvim/lua/plugins/treesj.lua" = {
+    source = ../nvim/.config/nvim/lua/plugins/treesj.lua;
+    force = true;
+  };
+
+  home.file.".config/nvim/lua/plugins/typing.lua" = {
+    source = ../nvim/.config/nvim/lua/plugins/typing.lua;
+    force = true;
+  };
+
+  home.file.".config/nvim/lua/plugins/yazi.lua" = {
+    source = ../nvim/.config/nvim/lua/plugins/yazi.lua;
+    force = true;
+  };
+
+  home.activation.nvimLazyLock = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
+    lock="$HOME/.config/nvim/lazy-lock.json"
+    if [ ! -e "$lock" ]; then
+      cp ${../nvim/.config/nvim/lazy-lock.json} "$lock"
+    fi
+  '';
 }

@@ -31,7 +31,7 @@ fi
 echo "Running stow for dotfiles..."
 # Claude and Codex homes are mutable runtime directories. Their portable assets
 # are applied by install-agent-assets and Home Manager; do not stow either home.
-stow_dirs=(bin nvim tmux)
+stow_dirs=(bin)
 
 for dir in "${stow_dirs[@]}"; do
   if [[ -d "$dir" ]]; then

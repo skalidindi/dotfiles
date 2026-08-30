@@ -42,6 +42,7 @@ expected_commands=(
   rustc
   starship
   stow
+  tmux
   tree-sitter
   uv
   wget

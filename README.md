@@ -75,13 +75,15 @@ Home Manager currently owns `~/.config/starship.toml`, `~/.config/zellij`,
 `~/.config/yazi`, `~/.config/fastfetch`, `~/.config/ghostty`, and
 `~/.config/lazygit`, plus the static `herdr/config.toml` and
 `worktrunk/config.toml` files. It also owns the shell startup files, shared
-agent assets, and the OSS Git files under `~/.config/git`; Homebrew still owns
-the executables. Bootstrap removes the legacy Stow links and activates Home
-Manager automatically when Nix is installed. To migrate an existing machine
-manually, remove the old links, then apply the configuration:
+agent assets, the OSS Git files under `~/.config/git`, the Neovim configuration,
+and tmux with its plugins. Home Manager installs Neovim and tmux through Nix;
+Homebrew owns the other executables. Bootstrap removes the legacy Stow
+links and activates Home Manager automatically when Nix is installed. To
+migrate an existing machine manually, remove the old links, then apply the
+configuration:
 
 ```bash
-stow -t "$HOME" -D agents bash git zsh starship zellij yazi fastfetch ghostty lazygit herdr worktrunk
+stow -t "$HOME" -D agents bash git nvim tmux zsh starship zellij yazi fastfetch ghostty lazygit herdr worktrunk
 NIX_CONFIG="extra-experimental-features = nix-command flakes" \
   nix run .#home-manager -- switch --flake .#oss
 ```
@@ -119,8 +121,8 @@ stow -t "$HOME" -R nvim
 stow -t "$HOME" -R bin
 ```
 
-The remaining Stow packages are `bin`, `nvim`, and `tmux`; their runtime and
-plugin state is intentionally kept outside Home Manager for now.
+The remaining Stow package is `bin`; its mixed static scripts and runtime state
+are intentionally kept outside Home Manager for now.
 
 ## Agent Workflow
 
