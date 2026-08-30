@@ -27,7 +27,7 @@ contains_line() {
 for nix_darwin_source in "$flake" "$darwin_host_module"; do
   [[ -f "$nix_darwin_source" ]] ||
     fail "Nix/Darwin ownership source is missing: $nix_darwin_source"
-  if grep -Eq '(^|[^[:alnum:]_-])homebrew[.]' "$nix_darwin_source"; then
+  if grep -Eq '(^|[^[:alnum:]_-])homebrew([.]|[[:space:]]*=)' "$nix_darwin_source"; then
     fail "Nix/Darwin must not declare Homebrew package ownership: $nix_darwin_source"
   fi
   if grep -Fq 'nix-homebrew' "$nix_darwin_source"; then
