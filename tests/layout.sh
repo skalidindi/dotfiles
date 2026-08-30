@@ -32,6 +32,9 @@ for setup_doc in config/agents/README.md config/nvim/README.md; do
     fail "$setup_doc should document the current bootstrap entrypoint"
 done
 
+grep -Fq "nix run '.#darwin-rebuild'" "$root_dir/README.md" ||
+  fail "the zsh-facing Darwin activation example should quote its flake reference"
+
 agent_setup="$(tr '\n' ' ' <"$root_dir/config/agents/README.md")"
 if grep -Eiq 'bootstrap[^.]*followed by[^.]*activation' <<<"$agent_setup"; then
   fail "agent setup should not advertise a separate Home Manager activation step"

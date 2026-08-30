@@ -113,7 +113,7 @@ Apply the current architecture configuration when validating a real macOS home:
 ```bash
 target="oss-$(nix --extra-experimental-features 'nix-command flakes' eval --impure --raw --expr builtins.currentSystem)"
 sudo env NIX_CONFIG="extra-experimental-features = nix-command flakes" \
-  nix run .#darwin-rebuild -- switch --flake ".#$target"
+  nix run '.#darwin-rebuild' -- switch --flake ".#$target"
 ```
 
 Check that the current Homebrew installation satisfies the Brewfile without
