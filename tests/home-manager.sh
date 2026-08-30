@@ -73,12 +73,32 @@ grep -Fq 'git/ignore' "$files_module" ||
   fail "the files module should own the global Git ignore file"
 grep -Fq 'programs.tmux' "$programs_module" ||
   fail "the programs module should own tmux configuration and plugins"
+for tmux_setting in \
+  'prefix = "C-Space";' \
+  'keyMode = "vi";' \
+  'mouse = true;' \
+  'extraConfig = builtins.readFile ../../config/tmux/tmux.conf;'; do
+  grep -Fq "$tmux_setting" "$programs_module" ||
+    fail "the programs module should preserve tmux setting: $tmux_setting"
+done
+
+for tmux_plugin in sensible yank resurrect continuum dracula vim-tmux-navigator; do
+  grep -Eq "^[[:space:]]+$tmux_plugin$" "$programs_module" ||
+    fail "the programs module should preserve the $tmux_plugin tmux plugin"
+done
+
 grep -Fq 'nvimLazyLock' "$programs_module" ||
   fail "the programs module should preserve Neovim lazy-lock seeding"
 grep -Fq 'baseNameOf path != "lazy-lock.json"' "$programs_module" ||
   fail "the managed Neovim tree should leave lazy-lock.json writable"
+grep -Fq 'home.activation.nvimLazyLock = lib.hm.dag.entryAfter [ "linkGeneration" ]' "$programs_module" ||
+  fail "Neovim lazy-lock seeding should run after link generation"
+grep -Fq 'lock="$HOME/.config/nvim/lazy-lock.json"' "$programs_module" ||
+  fail "Neovim lazy-lock seeding should target the Home Manager user's config"
 grep -Fq 'if [ ! -e "$lock" ]' "$programs_module" ||
   fail "Neovim lazy-lock seeding should remain first-install-only"
+grep -Fq 'cp ${../../config/nvim/lazy-lock.json} "$lock"' "$programs_module" ||
+  fail "Neovim lazy-lock seeding should copy the repository seed into the guarded target"
 grep -Fq 'pkgs.neovim' "$packages_module" ||
   fail "the packages module should retain Neovim ownership"
 
@@ -114,5 +134,14 @@ target_names="$("$nix_bin" "${nix_args[@]}" eval --raw "$root_dir#homeConfigurat
   "$root_dir#homeConfigurations.\"oss-x86_64-darwin\".activationPackage.drvPath" >/dev/null
 "$nix_bin" "${nix_args[@]}" eval --raw \
   "$root_dir#packages.aarch64-darwin.home-manager.name" >/dev/null
+
+git_profile="$("$nix_bin" "${nix_args[@]}" eval --raw \
+  "$root_dir#homeConfigurations.\"oss-aarch64-darwin\".config.xdg.configFile.\"git/.gitconfig.oss-base\".text")"
+signing_key="$(printf '%s' "$git_profile" | git config --file /dev/stdin --get user.signingKey || true)"
+gpg_sign="$(printf '%s' "$git_profile" | git config --file /dev/stdin --type=bool --get commit.gpgSign || true)"
+[[ "$signing_key" == '5EFA48B9657D7C02' ]] ||
+  fail "the generated Git profile should select the host GPG key through user.signingKey"
+[[ "$gpg_sign" == 'true' ]] ||
+  fail "the generated Git profile should enable commit signing"
 
 printf 'PASS: Home Manager modules, identity boundary, and explicit targets\n'

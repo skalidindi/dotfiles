@@ -10,10 +10,10 @@
       name = Santosh Kalidindi
       initials = sk
       email = skalidindi8@gmail.com
+      signingKey = 5EFA48B9657D7C02
 
     [commit]
       gpgsign = true
-      signingKey = 5EFA48B9657D7C02
   '';
 
   xdg.configFile."git/.gitconfig.oss-laptop".text = ''
