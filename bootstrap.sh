@@ -19,6 +19,25 @@ repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 installer_dir="$repo_root/installers"
 profile="full"
 
+refresh_homebrew_env() {
+  local brew_bin candidate
+
+  if [[ -n "${HOMEBREW_PREFIX:-}" && -x "$HOMEBREW_PREFIX/bin/brew" ]]; then
+    brew_bin="$HOMEBREW_PREFIX/bin/brew"
+  else
+    for candidate in /opt/homebrew/bin/brew /usr/local/bin/brew /home/linuxbrew/.linuxbrew/bin/brew; do
+      if [[ -x "$candidate" ]]; then
+        brew_bin="$candidate"
+        break
+      fi
+    done
+  fi
+
+  if [[ -n "${brew_bin:-}" ]]; then
+    eval "$(\"$brew_bin\" shellenv)"
+  fi
+}
+
 list_installers() {
   if [[ "$profile" == "base" ]]; then
     printf '%s\n' "$installer_dir/010-stow.sh" "$installer_dir/020-agent-assets.sh"
@@ -59,6 +78,7 @@ while IFS= read -r installer; do
   [ -n "$installer" ] || continue
   printf 'Running %s\n' "${installer#$repo_root/}"
   bash "$installer"
+  refresh_homebrew_env
 done < <(list_installers)
 
 echo "Bootstrap completed!"

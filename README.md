@@ -15,7 +15,9 @@ agent-doctor
 ```
 
 `agent-doctor` is the quick post-bootstrap check for the agent surfaces,
-launcher commands, prompt sync, profile drift, and obvious runtime-state leaks.
+launcher commands, prompt sync, and obvious runtime-state leaks. Run
+`agent-skill-profile diff --target all` separately when you want to inspect
+profile drift.
 
 ## Bootstrap
 
@@ -26,7 +28,7 @@ launcher commands, prompt sync, profile drift, and obvious runtime-state leaks.
 - runs `install-agent-assets` and `configure-oss-git` when available;
 - runs `brew bundle --file=Brewfile`;
 - installs the global agent and development CLIs this setup expects;
-- decrypts `env/.env-secrets.gpg` into the ignored local `env/.env-secrets`
+- decrypts `env/.env-secrets.gpg` atomically into the ignored `$HOME/.env-secrets`
   file when the encrypted file is present.
 
 Bootstrap behavior is split into numbered scripts under `installers/`. Use

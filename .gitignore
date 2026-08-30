@@ -21,7 +21,6 @@ codex
 codex/*
 !codex/.codex/
 codex/.codex/**
-!codex/.codex/AGENTS.md
 !codex/.codex/skills/
 !codex/.codex/skills/learn-quiz/
 !codex/.codex/skills/learn-quiz/**
@@ -34,7 +33,6 @@ claude
 claude/*
 !claude/.claude/
 claude/.claude/**
-!claude/.claude/CLAUDE.md
 !claude/.claude/plugins/
 claude/.claude/plugins/**
 !claude/.claude/plugins/config.json
@@ -57,13 +55,11 @@ bin/.local/*
 !bin/.local/bin/
 bin/.local/bin/*
 !bin/.local/bin/agent-doctor
-!bin/.local/bin/agent-mode
 !bin/.local/bin/agent-runtime-guard
 !bin/.local/bin/agent-skill-profile
 !bin/.local/bin/configure-oss-git
 !bin/.local/bin/install-agent-assets
 !bin/.local/bin/restore-skills-sh
-!bin/.local/bin/zellij-sessionizer
 !bin/.local/bin/zrun
 !bin/.local/share/
 bin/.local/share/*
