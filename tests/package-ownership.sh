@@ -173,11 +173,8 @@ fi
 
 [[ -x "$nix_bin" ]] || fail "Nix is required to evaluate package ownership"
 nix_args=(--extra-experimental-features 'nix-command flakes')
-dev_shells_status="$({
-  "$nix_bin" "${nix_args[@]}" eval --impure --raw --expr \
-    "let flake = builtins.getFlake \"$root_dir\"; in if flake.outputs ? devShells then \"present\" else \"absent\""
-})"
-[[ "$dev_shells_status" == 'absent' ]] ||
+"$nix_bin" "${nix_args[@]}" flake show --json --no-write-lock-file "$root_dir" |
+  jq -e 'has("devShells") | not' >/dev/null ||
   fail "the evaluated flake outputs should not expose development shells"
 
 global_tools="$root_dir/scripts/global-tools"
