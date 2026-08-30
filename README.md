@@ -70,13 +70,13 @@ Review and commit `flake.lock` with that update.
 
 ### Home Manager pilot
 
-Home Manager currently owns only `~/.config/starship.toml`; Homebrew still
-owns the `starship` executable and Stow owns the rest of the dotfiles. On the
-first activation, remove the legacy Starship Stow link, then apply the
-configuration:
+Home Manager currently owns `~/.config/starship.toml`, `~/.config/zellij`, and
+`~/.config/yazi`; Homebrew still owns those executables and Stow owns the rest
+of the dotfiles. On the first activation, remove the legacy Stow links, then
+apply the configuration:
 
 ```bash
-stow -t "$HOME" -D starship
+stow -t "$HOME" -D starship zellij yazi
 NIX_CONFIG="extra-experimental-features = nix-command flakes" \
   nix run .#home-manager -- switch --flake .#oss
 ```

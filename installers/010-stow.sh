@@ -31,7 +31,7 @@ fi
 echo "Running stow for dotfiles..."
 # Claude and Codex homes are mutable runtime directories. Their portable assets are
 # applied by install-agent-assets; do not stow either whole home directory.
-stow_dirs=(agents bash bin env fastfetch gh ghostty git herdr lazygit nvim tmux worktrunk yazi zellij zsh)
+stow_dirs=(agents bash bin env fastfetch gh ghostty git herdr lazygit nvim tmux worktrunk zsh)
 
 migrate_work_agent_prompt_fallback() {
   local target="$HOME/.agents/prompts/pull-request.md"

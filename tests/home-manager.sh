@@ -25,6 +25,13 @@ grep -Fq 'starship.toml' "$root_dir/home-manager/oss.nix" || {
   exit 1
 }
 
+for config_dir in zellij yazi; do
+  grep -Fq "${config_dir}" "$root_dir/home-manager/oss.nix" || {
+    printf 'FAIL: Home Manager should own the %s config\n' "$config_dir" >&2
+    exit 1
+  }
+done
+
 grep -Fq 'home.username' "$root_dir/home-manager/hosts/skalidindi.nix" || {
   printf 'FAIL: account identity should live in a host module\n' >&2
   exit 1
@@ -35,9 +42,11 @@ if grep -Fq 'home.username' "$root_dir/home-manager/oss.nix"; then
   exit 1
 fi
 
-if grep -Fq 'starship' "$root_dir/installers/010-stow.sh"; then
-  printf 'FAIL: Stow should not also own the Starship config\n' >&2
-  exit 1
-fi
+for package in starship zellij yazi; do
+  if grep -Fq "$package" "$root_dir/installers/010-stow.sh"; then
+    printf 'FAIL: Stow should not also own the %s config\n' "$package" >&2
+    exit 1
+  fi
+done
 
 printf 'PASS: Home Manager tests\n'
