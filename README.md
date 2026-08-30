@@ -40,9 +40,9 @@ lists.
 
 ## Nix development shell
 
-The repository includes an opt-in Nix flake for OSS command-line tools and
-development runtimes. It does not replace `bootstrap.sh`, install packages
-globally, or manage files in `$HOME`.
+The repository includes an opt-in Nix flake for OSS command-line tools,
+development runtimes, and selected static configuration. It does not replace
+`bootstrap.sh` or install packages globally.
 
 Install Nix with the official macOS daemon installer, then reopen the terminal.
 From the repository root, validate and enter the shell with:
@@ -56,7 +56,8 @@ nix --extra-experimental-features 'nix-command flakes' develop
 The first invocation downloads the locked packages into the Nix store. While
 inside `nix develop`, those versions take precedence over Homebrew versions.
 Run `exit` to leave the shell. Homebrew remains the source for GUI applications,
-Work tools, and global tools. GNU Stow remains the source for static dotfiles.
+Work tools, and global tools. Home Manager owns the migrated static configs;
+GNU Stow owns the remaining dotfiles.
 
 To add a tool to the shell, add its nixpkgs attribute to `flake.nix`, then run
 the flake check and `bash tests/nix-pilot.sh`. Update pinned package versions
@@ -70,13 +71,15 @@ Review and commit `flake.lock` with that update.
 
 ### Home Manager pilot
 
-Home Manager currently owns `~/.config/starship.toml`, `~/.config/zellij`, and
-`~/.config/yazi`; Homebrew still owns those executables and Stow owns the rest
-of the dotfiles. On the first activation, remove the legacy Stow links, then
-apply the configuration:
+Home Manager currently owns `~/.config/starship.toml`, `~/.config/zellij`,
+`~/.config/yazi`, `~/.config/fastfetch`, `~/.config/ghostty`, and
+`~/.config/lazygit`, plus the static `herdr/config.toml` and
+`worktrunk/config.toml` files. Homebrew still owns the executables. On the first
+activation after pulling this change, remove the legacy Stow links, then apply
+the configuration:
 
 ```bash
-stow -t "$HOME" -D starship zellij yazi
+stow -t "$HOME" -D starship zellij yazi fastfetch ghostty lazygit herdr worktrunk
 NIX_CONFIG="extra-experimental-features = nix-command flakes" \
   nix run .#home-manager -- switch --flake .#oss
 ```
@@ -98,7 +101,7 @@ different macOS account.
   `agent-skill-profile`.
 - `bash/`, `zsh/`, `starship/` - shell configuration and prompt
   setup.
-- `git/`, `gh/`, `lazygit/` - source-control configuration.
+- `git/` - layered source-control configuration.
 - `nvim/`, `tmux/`, `zellij/`, `ghostty/`, `yazi/` - editor, terminal,
   multiplexer, and file-manager configuration.
 - `Brewfile` - Homebrew packages managed by bootstrap.
@@ -116,7 +119,7 @@ stow -t "$HOME" -R --no-folding agents
 ```
 
 `bootstrap.sh` uses `--no-folding` for packages where preserving a mixed local
-directory matters, such as `agents`, `git`, and `worktrunk`.
+directory matters, such as `agents` and `git`.
 
 ## Agent Workflow
 
@@ -156,9 +159,9 @@ Do not commit:
 - downloaded plugin caches, generated model catalogs, and package installs;
 - decrypted environment files.
 
-If a file is static and safe to symlink, keep it in a stow package. If a tool
-mutates it during normal use, track a template or installer behavior instead of
-the live file.
+If a file is static and safe to symlink, keep it in a Home Manager module. If a
+tool mutates it during normal use, track a template or installer behavior
+instead of the live file. Keep each target owned by exactly one system.
 
 ## License
 
