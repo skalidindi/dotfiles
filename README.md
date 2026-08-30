@@ -15,9 +15,7 @@ agent-doctor
 ```
 
 `agent-doctor` is the quick post-bootstrap check for the agent surfaces,
-launcher commands, prompt sync, and obvious runtime-state leaks. Run
-`agent-skill-profile diff --target all` separately when you want to inspect
-profile drift.
+launcher commands, prompt sync, and obvious runtime-state leaks.
 
 ## Bootstrap
 
@@ -92,13 +90,12 @@ different macOS account.
 
 ## Repo Layout
 
-- `agents/` - shared Claude, Codex, and Cursor prompt assets, profiles, task
-  notes, and skill source manifests.
+- `agents/` - shared Claude, Codex, and Cursor prompt assets and skill source
+  manifests.
 - `claude/`, `codex/`, `cursor/` - tool-specific agent homes,
   templates, hooks, keybindings, and portable extensions. Runtime files inside
   these trees are intentionally ignored.
-- `bin/.local/bin/` - local PATH helpers such as `zrun`, `agent-doctor`, and
-  `agent-skill-profile`.
+- `bin/.local/bin/` - local PATH helpers such as `zrun` and `agent-doctor`.
 - `bash/`, `zsh/`, `starship/` - shell configuration and prompt
   setup.
 - `git/` - layered source-control configuration.
@@ -133,9 +130,8 @@ Useful checks and maintenance commands:
 agent-doctor
 agent-runtime-guard
 install-agent-assets
-agent-skill-profile diff --target all
-agent-skill-profile apply --target all --prune core
-agent-skill-profile apply --target all heavy
+restore-skills-sh
+restore-skills-sh --apply
 ```
 
 For long-lived interactive agents, start or attach a zellij session manually,

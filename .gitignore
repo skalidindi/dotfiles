@@ -56,7 +56,6 @@ bin/.local/*
 bin/.local/bin/*
 !bin/.local/bin/agent-doctor
 !bin/.local/bin/agent-runtime-guard
-!bin/.local/bin/agent-skill-profile
 !bin/.local/bin/configure-oss-git
 !bin/.local/bin/install-agent-assets
 !bin/.local/bin/restore-skills-sh
@@ -67,8 +66,6 @@ bin/.local/share/*
 !bin/.local/share/agent-uv-enforcer/**
 !bin/.local/share/agent-dangerous-command-guard/
 !bin/.local/share/agent-dangerous-command-guard/**
-!bin/.local/share/agent-state/
-!bin/.local/share/agent-state/**
 
 .env-secrets
 

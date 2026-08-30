@@ -18,7 +18,6 @@ Track source-of-truth assets that should follow the user across machines:
 
 - prompt fragments and shared operating guidance;
 - active task notes that need to survive sessions;
-- curated profile definitions for small, explicit agent setups;
 - generated inventories that are safe to commit;
 - helper documentation for syncing tool-specific agent directories.
 
@@ -44,24 +43,6 @@ agent-doctor
 
 `install-agent-assets` syncs the shared base prompt into the Claude and Codex
 prompt files and merges tracked hook templates into local hook config.
-
-## Profiles
-
-Profiles describe what should be enabled by default.
-
-- `core` - minimal cross-agent behavior for day-to-day coding.
-- `heavy` - high-cost or special-purpose tools enabled only when useful.
-
-Use `agent-skill-profile` to inspect or apply those profiles:
-
-```bash
-agent-skill-profile diff --target all
-agent-skill-profile apply --target all --prune core
-agent-skill-profile apply --target all heavy
-```
-
-`--prune` moves extras into `~/.agents/disabled-skills/<target>/<timestamp>/`;
-it does not delete them.
 
 ## Prompts
 
