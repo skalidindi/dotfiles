@@ -4,6 +4,12 @@ set -euo pipefail
 root_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
 packages_module="$root_dir/home-manager/modules/packages.nix"
 brewfile="$root_dir/Brewfile"
+flake="$root_dir/flake.nix"
+darwin_host_module="$root_dir/darwin/hosts/skalidindi.nix"
+ownership_documents=(
+  "$root_dir/README.md"
+  "$root_dir/docs/superpowers/specs/2026-08-30-nix-darwin-design.md"
+)
 nix_bin="${NIX_BIN:-/nix/var/nix/profiles/default/bin/nix}"
 
 fail() {
@@ -17,6 +23,23 @@ contains_line() {
 
   grep -Fxq "$needle" <<<"$lines"
 }
+
+for nix_darwin_source in "$flake" "$darwin_host_module"; do
+  [[ -f "$nix_darwin_source" ]] ||
+    fail "Nix/Darwin ownership source is missing: $nix_darwin_source"
+  if grep -Eq '(^|[^[:alnum:]_-])homebrew[.]' "$nix_darwin_source"; then
+    fail "Nix/Darwin must not declare Homebrew package ownership: $nix_darwin_source"
+  fi
+  if grep -Fq 'nix-homebrew' "$nix_darwin_source"; then
+    fail "Nix/Darwin must not declare nix-homebrew package ownership: $nix_darwin_source"
+  fi
+done
+
+for ownership_document in "${ownership_documents[@]}"; do
+  tr -s '[:space:]' ' ' <"$ownership_document" |
+    grep -Fq '`nix-homebrew` is intentionally absent' ||
+    fail "ownership documentation must state that nix-homebrew is intentionally absent: $ownership_document"
+done
 
 home_manager_packages="$({
   sed -nE 's/^[[:space:]]*pkgs\.([A-Za-z0-9_.+-]+)[[:space:]]*(#.*)?$/\1/p' "$packages_module"

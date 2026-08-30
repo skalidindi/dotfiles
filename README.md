@@ -1,7 +1,7 @@
 # Dotfiles
 
-Personal macOS dotfiles for a development machine. Nix/Darwin owns system
-activation and activates Home Manager, which owns portable command-line
+Personal macOS dotfiles for a development machine. `nix-darwin` is the system
+activation layer and activates Home Manager, which owns portable command-line
 packages, static configuration, and helper scripts. Homebrew owns GUI
 applications, fonts, and the macOS- or Work-specific tools outside the portable
 Home Manager boundary. Auth, sessions, caches, generated files, and other
@@ -46,12 +46,19 @@ pull repository changes.
 
 ## Package and configuration ownership
 
-- Home Manager installs portable CLI packages from
+- `nix-darwin` is the system activation layer. It configures Nix and activates
+  the Home Manager user configuration; it does not manage Homebrew packages.
+- Home Manager is the user configuration layer. It installs portable CLI
+  packages from
   `home-manager/modules/packages.nix`.
 - Home Manager links static configuration from `config/` and executable helpers
   from `scripts/bin/`.
-- `Brewfile` owns macOS applications, fonts, Java tooling, and the retained
-  macOS or Work-adjacent formulae.
+- `Brewfile` remains the sole Homebrew package source. It owns macOS
+  applications, fonts, Java tooling, and the retained macOS or Work-adjacent
+  formulae.
+- `nix-homebrew` is intentionally absent. Homebrew installation and tap
+  management would add a second package-owner migration without improving the
+  existing Brewfile boundary.
 - `scripts/global-tools` owns mutable npm-installed agent CLIs and the Hunk
   agent skill.
 - `scripts/secrets` owns the optional encrypted environment-file migration and
