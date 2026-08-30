@@ -49,7 +49,6 @@ projects/*/*
 # transcripts, and scratch state out of this repo. Track only portable
 # bootstrap templates from the dotfiles checkout.
 *
-!hooks.json.tpl
 !mcp.json.tpl
 !.gitignore
 # <<< DOTFILES MANAGED BLOCK <<<

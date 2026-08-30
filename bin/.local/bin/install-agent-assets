@@ -241,16 +241,6 @@ copy_if_changed \
   "$HOME/.codex/AGENTS.md" \
   "Codex base prompt"
 
-merge_json_with_hook_arrays \
-  "$dotfiles_dir/codex/.codex/hooks.json.tpl" \
-  "$HOME/.codex/hooks.json" \
-  "Codex hooks.json"
-
-merge_json_with_hook_arrays \
-  "$dotfiles_dir/cursor/.cursor/hooks.json.tpl" \
-  "$HOME/.cursor/hooks.json" \
-  "Cursor hooks.json"
-
 if [ -d "$HOME/.agents" ]; then
   printf 'ok shared agent directory\n'
 else

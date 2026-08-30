@@ -22,7 +22,6 @@ codex/*
 !codex/.codex/
 codex/.codex/**
 !codex/.codex/AGENTS.md
-!codex/.codex/hooks.json.tpl
 !codex/.codex/skills/
 !codex/.codex/skills/learn-quiz/
 !codex/.codex/skills/learn-quiz/**
@@ -52,7 +51,6 @@ cursor/*
 !cursor/.cursor/
 cursor/.cursor/**
 !cursor/.cursor/.gitignore
-!cursor/.cursor/hooks.json.tpl
 
 # Bin
 bin/.local/*
