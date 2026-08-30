@@ -1,0 +1,128 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
+brew_bin=""
+nix_bin=""
+
+find_brew() {
+  local candidate
+
+  if [[ -n "${HOMEBREW_PREFIX:-}" && -x "$HOMEBREW_PREFIX/bin/brew" ]]; then
+    printf '%s\n' "$HOMEBREW_PREFIX/bin/brew"
+    return 0
+  fi
+
+  for candidate in /opt/homebrew/bin/brew /usr/local/bin/brew /home/linuxbrew/.linuxbrew/bin/brew; do
+    if [[ -x "$candidate" ]]; then
+      printf '%s\n' "$candidate"
+      return 0
+    fi
+  done
+
+  command -v brew 2>/dev/null
+}
+
+find_nix() {
+  if command -v nix >/dev/null 2>&1; then
+    command -v nix
+    return 0
+  fi
+
+  if [[ -x /nix/var/nix/profiles/default/bin/nix ]]; then
+    printf '%s\n' /nix/var/nix/profiles/default/bin/nix
+    return 0
+  fi
+
+  return 1
+}
+
+select_home_manager_target() {
+  local architecture
+
+  architecture="$(uname -m)"
+  case "$architecture" in
+    arm64)
+      printf '%s\n' oss-aarch64-darwin
+      ;;
+    x86_64)
+      printf '%s\n' oss-x86_64-darwin
+      ;;
+    *)
+      printf 'bootstrap: unsupported architecture: %s\n' "$architecture" >&2
+      return 1
+      ;;
+  esac
+}
+
+ensure_homebrew() {
+  if brew_bin="$(find_brew)"; then
+    eval "$("$brew_bin" shellenv)"
+    printf 'Homebrew already installed.\n'
+    return 0
+  fi
+
+  printf 'Homebrew not found. Installing Homebrew...\n'
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+  if brew_bin="$(find_brew)"; then
+    eval "$("$brew_bin" shellenv)"
+    return 0
+  fi
+
+  printf 'bootstrap: Homebrew installer completed but brew was not found\n' >&2
+  return 1
+}
+
+ensure_nix() {
+  if nix_bin="$(find_nix)"; then
+    return 0
+  fi
+
+  printf 'Nix not found. Installing Nix...\n'
+  curl -L https://nixos.org/nix/install | sh
+
+  if nix_bin="$(find_nix)"; then
+    return 0
+  fi
+
+  printf 'bootstrap: Nix installation finished but nix is unavailable. Open a new terminal, or add /nix/var/nix/profiles/default/bin to PATH, then rerun scripts/bootstrap.\n' >&2
+  return 1
+}
+
+run_home_manager_helper() {
+  local helper="$1"
+  local helper_path="$HOME/.local/bin/$helper"
+
+  if [[ ! -x "$helper_path" ]]; then
+    printf 'bootstrap: expected Home Manager helper is unavailable: %s\n' "$helper_path" >&2
+    return 1
+  fi
+
+  printf 'Running %s...\n' "$helper"
+  "$helper_path"
+}
+
+main() {
+  local target
+
+  target="$(select_home_manager_target)"
+  cd "$repo_root"
+
+  ensure_homebrew
+  "$brew_bin" bundle --file="$repo_root/Brewfile"
+
+  ensure_nix
+  printf 'Activating Home Manager target %s...\n' "$target"
+  NIX_CONFIG="extra-experimental-features = nix-command flakes" \
+    "$nix_bin" run .#home-manager -- switch --flake ".#$target"
+
+  run_home_manager_helper install-agent-assets
+  run_home_manager_helper configure-oss-git
+  "$repo_root/scripts/global-tools"
+  "$repo_root/scripts/secrets"
+
+  printf 'Bootstrap completed.\n'
+}
+
+main "$@"

@@ -17,7 +17,7 @@ printf 'secret value\n'
 EOF
 chmod +x "$sandbox/bin/gpg"
 
-HOME="$sandbox/home" PATH="$sandbox/bin:$PATH" bash "$root_dir/installers/050-secrets.sh" >/dev/null
+HOME="$sandbox/home" PATH="$sandbox/bin:$PATH" "$root_dir/scripts/secrets" >/dev/null
 
 [[ "$(cat "$sandbox/home/.env-secrets")" == "secret value" ]] || {
   printf 'FAIL: secrets should be written to the home file shells source\n' >&2
@@ -31,7 +31,7 @@ fi
 
 printf 'existing secret\n' >"$sandbox/home/.env-secrets"
 if HOME="$sandbox/home" PATH="$sandbox/bin:$PATH" FAKE_GPG_MODE=failure \
-  bash "$root_dir/installers/050-secrets.sh" >/dev/null 2>&1; then
+  "$root_dir/scripts/secrets" >/dev/null 2>&1; then
   printf 'FAIL: failed decryption should fail the installer\n' >&2
   exit 1
 fi
@@ -41,12 +41,9 @@ fi
   exit 1
 }
 
-legacy_target="$sandbox/oss/dotfiles/env/.env-secrets"
-mkdir -p "$(dirname "$legacy_target")"
-printf 'legacy secret\n' >"$legacy_target"
 rm -f "$sandbox/home/.env-secrets"
-ln -s "../oss/dotfiles/env/.env-secrets" "$sandbox/home/.env-secrets"
-HOME="$sandbox/home" PATH="$sandbox/bin:$PATH" bash "$root_dir/installers/050-secrets.sh" >/dev/null
+ln -s "$root_dir/env/.env-secrets" "$sandbox/home/.env-secrets"
+HOME="$sandbox/home" PATH="$sandbox/bin:$PATH" "$root_dir/scripts/secrets" >/dev/null
 
 [[ ! -L "$sandbox/home/.env-secrets" ]] || {
   printf 'FAIL: legacy secrets symlink should be replaced with a regular home file\n' >&2
@@ -56,8 +53,24 @@ HOME="$sandbox/home" PATH="$sandbox/bin:$PATH" bash "$root_dir/installers/050-se
   printf 'FAIL: migrated secrets should be written to the home file\n' >&2
   exit 1
 }
-[[ "$(cat "$legacy_target")" == "legacy secret" ]] || {
-  printf 'FAIL: legacy repository target should not be overwritten\n' >&2
+unexpected_target="$sandbox/unexpected/.env-secrets"
+mkdir -p "$(dirname "$unexpected_target")"
+printf 'unrelated secret\n' >"$unexpected_target"
+rm -f "$sandbox/home/.env-secrets"
+ln -s "$unexpected_target" "$sandbox/home/.env-secrets"
+
+if HOME="$sandbox/home" PATH="$sandbox/bin:$PATH" \
+  "$root_dir/scripts/secrets" >/dev/null 2>&1; then
+  printf 'FAIL: unexpected secrets symlink should stop the helper\n' >&2
+  exit 1
+fi
+
+[[ -L "$sandbox/home/.env-secrets" ]] || {
+  printf 'FAIL: unexpected secrets symlink should be preserved\n' >&2
+  exit 1
+}
+[[ "$(cat "$unexpected_target")" == "unrelated secret" ]] || {
+  printf 'FAIL: unexpected symlink target should not be overwritten\n' >&2
   exit 1
 }
 
