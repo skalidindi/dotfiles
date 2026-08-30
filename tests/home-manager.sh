@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+root_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
+nix_bin="/nix/var/nix/profiles/default/bin/nix"
+
+if [[ ! -x "$nix_bin" ]]; then
+  printf 'SKIP: Nix is not installed\n'
+  exit 77
+fi
+
+nix_args=(--extra-experimental-features 'nix-command flakes')
+
+"$nix_bin" "${nix_args[@]}" eval --raw "$root_dir#homeConfigurations.oss.activationPackage.drvPath" >/dev/null
+"$nix_bin" "${nix_args[@]}" eval --raw "$root_dir#homeConfigurations.\"oss-x86_64-darwin\".activationPackage.drvPath" >/dev/null
+"$nix_bin" "${nix_args[@]}" eval --raw "$root_dir#packages.aarch64-darwin.home-manager.name" >/dev/null
+
+grep -Fq 'home-manager' "$root_dir/flake.nix" || {
+  printf 'FAIL: flake should declare Home Manager\n' >&2
+  exit 1
+}
+
+grep -Fq 'starship.toml' "$root_dir/home-manager/oss.nix" || {
+  printf 'FAIL: Home Manager should own the Starship config\n' >&2
+  exit 1
+}
+
+if grep -Fq 'starship' "$root_dir/installers/010-stow.sh"; then
+  printf 'FAIL: Stow should not also own the Starship config\n' >&2
+  exit 1
+fi
+
+printf 'PASS: Home Manager tests\n'

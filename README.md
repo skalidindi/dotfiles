@@ -68,6 +68,21 @@ nix --extra-experimental-features 'nix-command flakes' flake lock --update-input
 
 Review and commit `flake.lock` with that update.
 
+### Home Manager pilot
+
+Home Manager currently owns only `~/.config/starship.toml`; Homebrew still
+owns the `starship` executable and Stow owns the rest of the dotfiles. On the
+first activation, remove the legacy Starship Stow link, then apply the
+configuration:
+
+```bash
+stow -t "$HOME" -D starship
+nix run .#home-manager -- switch --flake .#oss
+```
+
+The flake also exposes `.#homeConfigurations.oss-x86_64-darwin` for Intel
+macOS. Do not add another Stow package for files managed by Home Manager.
+
 ## Repo Layout
 
 - `agents/` - shared Claude, Codex, and Cursor prompt assets, profiles, task
