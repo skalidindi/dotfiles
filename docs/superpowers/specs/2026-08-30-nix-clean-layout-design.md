@@ -1,5 +1,9 @@
 # Nix Clean Layout Design
 
+> **Superseded for system activation:** This records the completed clean-layout
+> migration. The decision to remain standalone Home Manager is superseded by
+> [the Nix-Darwin design](2026-08-30-nix-darwin-design.md).
+
 ## Goal
 
 Turn the OSS dotfiles repository into a small, standalone macOS Home Manager

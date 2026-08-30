@@ -74,14 +74,16 @@ The flake exposes explicit `oss-aarch64-darwin` and
 `oss-x86_64-darwin` configurations. `./scripts/bootstrap` selects one from the
 current machine architecture.
 
-The account-specific username, home directory, and OSS Git identity live in
-`home-manager/hosts/skalidindi.nix`. To use this repository for another macOS
-account, add a host module and matching flake target rather than putting identity
-data in the shared modules.
+`home-manager/hosts/skalidindi.nix` owns the Home Manager account identity and
+OSS Git identity. `darwin/hosts/skalidindi.nix` owns the system primary user and
+derived macOS home directory. To use this repository for another macOS account,
+add both host modules and a matching flake target rather than putting identity
+data in shared modules.
 
 ## Repository layout
 
 - `config/` contains declarative shell, editor, terminal, Git, and agent files.
+- `darwin/hosts/` contains account-specific nix-darwin system configuration.
 - `home-manager/hosts/` contains account-specific Home Manager configuration.
 - `home-manager/modules/` defines shared file, package, and program ownership.
 - `scripts/bin/` contains portable helpers installed into `$HOME/.local/bin`.
@@ -109,8 +111,9 @@ bash tests/home-manager.sh
 Apply the current architecture configuration when validating a real macOS home:
 
 ```bash
+target="oss-$(nix --extra-experimental-features 'nix-command flakes' eval --impure --raw --expr builtins.currentSystem)"
 sudo env NIX_CONFIG="extra-experimental-features = nix-command flakes" \
-  nix run .#darwin-rebuild -- switch --flake .#oss-$(nix eval --impure --raw --expr builtins.currentSystem)
+  nix run .#darwin-rebuild -- switch --flake ".#$target"
 ```
 
 Check that the current Homebrew installation satisfies the Brewfile without
