@@ -14,7 +14,7 @@ for required_dir in config scripts/bin; do
 done
 
 for legacy_path in bin/.local/bin claude codex cursor; do
-  [[ ! -e "$root_dir/$legacy_path" ]] ||
+  [[ ! -e "$root_dir/$legacy_path" && ! -L "$root_dir/$legacy_path" ]] ||
     fail "$legacy_path should not exist"
 done
 
