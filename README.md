@@ -109,8 +109,8 @@ bash tests/home-manager.sh
 Apply the current architecture configuration when validating a real macOS home:
 
 ```bash
-export NIX_CONFIG="extra-experimental-features = nix-command flakes"
-nix run .#darwin-rebuild -- switch --flake .#oss-$(nix eval --impure --raw --expr builtins.currentSystem)
+sudo env NIX_CONFIG="extra-experimental-features = nix-command flakes" \
+  nix run .#darwin-rebuild -- switch --flake .#oss-$(nix eval --impure --raw --expr builtins.currentSystem)
 ```
 
 Check that the current Homebrew installation satisfies the Brewfile without
