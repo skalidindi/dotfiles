@@ -49,6 +49,7 @@ chmod +x "$home/.nix-profile/bin/brew"
 
 if ! resolved_commands="$({
   HOME="$home" PATH="$home/.local/bin:$home/.nix-profile/bin:/usr/bin:/bin" /bin/bash -c '
+    unset PYTHON_HOME
     source "$1"
     path_once="$PATH"
     source "$1"
