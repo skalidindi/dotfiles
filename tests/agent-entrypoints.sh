@@ -32,12 +32,12 @@ assert_not_present() {
   fi
 }
 
-assert_not_tracked "bin/.local/bin/codex"
-assert_not_tracked "bin/.local/bin/claude"
-assert_not_allowlisted "bin/.local/bin/codex"
-assert_not_allowlisted "bin/.local/bin/claude"
+assert_not_tracked "scripts/bin/codex"
+assert_not_tracked "scripts/bin/claude"
+assert_not_allowlisted "scripts/bin/codex"
+assert_not_allowlisted "scripts/bin/claude"
 
-removed_awake_path="bin/.local/bin/agent-""awake"
+removed_awake_path="scripts/bin/agent-""awake"
 assert_not_present "$removed_awake_path"
 assert_not_allowlisted "$removed_awake_path"
 

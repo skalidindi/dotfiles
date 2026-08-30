@@ -2,7 +2,7 @@
 set -euo pipefail
 
 root_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
-guard="$root_dir/bin/.local/bin/agent-runtime-guard"
+guard="$root_dir/scripts/bin/agent-runtime-guard"
 
 fail() {
   printf 'FAIL: %s\n' "$1" >&2
@@ -22,6 +22,8 @@ test_runtime_guard_passes_current_repo() {
   listed_paths="$("$guard" --list)"
   [[ "$listed_paths" == *"codex/.codex/auth.json"* ]] ||
     fail "runtime guard should list representative Codex auth state"
+  [[ "$listed_paths" != *"bin/.local/bin/"* ]] ||
+    fail "runtime guard should not restore checks for the retired binary source root"
 }
 
 test_runtime_guard_fails_for_unignored_paths() {

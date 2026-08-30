@@ -1,120 +1,122 @@
 # Dotfiles
 
-Personal macOS dotfiles for a development machine. Home Manager installs the
-portable configuration and helper scripts into `$HOME`, while auth, sessions,
-caches, generated files, and other runtime state stay local and ignored.
+Personal macOS dotfiles for a development machine. Home Manager owns portable
+command-line packages, static configuration, and helper scripts. Homebrew owns
+GUI applications, fonts, and the macOS- or Work-specific tools outside the
+portable Home Manager boundary. Auth, sessions, caches, generated files, and
+other runtime state stay local and ignored.
 
-## Quick Start
+## Fresh laptop setup
+
+Clone the repository, then run the one normal installation command:
 
 ```bash
 git clone https://github.com/skalidindi/dotfiles.git ~/oss/dotfiles
 cd ~/oss/dotfiles
-./bootstrap.sh
-agent-doctor
+./scripts/bootstrap
 ```
 
-`agent-doctor` is the quick post-bootstrap check for the agent surfaces,
-launcher commands, prompt sync, and obvious runtime-state leaks.
+Bootstrap installs Homebrew and Nix when either is absent, applies the Brewfile,
+activates the Home Manager target for the current Mac architecture, installs
+mutable agent CLIs, and restores the local agent and Git integration. If
+`env/.env-secrets.gpg` exists, it also decrypts that file atomically into the
+ignored `$HOME/.env-secrets` file.
 
-## Bootstrap
+The Nix installer can complete before its profile is visible to the current
+shell. Bootstrap checks the standard Nix profile directly, but if Nix is still
+unavailable, open a fresh terminal and run `./scripts/bootstrap` again as the
+error instructs.
 
-`./bootstrap.sh` is the normal install and update path. Install Nix first when
-setting up a new laptop so Home Manager can activate during bootstrap. It:
+After installation, `agent-doctor` gives a quick status report for the agent
+surfaces, launcher commands, and runtime-state boundaries.
 
-- installs Homebrew if it is missing;
-- activates Home Manager when Nix is installed;
-- runs `install-agent-assets` and `configure-oss-git` when available;
-- runs `brew bundle --file=Brewfile`;
-- installs the global agent and development CLIs this setup expects;
-- decrypts `env/.env-secrets.gpg` atomically into the ignored `$HOME/.env-secrets`
-  file when the encrypted file is present.
+## Normal maintenance
 
-Bootstrap behavior is split into numbered scripts under `installers/`. Use
-`./bootstrap.sh --list` to inspect the exact run order, or run a single
-installer directly when only one slice changed.
-
-Re-run `./bootstrap.sh` after changing Home Manager config, helper scripts, or
-package lists.
-
-## Nix development shell
-
-The repository includes an opt-in Nix flake for OSS command-line tools,
-development runtimes, and selected static configuration. It does not replace
-`bootstrap.sh` or install packages globally.
-
-Install Nix with the official macOS daemon installer, then reopen the terminal.
-From the repository root, validate and enter the shell with:
+From the repository root, run:
 
 ```bash
-nix --extra-experimental-features 'nix-command flakes' flake check
-bash tests/nix-pilot.sh
-nix --extra-experimental-features 'nix-command flakes' develop
+./scripts/update
 ```
 
-The first invocation downloads the locked packages into the Nix store. While
-inside `nix develop`, those versions take precedence over Homebrew versions.
-Run `exit` to leave the shell. Homebrew remains the source for GUI applications,
-Work tools, and global tools. Home Manager owns the portable static
-configuration and helper scripts.
+Update runs Homebrew update and upgrade, updates the locked Nix inputs, then
+runs `./scripts/bootstrap` to reapply the complete configuration. Review and
+commit an intentional `flake.lock` change after maintenance. This command does
+not pull repository changes.
 
-To add a tool to the shell, add its nixpkgs attribute to `flake.nix`, then run
-the flake check and `bash tests/nix-pilot.sh`. Update pinned package versions
-only when intended:
+## Package and configuration ownership
+
+- Home Manager installs portable CLI packages from
+  `home-manager/modules/packages.nix`.
+- Home Manager links static configuration from `config/` and executable helpers
+  from `scripts/bin/`.
+- `Brewfile` owns macOS applications, fonts, Java tooling, and the retained
+  macOS or Work-adjacent formulae.
+- `scripts/global-tools` owns mutable npm-installed agent CLIs and the Hunk
+  agent skill.
+- `scripts/secrets` owns the optional encrypted environment-file migration and
+  decryption step.
+
+Each target should have one owner. Files that applications mutate during normal
+use should remain local or be seeded once rather than linked as immutable
+configuration.
+
+## Home Manager hosts
+
+The flake exposes explicit `oss-aarch64-darwin` and
+`oss-x86_64-darwin` configurations. `./scripts/bootstrap` selects one from the
+current machine architecture.
+
+The account-specific username, home directory, and OSS Git identity live in
+`home-manager/hosts/skalidindi.nix`. To use this repository for another macOS
+account, add a host module and matching flake target rather than putting identity
+data in the shared modules.
+
+## Repository layout
+
+- `config/` contains declarative shell, editor, terminal, Git, and agent files.
+- `home-manager/hosts/` contains account-specific Home Manager configuration.
+- `home-manager/modules/` defines shared file, package, and program ownership.
+- `scripts/bin/` contains portable helpers installed into `$HOME/.local/bin`.
+- `scripts/bootstrap` performs installation and applies the full configuration.
+- `scripts/update` handles package and flake maintenance.
+- `Brewfile` lists Homebrew-owned applications and retained formulae.
+- `env/` contains encrypted environment seed material. Plaintext stays ignored.
+- `tests/` contains shell tests for layout, ownership, entrypoints, and behavior.
+
+## Local verification
+
+Run the shell tests sequentially:
 
 ```bash
-nix --extra-experimental-features 'nix-command flakes' flake lock --update-input nixpkgs
+for test in tests/*.sh; do bash "$test"; done
 ```
 
-Review and commit `flake.lock` with that update.
-
-### Home Manager
-
-Home Manager owns `~/.config/starship.toml`, `~/.config/zellij`,
-`~/.config/yazi`, `~/.config/fastfetch`, `~/.config/ghostty`, and
-`~/.config/lazygit`, plus the static `herdr/config.toml` and
-`worktrunk/config.toml` files. It also owns the shell startup files, shared
-agent assets, the OSS Git files under `~/.config/git`, the Neovim configuration,
-and tmux with its plugins. It also installs the portable helpers under
-`~/.local/bin`. Home Manager installs Neovim and tmux through Nix; Homebrew
-owns the other executables. Bootstrap activates Home Manager automatically
-when Nix is installed. To migrate an existing machine manually, apply the
-configuration:
+Validate every flake output and both Home Manager targets:
 
 ```bash
-NIX_CONFIG="extra-experimental-features = nix-command flakes" \
-  nix run .#home-manager -- switch --flake .#oss
+nix --extra-experimental-features 'nix-command flakes' flake check --all-systems
+bash tests/home-manager.sh
 ```
 
-The flake also exposes `.#homeConfigurations.oss-x86_64-darwin` for Intel
-macOS.
-The account-specific username and home path live in
-`home-manager/hosts/skalidindi.nix`; copy that host module when using a
-different macOS account.
+Apply the current architecture configuration when validating a real macOS home:
 
-## Repo Layout
+```bash
+export NIX_CONFIG="extra-experimental-features = nix-command flakes"
+nix run .#home-manager -- switch --flake .#oss-$(nix eval --impure --raw --expr builtins.currentSystem)
+```
 
-- `agents/` - shared Claude, Codex, and Cursor prompt assets and skill source
-  manifests.
-- `claude/`, `codex/`, `cursor/` - tool-specific agent homes,
-  templates, hooks, keybindings, and portable extensions. Runtime files inside
-  these trees are intentionally ignored.
-- `bin/.local/bin/` - portable PATH helpers installed by Home Manager.
-- `bash/`, `zsh/`, `starship/` - shell configuration and prompt
-  setup.
-- `git/` - layered source-control configuration.
-- `nvim/`, `tmux/`, `zellij/`, `ghostty/`, `yazi/` - editor, terminal,
-  multiplexer, and file-manager configuration.
-- `Brewfile` - Homebrew packages managed by bootstrap.
-- `env/` - encrypted environment seed material. Keep decrypted files local and
-  ignored.
+Check that the current Homebrew installation satisfies the Brewfile without
+upgrading anything:
 
-## Agent Workflow
+```bash
+HOMEBREW_NO_AUTO_UPDATE=1 brew bundle check --file="$PWD/Brewfile" --no-upgrade --verbose
+```
 
-Shared portable agent assets live under `~/.agents`. Runtime state, auth,
-sessions, caches, memories, and generated catalogs should stay local and
-ignored.
+## Agent runtime state
 
-Useful checks and maintenance commands:
+Shared portable agent assets are installed under `~/.agents`. Runtime state,
+auth, sessions, caches, memories, generated catalogs, and decrypted environment
+files must stay local and ignored. Useful checks and helpers are:
 
 ```bash
 agent-doctor
@@ -125,29 +127,8 @@ restore-skills-sh --apply
 ```
 
 For long-lived interactive agents, start or attach a zellij session manually,
-then run the agent commands normally:
-
-```bash
-zellij
-codex
-claude
-```
-
-Agent CLIs resolve to installer-managed binaries; this repo does not track
-wrapper files or shell aliases for `codex` and `claude`.
-
-## Secrets And Runtime State
-
-Do not commit:
-
-- auth files, tokens, credentials, browser profiles, or OAuth caches;
-- agent sessions, logs, histories, memories, todos, and local plans;
-- downloaded plugin caches, generated model catalogs, and package installs;
-- decrypted environment files.
-
-If a file is static and safe to symlink, keep it in a Home Manager module. If a
-tool mutates it during normal use, track a template or installer behavior
-instead of the live file. Keep each target owned by exactly one system.
+then run the agent normally. Codex and Claude are installer-managed binaries;
+this repository does not track wrapper files or aliases for them.
 
 ## License
 

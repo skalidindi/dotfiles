@@ -13,12 +13,6 @@ EOF
 
 runtime_paths=(
   "env/.env-secrets"
-  "bin/.local/bin/agent"
-  "bin/.local/bin/agent-beach"
-  "bin/.local/bin/cursor-agent"
-  "bin/.local/bin/python3.14"
-  "bin/.local/bin/ruff"
-  "bin/.local/bin/ty"
   "claude/.claude/client_secrets.json"
   "claude/.claude/history.jsonl"
   "claude/.claude/settings.local.json"
