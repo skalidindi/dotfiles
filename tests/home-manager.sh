@@ -32,6 +32,13 @@ for config_dir in zellij yazi fastfetch ghostty lazygit herdr worktrunk; do
   }
 done
 
+for home_file in .aliases .bash_profile .exports .functions .path .zshrc .zsh_plugins.txt .agents/README.md .agents/prompts/base.md git/.gitconfig.common; do
+  grep -Fq "$home_file" "$root_dir/home-manager/oss.nix" || {
+    printf 'FAIL: Home Manager should own the %s file\n' "$home_file" >&2
+    exit 1
+  }
+done
+
 grep -Fq 'home.username' "$root_dir/home-manager/hosts/skalidindi.nix" || {
   printf 'FAIL: account identity should live in a host module\n' >&2
   exit 1
@@ -42,8 +49,9 @@ if grep -Fq 'home.username' "$root_dir/home-manager/oss.nix"; then
   exit 1
 fi
 
-for package in starship zellij yazi fastfetch ghostty lazygit herdr worktrunk; do
-  if grep -Fq "$package" "$root_dir/installers/010-stow.sh"; then
+stow_packages="$(sed -n 's/^stow_dirs=(\(.*\))/\1/p' "$root_dir/installers/010-stow.sh")"
+for package in starship zellij yazi fastfetch ghostty lazygit herdr worktrunk agents bash git zsh; do
+  if [[ " $stow_packages " == *" $package "* ]]; then
     printf 'FAIL: Stow should not also own the %s config\n' "$package" >&2
     exit 1
   fi

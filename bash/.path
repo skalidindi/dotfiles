@@ -26,7 +26,7 @@ export PATH="/usr/local/sbin:$PATH"
 export PATH="/usr/local/bin:$PATH"
 
 # LM Studio CLI (lms)
-export PATH="$PATH:/Users/skalidindi/.lmstudio/bin"
+export PATH="$PATH:$HOME/.lmstudio/bin"
 
 # npm
 export PATH=~/.npm-global/bin:$PATH

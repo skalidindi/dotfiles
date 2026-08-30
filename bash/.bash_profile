@@ -14,5 +14,5 @@ if [ -d "$HOME/.config/dotfiles/shell" ]; then
 fi
 
 # Added by LM Studio CLI (lms)
-export PATH="$PATH:/Users/skalidindi/.lmstudio/bin"
+export PATH="$PATH:$HOME/.lmstudio/bin"
 # End of LM Studio CLI section

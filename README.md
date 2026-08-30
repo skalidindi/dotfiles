@@ -19,10 +19,12 @@ launcher commands, prompt sync, and obvious runtime-state leaks.
 
 ## Bootstrap
 
-`./bootstrap.sh` is the normal install and update path. It:
+`./bootstrap.sh` is the normal install and update path. Install Nix first when
+setting up a new laptop so Home Manager can activate during bootstrap. It:
 
 - installs Homebrew if it is missing;
 - stows the configured dotfile packages into `$HOME`;
+- activates Home Manager when Nix is installed;
 - runs `install-agent-assets` and `configure-oss-git` when available;
 - runs `brew bundle --file=Brewfile`;
 - installs the global agent and development CLIs this setup expects;
@@ -67,17 +69,19 @@ nix --extra-experimental-features 'nix-command flakes' flake lock --update-input
 
 Review and commit `flake.lock` with that update.
 
-### Home Manager pilot
+### Home Manager
 
 Home Manager currently owns `~/.config/starship.toml`, `~/.config/zellij`,
 `~/.config/yazi`, `~/.config/fastfetch`, `~/.config/ghostty`, and
 `~/.config/lazygit`, plus the static `herdr/config.toml` and
-`worktrunk/config.toml` files. Homebrew still owns the executables. On the first
-activation after pulling this change, remove the legacy Stow links, then apply
-the configuration:
+`worktrunk/config.toml` files. It also owns the shell startup files, shared
+agent assets, and the OSS Git files under `~/.config/git`; Homebrew still owns
+the executables. Bootstrap removes the legacy Stow links and activates Home
+Manager automatically when Nix is installed. To migrate an existing machine
+manually, remove the old links, then apply the configuration:
 
 ```bash
-stow -t "$HOME" -D starship zellij yazi fastfetch ghostty lazygit herdr worktrunk
+stow -t "$HOME" -D agents bash git zsh starship zellij yazi fastfetch ghostty lazygit herdr worktrunk
 NIX_CONFIG="extra-experimental-features = nix-command flakes" \
   nix run .#home-manager -- switch --flake .#oss
 ```
@@ -110,13 +114,13 @@ different macOS account.
 Install one package manually when you only want a narrow update:
 
 ```bash
-stow -t "$HOME" -R zsh
+stow -t "$HOME" -R tmux
 stow -t "$HOME" -R nvim
-stow -t "$HOME" -R --no-folding agents
+stow -t "$HOME" -R bin
 ```
 
-`bootstrap.sh` uses `--no-folding` for packages where preserving a mixed local
-directory matters, such as `agents` and `git`.
+The remaining Stow packages are `bin`, `nvim`, and `tmux`; their runtime and
+plugin state is intentionally kept outside Home Manager for now.
 
 ## Agent Workflow
 

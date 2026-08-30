@@ -244,7 +244,7 @@ copy_if_changed \
 if [ -d "$HOME/.agents" ]; then
   printf 'ok shared agent directory\n'
 else
-  printf 'warn shared agent directory missing; run stow -t "$HOME" -R agents\n' >&2
+  printf 'warn shared agent directory missing; run Home Manager activation\n' >&2
 fi
 
 # A private work overlay may refine the portable base prompt. The optional

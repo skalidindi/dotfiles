@@ -42,14 +42,16 @@ eval "$(zoxide init zsh)"
 # Rust
 . "$HOME/.cargo/env"
 
-# Load API keys
-source ~/.env-secrets
+# Load API keys when available.
+if [[ -r "$HOME/.env-secrets" ]]; then
+  source "$HOME/.env-secrets"
+fi
 
 # Generated for envman. Do not edit.
 [ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"
 
 # Added by Antigravity
-export PATH="/Users/skalidindi/.antigravity/antigravity/bin:$PATH"
+export PATH="$HOME/.antigravity/antigravity/bin:$PATH"
 
 if (( $+commands[wt] )) && (( $+functions[zsh-defer] )); then
   zsh-defer -c 'eval "$(command wt config shell init zsh)"'
@@ -57,5 +59,5 @@ elif (( $+commands[wt] )); then
   eval "$(command wt config shell init zsh)"
 fi
 # >>> XP ENV BEGIN >>>
-export PATH="/Users/skalidindi/xp-env/bin:$PATH"
+export PATH="$HOME/xp-env/bin:$PATH"
 # <<< XP ENV END <<<

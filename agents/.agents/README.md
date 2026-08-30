@@ -3,14 +3,9 @@
 This directory is the portable, cross-tool agent layer for Claude, Codex,
 Cursor, and future coding agents.
 
-It is managed by GNU Stow through the `agents` package:
-
-```bash
-stow -t "$HOME" -R --no-folding agents
-```
-
-The normal entrypoint is still the top-level bootstrap script, which stows this
-package with the rest of the dotfiles and then runs `install-agent-assets`.
+The portable files in this directory are linked into `~/.agents` by Home
+Manager. The normal entrypoint is the top-level bootstrap script followed by
+the Home Manager activation documented in the root README.
 
 ## Contract
 
@@ -29,9 +24,9 @@ Do not track mutable or machine-local runtime state:
 - per-project trust metadata or machine-specific absolute-path config;
 - tool-owned files that are rewritten during normal use.
 
-If a file is static and safe to symlink, keep it in a stow package. If a tool
-mutates the file at runtime, track a template or installer behavior instead of
-the live file.
+If a file is static and safe to symlink, keep it in the Home Manager module. If
+a tool mutates the file at runtime, track a template or installer behavior
+instead of the live file.
 
 ## Install And Check
 
