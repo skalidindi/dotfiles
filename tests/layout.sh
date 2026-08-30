@@ -14,8 +14,14 @@ for required_dir in config scripts/bin; do
 done
 
 for legacy_path in bin/.local/bin claude codex cursor; do
-  [[ ! -e "$root_dir/$legacy_path" && ! -L "$root_dir/$legacy_path" ]] ||
-    fail "$legacy_path should not exist"
+  if git -C "$root_dir" ls-files --error-unmatch "$legacy_path/*" >/dev/null 2>&1; then
+    fail "$legacy_path should not contain tracked source files"
+  fi
+
+  if [[ -e "$root_dir/$legacy_path" || -L "$root_dir/$legacy_path" ]]; then
+    git -C "$root_dir" check-ignore -q "$legacy_path" ||
+      fail "$legacy_path should be absent or ignored runtime state"
+  fi
 done
 
 for setup_doc in config/agents/README.md config/nvim/README.md; do
