@@ -25,6 +25,16 @@ grep -Fq 'starship.toml' "$root_dir/home-manager/oss.nix" || {
   exit 1
 }
 
+grep -Fq 'home.username' "$root_dir/home-manager/hosts/skalidindi.nix" || {
+  printf 'FAIL: account identity should live in a host module\n' >&2
+  exit 1
+}
+
+if grep -Fq 'home.username' "$root_dir/home-manager/oss.nix"; then
+  printf 'FAIL: shared OSS module should not hardcode an account identity\n' >&2
+  exit 1
+fi
+
 if grep -Fq 'starship' "$root_dir/installers/010-stow.sh"; then
   printf 'FAIL: Stow should not also own the Starship config\n' >&2
   exit 1

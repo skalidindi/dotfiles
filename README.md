@@ -83,6 +83,9 @@ NIX_CONFIG="extra-experimental-features = nix-command flakes" \
 
 The flake also exposes `.#homeConfigurations.oss-x86_64-darwin` for Intel
 macOS. Do not add another Stow package for files managed by Home Manager.
+The account-specific username and home path live in
+`home-manager/hosts/skalidindi.nix`; copy that host module when using a
+different macOS account.
 
 ## Repo Layout
 

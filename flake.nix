@@ -19,7 +19,10 @@
       homeConfigurationsBySystem = nixpkgs.lib.genAttrs systems (system:
         home-manager.lib.homeManagerConfiguration {
           pkgs = import nixpkgs { inherit system; };
-          modules = [ ./home-manager/oss.nix ];
+          modules = [
+            ./home-manager/oss.nix
+            ./home-manager/hosts/skalidindi.nix
+          ];
         });
       homeConfigurationsByName = builtins.listToAttrs (map (system: {
         name = "oss-${system}";
