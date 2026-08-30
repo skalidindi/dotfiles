@@ -15,66 +15,15 @@ Thumbs.db
 
 *.zwc
 
-# Codex
-codex
-!codex/
-codex/*
-!codex/.codex/
-codex/.codex/**
-!codex/.codex/skills/
-!codex/.codex/skills/learn-quiz/
-!codex/.codex/skills/learn-quiz/**
-!codex/.codex/skills/workflow-audit/
-!codex/.codex/skills/workflow-audit/**
-
-# Claude
+# Agent CLI runtime state
 claude
-!claude/
-claude/*
-!claude/.claude/
-claude/.claude/**
-!claude/.claude/plugins/
-claude/.claude/plugins/**
-!claude/.claude/plugins/config.json
-!claude/.claude/skills/
-!claude/.claude/skills/learn-quiz/
-!claude/.claude/skills/learn-quiz/**
-!claude/.claude/skills/workflow-audit/
-!claude/.claude/skills/workflow-audit/**
-
-# Cursor
+codex
 cursor
-!cursor/
-cursor/*
-!cursor/.cursor/
-cursor/.cursor/**
-!cursor/.cursor/.gitignore
-
-# Bin
-bin/.local/*
-!bin/.local/bin/
-bin/.local/bin/*
-!bin/.local/bin/agent-doctor
-!bin/.local/bin/agent-runtime-guard
-!bin/.local/bin/configure-oss-git
-!bin/.local/bin/install-agent-assets
-!bin/.local/bin/restore-skills-sh
-!bin/.local/bin/zrun
-!bin/.local/share/
-bin/.local/share/*
-!bin/.local/share/agent-uv-enforcer/
-!bin/.local/share/agent-uv-enforcer/**
-!bin/.local/share/agent-dangerous-command-guard/
-!bin/.local/share/agent-dangerous-command-guard/**
 
 .env-secrets
 
 # JJ
 .jj
 
-# Tmux
-tmux/.tmux/plugins/*
-!tmux/.tmux/plugins/tpm
-
 # Zsh
-zsh/_bun
+config/zsh/_bun
