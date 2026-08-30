@@ -77,7 +77,8 @@ configuration:
 
 ```bash
 stow -t "$HOME" -D starship
-nix run .#home-manager -- switch --flake .#oss
+NIX_CONFIG="extra-experimental-features = nix-command flakes" \
+  nix run .#home-manager -- switch --flake .#oss
 ```
 
 The flake also exposes `.#homeConfigurations.oss-x86_64-darwin` for Intel
