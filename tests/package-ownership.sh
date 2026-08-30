@@ -163,22 +163,35 @@ for java_tool in coursier gradle maven openjdk; do
   fi
 done
 
-if grep -Eq '(^|[[:space:]])devShells[[:space:]]*=' "$root_dir/flake.nix"; then
-  fail "the flake should not expose development shells"
+if grep -RIiq 'sdkman' "$root_dir/config/bash" "$brewfile"; then
+  fail "OSS shell and package configuration should not initialize or install SDKMAN"
 fi
+
+[[ -x "$nix_bin" ]] || fail "Nix is required to evaluate package ownership"
+nix_args=(--extra-experimental-features 'nix-command flakes')
+dev_shells_status="$({
+  "$nix_bin" "${nix_args[@]}" eval --impure --raw --expr \
+    "let flake = builtins.getFlake \"$root_dir\"; in if flake.outputs ? devShells then \"present\" else \"absent\""
+})"
+[[ "$dev_shells_status" == 'absent' ]] ||
+  fail "the evaluated flake outputs should not expose development shells"
 
 global_tools="$root_dir/scripts/global-tools"
 [[ -x "$global_tools" ]] ||
   fail "mutable agent tooling should be installed by scripts/global-tools"
 [[ ! -e "$root_dir/installers/040-global-tools.sh" ]] ||
   fail "the numbered global-tools installer should be retired"
-[[ ! -e "$root_dir/installers/060-bat-theme.sh" && ! -e "$root_dir/scripts/bat-theme" ]] ||
-  fail "the imperative bat theme downloader should be removed"
 
-for mutable_agent_tool in '@anthropic-ai/claude-code' '@openai/codex' 'hunkdiff'; do
-  grep -Fq "npm install -g --prefix \"\$HOME/.local\" $mutable_agent_tool" "$global_tools" ||
-    fail "global-tools should preserve mutable agent package $mutable_agent_tool"
-done
+bat_theme_script="$(find "$root_dir/scripts" -type f -iname '*bat*theme*' -print -quit)"
+[[ -z "$bat_theme_script" ]] ||
+  fail "the imperative bat theme downloader should not exist under scripts/"
+
+script_reference_roots=("$root_dir/scripts")
+[[ ! -d "$root_dir/installers" ]] || script_reference_roots+=("$root_dir/installers")
+[[ ! -f "$root_dir/bootstrap.sh" ]] || script_reference_roots+=("$root_dir/bootstrap.sh")
+if grep -RIEiq 'bat.*theme' "${script_reference_roots[@]}"; then
+  fail "active scripts should not reference an imperative bat theme downloader"
+fi
 
 if grep -Eq '(cargo install|uv tool install|volta install)' "$global_tools"; then
   fail "Nix-packaged language tools should not also be installed imperatively"
@@ -196,7 +209,7 @@ cat >"$helper_test_home/fake-bin/npm" <<'EOF'
 set -euo pipefail
 
 prefix=''
-package=''
+packages=()
 while [[ "$#" -gt 0 ]]; do
   case "$1" in
     --prefix)
@@ -206,33 +219,46 @@ while [[ "$#" -gt 0 ]]; do
     install|-g)
       shift
       ;;
+    -*)
+      shift
+      ;;
     *)
-      package="$1"
+      packages+=("$1")
       shift
       ;;
   esac
 done
 
-if [[ "$package" == 'hunkdiff' ]]; then
-  mkdir -p "$prefix/bin"
-  cat >"$prefix/bin/hunk" <<'HUNK'
+for package in "${packages[@]}"; do
+  printf '%s\n' "$package" >>"$HOME/npm-packages"
+  if [[ "$package" == 'hunkdiff' ]]; then
+    mkdir -p "$prefix/bin"
+    cat >"$prefix/bin/hunk" <<'HUNK'
 #!/usr/bin/env bash
 if [[ "${1:-}" == 'skill' && "${2:-}" == 'path' ]]; then
   printf '%s\n' "$HOME/fake-hunk-skill/SKILL.md"
 fi
 HUNK
-  chmod +x "$prefix/bin/hunk"
-fi
+    chmod +x "$prefix/bin/hunk"
+  fi
+done
 EOF
 chmod +x "$helper_test_home/fake-bin/npm"
 
 HOME="$helper_test_home" PATH="$helper_test_home/fake-bin:/usr/bin:/bin" \
   /bin/bash "$global_tools" >/dev/null
+expected_mutable_agent_packages="$(cat <<'EOF'
+@anthropic-ai/claude-code
+@openai/codex
+hunkdiff
+EOF
+)"
+actual_mutable_agent_packages="$(sort "$helper_test_home/npm-packages")"
+[[ "$actual_mutable_agent_packages" == "$expected_mutable_agent_packages" ]] ||
+  fail "global-tools should install exactly Claude Code, Codex, and Hunk with npm"
 [[ -f "$helper_test_home/.agents/skills/hunk-review/SKILL.md" ]] ||
   fail "global-tools should sync the Hunk skill installed under the mutable user prefix"
 
-[[ -x "$nix_bin" ]] || fail "Nix is required to evaluate package ownership"
-nix_args=(--extra-experimental-features 'nix-command flakes')
 required_count="$(wc -l <<<"$required_home_manager_packages" | tr -d ' ')"
 
 for system in aarch64-darwin x86_64-darwin; do
