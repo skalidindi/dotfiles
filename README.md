@@ -36,6 +36,36 @@ installer directly when only one slice changed.
 Re-run `./bootstrap.sh` after changing stowed config, helper scripts, or package
 lists.
 
+## Nix development shell
+
+The repository includes an opt-in Nix flake for OSS command-line tools and
+development runtimes. It does not replace `bootstrap.sh`, install packages
+globally, or manage files in `$HOME`.
+
+Install Nix with the official macOS daemon installer, then reopen the terminal.
+From the repository root, validate and enter the shell with:
+
+```bash
+nix --extra-experimental-features 'nix-command flakes' flake check
+bash tests/nix-pilot.sh
+nix --extra-experimental-features 'nix-command flakes' develop
+```
+
+The first invocation downloads the locked packages into the Nix store. While
+inside `nix develop`, those versions take precedence over Homebrew versions.
+Run `exit` to leave the shell. Homebrew remains the source for GUI applications,
+Work tools, and global tools. GNU Stow remains the source for static dotfiles.
+
+To add a tool to the shell, add its nixpkgs attribute to `flake.nix`, then run
+the flake check and `bash tests/nix-pilot.sh`. Update pinned package versions
+only when intended:
+
+```bash
+nix --extra-experimental-features 'nix-command flakes' flake lock --update-input nixpkgs
+```
+
+Review and commit `flake.lock` with that update.
+
 ## Repo Layout
 
 - `agents/` - shared Claude, Codex, and Cursor prompt assets, profiles, task
