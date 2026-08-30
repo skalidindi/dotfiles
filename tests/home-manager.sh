@@ -59,12 +59,11 @@ grep -Fq 'pkgs.neovim' "$root_dir/home-manager/oss.nix" || {
   exit 1
 }
 
-stow_packages="$(sed -n 's/^stow_dirs=(\(.*\))/\1/p' "$root_dir/installers/010-stow.sh")"
-for package in starship zellij yazi fastfetch ghostty lazygit herdr worktrunk agents bash git nvim tmux zsh; do
-  if [[ " $stow_packages " == *" $package "* ]]; then
-    printf 'FAIL: Stow should not also own the %s config\n' "$package" >&2
+for helper in agent-doctor agent-runtime-guard configure-oss-git install-agent-assets restore-skills-sh zrun; do
+  grep -Fq ".local/bin/$helper" "$root_dir/home-manager/oss.nix" || {
+    printf 'FAIL: Home Manager should own the %s helper\n' "$helper" >&2
     exit 1
-  fi
+  }
 done
 
 printf 'PASS: Home Manager tests\n'

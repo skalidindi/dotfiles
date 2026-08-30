@@ -83,6 +83,42 @@
     force = true;
   };
 
+  home.file.".local/bin/agent-doctor" = {
+    source = ../bin/.local/bin/agent-doctor;
+    executable = true;
+    force = true;
+  };
+
+  home.file.".local/bin/agent-runtime-guard" = {
+    source = ../bin/.local/bin/agent-runtime-guard;
+    executable = true;
+    force = true;
+  };
+
+  home.file.".local/bin/configure-oss-git" = {
+    source = ../bin/.local/bin/configure-oss-git;
+    executable = true;
+    force = true;
+  };
+
+  home.file.".local/bin/install-agent-assets" = {
+    source = ../bin/.local/bin/install-agent-assets;
+    executable = true;
+    force = true;
+  };
+
+  home.file.".local/bin/restore-skills-sh" = {
+    source = ../bin/.local/bin/restore-skills-sh;
+    executable = true;
+    force = true;
+  };
+
+  home.file.".local/bin/zrun" = {
+    source = ../bin/.local/bin/zrun;
+    executable = true;
+    force = true;
+  };
+
   home.file.".agents/README.md" = {
     source = ../agents/.agents/README.md;
     force = true;

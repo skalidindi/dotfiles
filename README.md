@@ -1,9 +1,8 @@
 # Dotfiles
 
-Personal macOS dotfiles for a development machine. The repo is organized as
-GNU Stow packages plus a bootstrap script: static config is symlinked into
-`$HOME`, while auth, sessions, caches, generated files, and other runtime state
-stay ignored.
+Personal macOS dotfiles for a development machine. Home Manager installs the
+portable configuration and helper scripts into `$HOME`, while auth, sessions,
+caches, generated files, and other runtime state stay local and ignored.
 
 ## Quick Start
 
@@ -23,7 +22,6 @@ launcher commands, prompt sync, and obvious runtime-state leaks.
 setting up a new laptop so Home Manager can activate during bootstrap. It:
 
 - installs Homebrew if it is missing;
-- stows the configured dotfile packages into `$HOME`;
 - activates Home Manager when Nix is installed;
 - runs `install-agent-assets` and `configure-oss-git` when available;
 - runs `brew bundle --file=Brewfile`;
@@ -35,8 +33,8 @@ Bootstrap behavior is split into numbered scripts under `installers/`. Use
 `./bootstrap.sh --list` to inspect the exact run order, or run a single
 installer directly when only one slice changed.
 
-Re-run `./bootstrap.sh` after changing stowed config, helper scripts, or package
-lists.
+Re-run `./bootstrap.sh` after changing Home Manager config, helper scripts, or
+package lists.
 
 ## Nix development shell
 
@@ -56,8 +54,8 @@ nix --extra-experimental-features 'nix-command flakes' develop
 The first invocation downloads the locked packages into the Nix store. While
 inside `nix develop`, those versions take precedence over Homebrew versions.
 Run `exit` to leave the shell. Homebrew remains the source for GUI applications,
-Work tools, and global tools. Home Manager owns the migrated static configs;
-GNU Stow owns the remaining dotfiles.
+Work tools, and global tools. Home Manager owns the portable static
+configuration and helper scripts.
 
 To add a tool to the shell, add its nixpkgs attribute to `flake.nix`, then run
 the flake check and `bash tests/nix-pilot.sh`. Update pinned package versions
@@ -71,25 +69,24 @@ Review and commit `flake.lock` with that update.
 
 ### Home Manager
 
-Home Manager currently owns `~/.config/starship.toml`, `~/.config/zellij`,
+Home Manager owns `~/.config/starship.toml`, `~/.config/zellij`,
 `~/.config/yazi`, `~/.config/fastfetch`, `~/.config/ghostty`, and
 `~/.config/lazygit`, plus the static `herdr/config.toml` and
 `worktrunk/config.toml` files. It also owns the shell startup files, shared
 agent assets, the OSS Git files under `~/.config/git`, the Neovim configuration,
-and tmux with its plugins. Home Manager installs Neovim and tmux through Nix;
-Homebrew owns the other executables. Bootstrap removes the legacy Stow
-links and activates Home Manager automatically when Nix is installed. To
-migrate an existing machine manually, remove the old links, then apply the
+and tmux with its plugins. It also installs the portable helpers under
+`~/.local/bin`. Home Manager installs Neovim and tmux through Nix; Homebrew
+owns the other executables. Bootstrap activates Home Manager automatically
+when Nix is installed. To migrate an existing machine manually, apply the
 configuration:
 
 ```bash
-stow -t "$HOME" -D agents bash git nvim tmux zsh starship zellij yazi fastfetch ghostty lazygit herdr worktrunk
 NIX_CONFIG="extra-experimental-features = nix-command flakes" \
   nix run .#home-manager -- switch --flake .#oss
 ```
 
 The flake also exposes `.#homeConfigurations.oss-x86_64-darwin` for Intel
-macOS. Do not add another Stow package for files managed by Home Manager.
+macOS.
 The account-specific username and home path live in
 `home-manager/hosts/skalidindi.nix`; copy that host module when using a
 different macOS account.
@@ -101,7 +98,7 @@ different macOS account.
 - `claude/`, `codex/`, `cursor/` - tool-specific agent homes,
   templates, hooks, keybindings, and portable extensions. Runtime files inside
   these trees are intentionally ignored.
-- `bin/.local/bin/` - local PATH helpers such as `zrun` and `agent-doctor`.
+- `bin/.local/bin/` - portable PATH helpers installed by Home Manager.
 - `bash/`, `zsh/`, `starship/` - shell configuration and prompt
   setup.
 - `git/` - layered source-control configuration.
@@ -110,19 +107,6 @@ different macOS account.
 - `Brewfile` - Homebrew packages managed by bootstrap.
 - `env/` - encrypted environment seed material. Keep decrypted files local and
   ignored.
-
-## Stow
-
-Install one package manually when you only want a narrow update:
-
-```bash
-stow -t "$HOME" -R tmux
-stow -t "$HOME" -R nvim
-stow -t "$HOME" -R bin
-```
-
-The remaining Stow package is `bin`; its mixed static scripts and runtime state
-are intentionally kept outside Home Manager for now.
 
 ## Agent Workflow
 

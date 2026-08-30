@@ -41,7 +41,6 @@ expected_commands=(
   rg
   rustc
   starship
-  stow
   tmux
   tree-sitter
   uv

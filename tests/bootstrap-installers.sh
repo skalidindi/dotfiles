@@ -12,7 +12,6 @@ expected="$(
   cat <<EOF
 $root_dir/installers/000-homebrew.sh
 $root_dir/installers/005-brew-bundle.sh
-$root_dir/installers/010-stow.sh
 $root_dir/installers/015-home-manager.sh
 $root_dir/installers/020-agent-assets.sh
 $root_dir/installers/040-global-tools.sh

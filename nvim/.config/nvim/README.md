@@ -4,11 +4,7 @@ LazyVim-based Neovim config managed by the top-level dotfiles bootstrap.
 
 ## Install
 
-```bash
-stow -t "$HOME" -R nvim
-```
-
-The normal path is still:
+Home Manager installs this configuration during the normal bootstrap path:
 
 ```bash
 ./bootstrap.sh

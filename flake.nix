@@ -58,7 +58,6 @@
               ripgrep
               rustc
               starship
-              stow
               tmux
               tree-sitter
               uv

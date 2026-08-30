@@ -1,7 +1,0 @@
-# Files to be ignored by gnu 'stow'
-
-.git
-.gitignore
-.DS_Store
-
-^/README.*

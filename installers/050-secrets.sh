@@ -14,7 +14,7 @@ if [[ -f env/.env-secrets.gpg ]]; then
   gpg --decrypt env/.env-secrets.gpg > "$temporary"
   chmod 600 "$temporary"
 
-  # Older Stow runs could leave ~/.env-secrets linked into the repository.
+  # Older installs could leave ~/.env-secrets linked into the repository.
   # Remove only that legacy link before installing the real home-owned file.
   if [[ -L "$destination" ]]; then
     linked_path="$(readlink "$destination")"

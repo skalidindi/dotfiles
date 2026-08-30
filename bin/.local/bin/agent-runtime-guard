@@ -11,23 +11,6 @@ Verify representative agent runtime files are ignored and not tracked.
 EOF
 }
 
-resolve_script_path() {
-  local source="$1"
-  local dir
-  local link
-
-  while [ -L "$source" ]; do
-    dir="$(cd -P "$(dirname "$source")" && pwd)"
-    link="$(readlink "$source")"
-    case "$link" in
-      /*) source="$link" ;;
-      *) source="$dir/$link" ;;
-    esac
-  done
-
-  cd -P "$(dirname "$source")" && pwd
-}
-
 runtime_paths=(
   "env/.env-secrets"
   "bin/.local/bin/agent"
@@ -76,8 +59,15 @@ while [ "$#" -gt 0 ]; do
   esac
 done
 
-script_dir="$(resolve_script_path "${BASH_SOURCE[0]}")"
-dotfiles_dir="${AGENT_RUNTIME_GUARD_ROOT:-$(cd "$script_dir/../../.." && pwd)}"
+dotfiles_dir="${AGENT_RUNTIME_GUARD_ROOT:-}"
+if [[ -z "$dotfiles_dir" ]]; then
+  for candidate in "$PWD" "$HOME/oss/dotfiles"; do
+    if git -C "$candidate" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+      dotfiles_dir="$(git -C "$candidate" rev-parse --show-toplevel)"
+      break
+    fi
+  done
+fi
 
 if ! git -C "$dotfiles_dir" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
   printf 'agent-runtime-guard: not a git worktree: %s\n' "$dotfiles_dir" >&2

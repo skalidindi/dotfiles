@@ -1,23 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-resolve_script_path() {
-  local source="$1"
-  local dir
-  local link
-
-  while [ -L "$source" ]; do
-    dir="$(cd -P "$(dirname "$source")" && pwd)"
-    link="$(readlink "$source")"
-    case "$link" in
-      /*) source="$link" ;;
-      *) source="$dir/$link" ;;
-    esac
-  done
-
-  cd -P "$(dirname "$source")" && pwd
-}
-
 copy_or_merge_json() {
   local template="$1"
   local target="$2"
@@ -228,16 +211,13 @@ while [ "$#" -gt 0 ]; do
   esac
 done
 
-script_dir="$(resolve_script_path "${BASH_SOURCE[0]}")"
-dotfiles_dir="$(cd "$script_dir/../../.." && pwd)"
-
 copy_if_changed \
-  "$dotfiles_dir/agents/.agents/prompts/base.md" \
+  "$HOME/.agents/prompts/base.md" \
   "$HOME/.claude/CLAUDE.md" \
   "Claude base prompt"
 
 copy_if_changed \
-  "$dotfiles_dir/agents/.agents/prompts/base.md" \
+  "$HOME/.agents/prompts/base.md" \
   "$HOME/.codex/AGENTS.md" \
   "Codex base prompt"
 

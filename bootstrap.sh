@@ -40,7 +40,7 @@ refresh_homebrew_env() {
 
 list_installers() {
   if [[ "$profile" == "base" ]]; then
-    printf '%s\n' "$installer_dir/010-stow.sh" "$installer_dir/015-home-manager.sh" "$installer_dir/020-agent-assets.sh"
+    printf '%s\n' "$installer_dir/015-home-manager.sh" "$installer_dir/020-agent-assets.sh"
   else
     find "$installer_dir" -maxdepth 1 -type f -name '*.sh' | sort
   fi
