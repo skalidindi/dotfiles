@@ -60,7 +60,7 @@
       });
 
       checks = forAllSystems (system: {
-        default = self.homeConfigurations."oss-${system}".activationPackage;
+        default = self.darwinConfigurations."oss-${system}".system;
       });
     };
 }

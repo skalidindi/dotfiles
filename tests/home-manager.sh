@@ -37,6 +37,8 @@ grep -Fq 'modules = homeModules;' "$root_dir/flake.nix" ||
   fail "direct Home Manager evaluation should reuse the shared module list"
 grep -Fq 'imports = homeModules;' "$root_dir/flake.nix" ||
   fail "Darwin Home Manager activation should reuse the shared module list"
+grep -Fq 'default = self.darwinConfigurations."oss-${system}".system;' "$root_dir/flake.nix" ||
+  fail "flake checks should evaluate the Darwin system output"
 
 [[ -f "$darwin_host_module" ]] ||
   fail "Darwin should define a host module"
