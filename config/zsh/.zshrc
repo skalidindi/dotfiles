@@ -17,7 +17,9 @@ export SAVEHIST=32768
 setopt APPEND_HISTORY HIST_IGNORE_DUPS
 
 # Source antidote at the start of your .zshrc file.
-if [[ -r /opt/homebrew/opt/antidote/share/antidote/antidote.zsh ]]; then
+if [[ -r "$HOME/.nix-profile/share/antidote/antidote.zsh" ]]; then
+  source "$HOME/.nix-profile/share/antidote/antidote.zsh"
+elif [[ -r /opt/homebrew/opt/antidote/share/antidote/antidote.zsh ]]; then
   source /opt/homebrew/opt/antidote/share/antidote/antidote.zsh
 elif [[ -r /usr/local/opt/antidote/share/antidote/antidote.zsh ]]; then
   source /usr/local/opt/antidote/share/antidote/antidote.zsh
@@ -39,9 +41,6 @@ eval "$(starship init zsh)"
 # Zoxide
 eval "$(zoxide init zsh)"
 
-# Rust
-. "$HOME/.cargo/env"
-
 # Load API keys when available.
 if [[ -r "$HOME/.env-secrets" ]]; then
   source "$HOME/.env-secrets"
@@ -50,14 +49,8 @@ fi
 # Generated for envman. Do not edit.
 [ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"
 
-# Added by Antigravity
-export PATH="$HOME/.antigravity/antigravity/bin:$PATH"
-
 if (( $+commands[wt] )) && (( $+functions[zsh-defer] )); then
   zsh-defer -c 'eval "$(command wt config shell init zsh)"'
 elif (( $+commands[wt] )); then
   eval "$(command wt config shell init zsh)"
 fi
-# >>> XP ENV BEGIN >>>
-export PATH="$HOME/xp-env/bin:$PATH"
-# <<< XP ENV END <<<

@@ -7,7 +7,7 @@ LazyVim-based Neovim config managed by the top-level dotfiles bootstrap.
 Home Manager installs this configuration during the normal bootstrap path:
 
 ```bash
-./bootstrap.sh
+./scripts/bootstrap
 ```
 
 ## Layout

@@ -5,37 +5,8 @@ repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
 brew_bin=""
 nix_bin=""
 
-find_brew() {
-  local candidate
-
-  if [[ -n "${HOMEBREW_PREFIX:-}" && -x "$HOMEBREW_PREFIX/bin/brew" ]]; then
-    printf '%s\n' "$HOMEBREW_PREFIX/bin/brew"
-    return 0
-  fi
-
-  for candidate in /opt/homebrew/bin/brew /usr/local/bin/brew /home/linuxbrew/.linuxbrew/bin/brew; do
-    if [[ -x "$candidate" ]]; then
-      printf '%s\n' "$candidate"
-      return 0
-    fi
-  done
-
-  command -v brew 2>/dev/null
-}
-
-find_nix() {
-  if command -v nix >/dev/null 2>&1; then
-    command -v nix
-    return 0
-  fi
-
-  if [[ -x /nix/var/nix/profiles/default/bin/nix ]]; then
-    printf '%s\n' /nix/var/nix/profiles/default/bin/nix
-    return 0
-  fi
-
-  return 1
-}
+# shellcheck source=lib/package-managers.sh
+source "$repo_root/scripts/lib/package-managers.sh"
 
 select_home_manager_target() {
   local architecture
@@ -109,13 +80,13 @@ main() {
   target="$(select_home_manager_target)"
   cd "$repo_root"
 
-  ensure_homebrew
-  "$brew_bin" bundle --file="$repo_root/Brewfile"
-
   ensure_nix
   printf 'Activating Home Manager target %s...\n' "$target"
   NIX_CONFIG="extra-experimental-features = nix-command flakes" \
     "$nix_bin" run .#home-manager -- switch --flake ".#$target"
+
+  ensure_homebrew
+  "$brew_bin" bundle --file="$repo_root/Brewfile"
 
   export PATH="$HOME/.nix-profile/bin:$PATH"
   run_home_manager_helper install-agent-assets

@@ -95,10 +95,6 @@ grep -Fq 'home.activation.nvimLazyLock = lib.hm.dag.entryAfter [ "linkGeneration
   fail "Neovim lazy-lock seeding should run after link generation"
 grep -Fq 'lock="$HOME/.config/nvim/lazy-lock.json"' "$programs_module" ||
   fail "Neovim lazy-lock seeding should target the Home Manager user's config"
-grep -Fq 'if [ ! -e "$lock" ]' "$programs_module" ||
-  fail "Neovim lazy-lock seeding should remain first-install-only"
-grep -Fq 'cp ${../../config/nvim/lazy-lock.json} "$lock"' "$programs_module" ||
-  fail "Neovim lazy-lock seeding should copy the repository seed into the guarded target"
 grep -Fq 'pkgs.neovim' "$packages_module" ||
   fail "the packages module should retain Neovim ownership"
 
@@ -134,6 +130,111 @@ target_names="$("$nix_bin" "${nix_args[@]}" eval --raw "$root_dir#homeConfigurat
   "$root_dir#homeConfigurations.\"oss-x86_64-darwin\".activationPackage.drvPath" >/dev/null
 "$nix_bin" "${nix_args[@]}" eval --raw \
   "$root_dir#packages.aarch64-darwin.home-manager.name" >/dev/null
+
+source_manifest() {
+  local file_group="$1"
+
+  "$nix_bin" "${nix_args[@]}" eval --raw \
+    "$root_dir#homeConfigurations.\"oss-aarch64-darwin\".config.$file_group" \
+    --apply 'files: let walk = prefix: dir: builtins.concatLists (map (name: let path = dir + "/${name}"; type = (builtins.readDir dir).${name}; relative = if prefix == "" then name else "${prefix}/${name}"; in if type == "directory" then walk relative path else if type == "regular" then [ "${relative}\t${builtins.hashFile "sha256" path}" ] else [ "${relative}\t${type}" ]) (builtins.attrNames (builtins.readDir dir))); manifest = source: if builtins.readFileType source == "directory" then walk "" source else [ ".\t${builtins.hashFile "sha256" source}" ]; names = builtins.filter (name: files.${name} ? source) (builtins.attrNames files); rows = builtins.concatLists (map (name: map (entry: "${name}\t${entry}") (manifest files.${name}.source)) names); in builtins.concatStringsSep "\n" rows'
+}
+
+assert_source_mapping() {
+  local manifest="$1"
+  local target="$2"
+  local expected="$3"
+  local expected_relative="${expected#"$root_dir/"}"
+  local actual_rows
+  local expected_rows
+
+  if [[ -d "$expected" ]]; then
+    expected_rows="$({
+      git -C "$root_dir" ls-files "$expected_relative" | while IFS= read -r tracked_file; do
+        file="$root_dir/$tracked_file"
+        relative="${file#"$expected/"}"
+        if [[ "$target" != nvim || "$relative" != lazy-lock.json ]]; then
+          printf '%s\t%s\t%s\n' "$target" "$relative" "$(shasum -a 256 "$file" | awk '{ print $1 }')"
+        fi
+      done
+    } | sort)"
+  else
+    expected_rows="$(printf '%s\t.\t%s' "$target" "$(shasum -a 256 "$expected" | awk '{ print $1 }')")"
+  fi
+
+  actual_rows="$(awk -F '\t' -v target="$target" '$1 == target' <<<"$manifest" | sort)"
+  [[ -n "$actual_rows" ]] || fail "Home Manager should deploy $target"
+  [[ "$actual_rows" == "$expected_rows" ]] ||
+    fail "Home Manager should map $target to $expected_relative"
+}
+
+xdg_sources="$(source_manifest xdg.configFile)"
+while IFS='|' read -r target source; do
+  assert_source_mapping "$xdg_sources" "$target" "$root_dir/$source"
+done <<'EOF'
+fastfetch|config/fastfetch
+ghostty|config/ghostty
+git/.gitconfig.common|config/git/.gitconfig.common
+git/ignore|config/git/ignore
+herdr|config/herdr
+lazygit|config/lazygit
+nvim|config/nvim
+starship.toml|config/starship/starship.toml
+worktrunk|config/worktrunk
+yazi|config/yazi
+zellij|config/zellij
+EOF
+
+generated_tmux_config="$({
+  "$nix_bin" "${nix_args[@]}" eval --raw \
+    "$root_dir#homeConfigurations.\"oss-aarch64-darwin\".config.xdg.configFile.\"tmux/tmux.conf\".source" \
+    --apply builtins.readFile
+})"
+tracked_tmux_config="$(cat "$root_dir/config/tmux/tmux.conf")"
+[[ "$generated_tmux_config" == *"$tracked_tmux_config" ]] ||
+  fail "Home Manager should include config/tmux/tmux.conf in the deployed tmux configuration"
+
+home_sources="$(source_manifest home.file)"
+while IFS='|' read -r target source; do
+  assert_source_mapping "$home_sources" "$target" "$root_dir/$source"
+done <<'EOF'
+.agents|config/agents
+.aliases|config/bash/.aliases
+.bash_profile|config/bash/.bash_profile
+.exports|config/bash/.exports
+.functions|config/bash/.functions
+.local/bin/agent-doctor|scripts/bin/agent-doctor
+.local/bin/agent-runtime-guard|scripts/bin/agent-runtime-guard
+.local/bin/configure-oss-git|scripts/bin/configure-oss-git
+.local/bin/install-agent-assets|scripts/bin/install-agent-assets
+.local/bin/restore-skills-sh|scripts/bin/restore-skills-sh
+.local/bin/zrun|scripts/bin/zrun
+.path|config/bash/.path
+.zsh.d/_flamegraph|config/zsh/.zsh.d/_flamegraph
+.zsh_plugins.txt|config/zsh/.zsh_plugins.txt
+.zshrc|config/zsh/.zshrc
+EOF
+
+lock_activation="$({
+  "$nix_bin" "${nix_args[@]}" eval --raw \
+    "$root_dir#homeConfigurations.\"oss-aarch64-darwin\".config.home.activation.nvimLazyLock.data"
+})"
+activation_home="$(mktemp -d "${TMPDIR:-/tmp}/dotfiles-home-manager.XXXXXXXX")"
+trap 'rm -rf "$activation_home"' EXIT
+mkdir -p "$activation_home/.config/nvim"
+
+HOME="$activation_home" /bin/bash -c "$lock_activation"
+lock="$activation_home/.config/nvim/lazy-lock.json"
+[[ -f "$lock" ]] || fail "Neovim activation should seed a missing lazy-lock.json"
+[[ "$(stat -f '%Lp' "$lock")" == 644 ]] ||
+  fail "a seeded Neovim lazy-lock.json should have mode 0644"
+
+printf '%s\n' 'user lock content' >"$lock"
+chmod 0444 "$lock"
+HOME="$activation_home" /bin/bash -c "$lock_activation"
+[[ "$(cat "$lock")" == 'user lock content' ]] ||
+  fail "Neovim activation should preserve an existing user lazy-lock.json"
+[[ "$(stat -f '%Lp' "$lock")" == 644 ]] ||
+  fail "Neovim activation should repair a read-only user lazy-lock.json"
 
 git_profile="$("$nix_bin" "${nix_args[@]}" eval --raw \
   "$root_dir#homeConfigurations.\"oss-aarch64-darwin\".config.xdg.configFile.\"git/.gitconfig.oss-base\".text")"

@@ -42,6 +42,3 @@ export LS_COLORS=$(vivid generate catppuccin-macchiato);
 
 # Auto update Brew Packages every 24 hours
 export HOMEBREW_AUTO_UPDATE_SECS=86400
-
-# Nub
-export PATH="$HOME/.nub/bin:$PATH"

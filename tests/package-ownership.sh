@@ -21,9 +21,13 @@ contains_line() {
 home_manager_packages="$({
   sed -nE 's/^[[:space:]]*pkgs\.([A-Za-z0-9_.+-]+)[[:space:]]*(#.*)?$/\1/p' "$packages_module"
 } | sort -u)"
-brew_formulae="$({
+brew_formulae_declared="$({
   sed -nE 's/^[[:space:]]*brew "([^"]+)".*$/\1/p' "$brewfile"
-} | sort -u)"
+})"
+duplicate_brew_formula="$(sort <<<"$brew_formulae_declared" | uniq -d | head -n 1)"
+[[ -z "$duplicate_brew_formula" ]] ||
+  fail "Homebrew formula is declared more than once: $duplicate_brew_formula"
+brew_formulae="$(sort -u <<<"$brew_formulae_declared")"
 
 required_home_manager_packages="$(cat <<'EOF'
 ansible

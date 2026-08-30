@@ -3,43 +3,19 @@ set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
 
-find_brew() {
-  local candidate
-
-  if [[ -n "${HOMEBREW_PREFIX:-}" && -x "$HOMEBREW_PREFIX/bin/brew" ]]; then
-    printf '%s\n' "$HOMEBREW_PREFIX/bin/brew"
-    return 0
-  fi
-
-  for candidate in /opt/homebrew/bin/brew /usr/local/bin/brew /home/linuxbrew/.linuxbrew/bin/brew; do
-    if [[ -x "$candidate" ]]; then
-      printf '%s\n' "$candidate"
-      return 0
-    fi
-  done
-
-  command -v brew 2>/dev/null
-}
-
-find_nix() {
-  if command -v nix >/dev/null 2>&1; then
-    command -v nix
-    return 0
-  fi
-
-  if [[ -x /nix/var/nix/profiles/default/bin/nix ]]; then
-    printf '%s\n' /nix/var/nix/profiles/default/bin/nix
-    return 0
-  fi
-
-  return 1
-}
+# shellcheck source=lib/package-managers.sh
+source "$repo_root/scripts/lib/package-managers.sh"
 
 main() {
   local brew_bin
   local nix_bin
 
   cd "$repo_root"
+
+  if ! nix_bin="$(find_nix)"; then
+    printf 'update: Nix is required; run scripts/bootstrap first.\n' >&2
+    return 1
+  fi
 
   if ! brew_bin="$(find_brew)"; then
     printf 'update: Homebrew is required; run scripts/bootstrap first.\n' >&2
@@ -49,10 +25,6 @@ main() {
   "$brew_bin" update
   "$brew_bin" upgrade
 
-  if ! nix_bin="$(find_nix)"; then
-    printf 'update: Nix is required; run scripts/bootstrap first.\n' >&2
-    return 1
-  fi
   NIX_CONFIG="extra-experimental-features = nix-command flakes" "$nix_bin" flake update
   "$repo_root/scripts/bootstrap"
 }

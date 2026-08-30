@@ -16,9 +16,11 @@ cd ~/oss/dotfiles
 ./scripts/bootstrap
 ```
 
-Bootstrap installs Homebrew and Nix when either is absent, applies the Brewfile,
-activates the Home Manager target for the current Mac architecture, installs
-mutable agent CLIs, and restores the local agent and Git integration. If
+Bootstrap installs Nix when it is absent and activates the Home Manager target
+for the current Mac architecture first. It then installs Homebrew when needed,
+applies the Brewfile, installs mutable agent CLIs, and restores the local agent
+and Git integration. If Nix installation or Home Manager activation fails,
+bootstrap stops before any Homebrew package mutation. If
 `env/.env-secrets.gpg` exists, it also decrypts that file atomically into the
 ignored `$HOME/.env-secrets` file.
 
@@ -35,10 +37,11 @@ From the repository root, run:
 ./scripts/update
 ```
 
-Update runs Homebrew update and upgrade, updates the locked Nix inputs, then
-runs `./scripts/bootstrap` to reapply the complete configuration. Review and
-commit an intentional `flake.lock` change after maintenance. This command does
-not pull repository changes.
+Update first verifies that Nix is available, then runs Homebrew update and
+upgrade, updates the locked Nix inputs, and runs `./scripts/bootstrap` to
+reapply the complete configuration. Review and commit an intentional
+`flake.lock` change after maintenance. This command does not pull repository
+changes.
 
 ## Package and configuration ownership
 

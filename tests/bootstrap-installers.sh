@@ -118,9 +118,9 @@ run_bootstrap() {
 
 run_bootstrap arm64
 assert_log_order \
+  'nix run .#home-manager -- switch --flake .#oss-aarch64-darwin' \
   'brew shellenv' \
   "brew bundle --file=$root_dir/Brewfile" \
-  'nix run .#home-manager -- switch --flake .#oss-aarch64-darwin' \
   'agent-assets' \
   'configure-oss-git' \
   'npm install -g --prefix /' \
@@ -139,6 +139,18 @@ fi
 if grep -Fq 'npm install' "$command_log"; then
   fail "bootstrap should not report npm installs when npm is unavailable"
 fi
+
+: >"$command_log"
+if HOME="$sandbox/home" \
+  PATH="$sandbox/bin:/usr/bin:/bin" \
+  BOOTSTRAP_COMMAND_LOG="$command_log" \
+  FAKE_ARCH=arm64 \
+  FAKE_FAILURE=nix-run \
+  "$root_dir/scripts/bootstrap" >/dev/null 2>&1; then
+  fail "bootstrap should stop when Home Manager activation fails"
+fi
+[[ "$(cat "$command_log")" == 'nix run .#home-manager -- switch --flake .#oss-aarch64-darwin' ]] ||
+  fail "bootstrap should activate Home Manager before mutating Homebrew packages"
 
 : >"$command_log"
 if HOME="$sandbox/home" \
@@ -163,6 +175,18 @@ assert_log_order \
   'brew upgrade' \
   'nix flake update' \
   'nix run .#home-manager -- switch --flake .#oss-aarch64-darwin'
+
+: >"$command_log"
+if HOME="$sandbox/home" \
+  PATH="$sandbox/bin:/usr/bin:/bin" \
+  NIX_BIN="$sandbox/missing-nix" \
+  BOOTSTRAP_COMMAND_LOG="$command_log" \
+  FAKE_ARCH=arm64 \
+  "$root_dir/scripts/update" >/dev/null 2>&1; then
+  fail "update should require Nix before package-manager mutation"
+fi
+[[ ! -s "$command_log" ]] ||
+  fail "update should discover Nix before brew update or upgrade"
 
 : >"$command_log"
 if HOME="$sandbox/home" \

@@ -33,7 +33,9 @@ in
   home.activation.nvimLazyLock = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
     lock="$HOME/.config/nvim/lazy-lock.json"
     if [ ! -e "$lock" ]; then
-      cp ${../../config/nvim/lazy-lock.json} "$lock"
+      ${pkgs.coreutils}/bin/install -m 0644 ${../../config/nvim/lazy-lock.json} "$lock"
+    else
+      ${pkgs.coreutils}/bin/chmod u+w "$lock"
     fi
   '';
 }

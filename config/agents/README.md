@@ -4,8 +4,8 @@ This directory is the portable, cross-tool agent layer for Claude, Codex,
 Cursor, and future coding agents.
 
 The portable files in this directory are linked into `~/.agents` by Home
-Manager. The normal entrypoint is the top-level bootstrap script followed by
-the Home Manager activation documented in the root README.
+Manager. The normal entrypoint is `./scripts/bootstrap`, which applies the full
+Home Manager configuration as part of setup.
 
 ## Contract
 
@@ -31,7 +31,7 @@ instead of the live file.
 ## Install And Check
 
 ```bash
-./bootstrap.sh
+./scripts/bootstrap
 install-agent-assets
 agent-doctor
 ```
