@@ -19,6 +19,39 @@ done
 
 host_module="$root_dir/home-manager/hosts/skalidindi.nix"
 shared_modules="$root_dir/home-manager/modules"
+darwin_host_module="$root_dir/darwin/hosts/skalidindi.nix"
+
+grep -Fq 'inputs.nix-darwin' "$root_dir/flake.nix" ||
+  fail "the flake should declare nix-darwin"
+grep -Fq 'nix-darwin-26.05' "$root_dir/flake.nix" ||
+  fail "nix-darwin should be release-aligned with nixpkgs"
+grep -Fq 'darwin.lib.darwinSystem' "$root_dir/flake.nix" ||
+  fail "the flake should define Darwin systems with nix-darwin"
+grep -Fq 'home-manager.darwinModules.home-manager' "$root_dir/flake.nix" ||
+  fail "Darwin should activate Home Manager through nix-darwin"
+grep -Fq 'home-manager.users.skalidindi' "$root_dir/flake.nix" ||
+  fail "Darwin should assign the Home Manager configuration to skalidindi"
+grep -Fq 'home-manager.useUserPackages = false;' "$root_dir/flake.nix" ||
+  fail "Darwin should preserve the existing user's Nix profile"
+grep -Fq 'modules = homeModules;' "$root_dir/flake.nix" ||
+  fail "direct Home Manager evaluation should reuse the shared module list"
+grep -Fq 'imports = homeModules;' "$root_dir/flake.nix" ||
+  fail "Darwin Home Manager activation should reuse the shared module list"
+
+[[ -f "$darwin_host_module" ]] ||
+  fail "Darwin should define a host module"
+for darwin_setting in \
+  'system.primaryUser = "skalidindi";' \
+  'users.users.${config.system.primaryUser}.home = "/Users/${config.system.primaryUser}";' \
+  'nix.settings.experimental-features = [ "nix-command" "flakes" ];'; do
+  grep -Fq "$darwin_setting" "$darwin_host_module" ||
+    fail "the Darwin host module should define $darwin_setting"
+done
+grep -Eq '^[[:space:]]*system\.stateVersion = [0-9]+;' "$darwin_host_module" ||
+  fail "the Darwin host module should define a Darwin state version"
+if grep -Fq '/Users/skalidindi' "$darwin_host_module"; then
+  fail "the Darwin host module should not contain a literal user-specific home path"
+fi
 
 for identity_setting in \
   'home.username' \
@@ -124,12 +157,25 @@ target_names="$("$nix_bin" "${nix_args[@]}" eval --raw "$root_dir#homeConfigurat
 [[ "$target_names" == 'oss-aarch64-darwin,oss-x86_64-darwin' ]] ||
   fail "Home Manager should expose only explicit Apple Silicon and Intel targets"
 
+darwin_target_names="$("$nix_bin" "${nix_args[@]}" eval --raw "$root_dir#darwinConfigurations" \
+  --apply 'configs: builtins.concatStringsSep "," (builtins.attrNames configs)')"
+[[ "$darwin_target_names" == 'oss-aarch64-darwin,oss-x86_64-darwin' ]] ||
+  fail "nix-darwin should expose only explicit Apple Silicon and Intel targets"
+
 "$nix_bin" "${nix_args[@]}" eval --raw \
   "$root_dir#homeConfigurations.\"oss-aarch64-darwin\".activationPackage.drvPath" >/dev/null
 "$nix_bin" "${nix_args[@]}" eval --raw \
   "$root_dir#homeConfigurations.\"oss-x86_64-darwin\".activationPackage.drvPath" >/dev/null
 "$nix_bin" "${nix_args[@]}" eval --raw \
+  "$root_dir#darwinConfigurations.\"oss-aarch64-darwin\".system.drvPath" >/dev/null
+"$nix_bin" "${nix_args[@]}" eval --raw \
+  "$root_dir#darwinConfigurations.\"oss-x86_64-darwin\".system.drvPath" >/dev/null
+"$nix_bin" "${nix_args[@]}" eval --raw \
   "$root_dir#packages.aarch64-darwin.home-manager.name" >/dev/null
+"$nix_bin" "${nix_args[@]}" eval --raw \
+  "$root_dir#packages.aarch64-darwin.darwin-rebuild.name" >/dev/null
+"$nix_bin" "${nix_args[@]}" eval --raw \
+  "$root_dir#packages.x86_64-darwin.darwin-rebuild.name" >/dev/null
 
 source_manifest() {
   local file_group="$1"
@@ -245,4 +291,4 @@ gpg_sign="$(printf '%s' "$git_profile" | git config --file /dev/stdin --type=boo
 [[ "$gpg_sign" == 'true' ]] ||
   fail "the generated Git profile should enable commit signing"
 
-printf 'PASS: Home Manager modules, identity boundary, and explicit targets\n'
+printf 'PASS: Home Manager modules, Darwin integration, identity boundary, and explicit targets\n'
