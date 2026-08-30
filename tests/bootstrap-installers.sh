@@ -59,6 +59,16 @@ printf 'nix %s\n' "$*" >>"$BOOTSTRAP_COMMAND_LOG"
 if [[ "${FAKE_FAILURE:-}" == "nix-${1:-}" ]]; then
   exit 42
 fi
+
+if [[ "${1:-}" == run && "${FAKE_NIX_OMIT_NPM:-0}" != 1 ]]; then
+  mkdir -p "$HOME/.nix-profile/bin"
+  cat >"$HOME/.nix-profile/bin/npm" <<'NPM'
+#!/usr/bin/env bash
+set -euo pipefail
+printf 'npm %s\n' "$*" >>"$BOOTSTRAP_COMMAND_LOG"
+NPM
+  chmod +x "$HOME/.nix-profile/bin/npm"
+fi
 EOF
 
 cat >"$sandbox/bin/gpg" <<'EOF'
@@ -66,12 +76,6 @@ cat >"$sandbox/bin/gpg" <<'EOF'
 set -euo pipefail
 printf 'gpg %s\n' "$*" >>"$BOOTSTRAP_COMMAND_LOG"
 printf 'test material\n'
-EOF
-
-cat >"$sandbox/bin/npm" <<'EOF'
-#!/usr/bin/env bash
-set -euo pipefail
-printf 'npm %s\n' "$*" >>"$BOOTSTRAP_COMMAND_LOG"
 EOF
 
 cat >"$sandbox/home/.local/bin/install-agent-assets" <<'EOF'
@@ -108,6 +112,7 @@ run_bootstrap() {
     PATH="$sandbox/bin:/usr/bin:/bin" \
     BOOTSTRAP_COMMAND_LOG="$command_log" \
     FAKE_ARCH="$1" \
+    FAKE_NIX_OMIT_NPM="${2:-0}" \
     "$root_dir/scripts/bootstrap" >/dev/null
 }
 
@@ -125,6 +130,15 @@ assert_log_order \
 run_bootstrap x86_64
 grep -Fxq 'nix run .#home-manager -- switch --flake .#oss-x86_64-darwin' "$command_log" ||
   fail "x86_64 should select the Intel Home Manager target"
+
+: >"$command_log"
+rm -f "$sandbox/home/.nix-profile/bin/npm"
+if run_bootstrap arm64 1 2>/dev/null; then
+  fail "bootstrap should fail when Home Manager does not provide npm"
+fi
+if grep -Fq 'npm install' "$command_log"; then
+  fail "bootstrap should not report npm installs when npm is unavailable"
+fi
 
 : >"$command_log"
 if HOME="$sandbox/home" \

@@ -117,6 +117,7 @@ main() {
   NIX_CONFIG="extra-experimental-features = nix-command flakes" \
     "$nix_bin" run .#home-manager -- switch --flake ".#$target"
 
+  export PATH="$HOME/.nix-profile/bin:$PATH"
   run_home_manager_helper install-agent-assets
   run_home_manager_helper configure-oss-git
   "$repo_root/scripts/global-tools"

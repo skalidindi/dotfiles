@@ -27,9 +27,6 @@ shell. Bootstrap checks the standard Nix profile directly, but if Nix is still
 unavailable, open a fresh terminal and run `./scripts/bootstrap` again as the
 error instructs.
 
-After installation, `agent-doctor` gives a quick status report for the agent
-surfaces, launcher commands, and runtime-state boundaries.
-
 ## Normal maintenance
 
 From the repository root, run:
@@ -88,7 +85,7 @@ data in the shared modules.
 Run the shell tests sequentially:
 
 ```bash
-for test in tests/*.sh; do bash "$test"; done
+for test in tests/*.sh; do bash "$test" || exit 1; done
 ```
 
 Validate every flake output and both Home Manager targets:
@@ -112,11 +109,12 @@ upgrading anything:
 HOMEBREW_NO_AUTO_UPDATE=1 brew bundle check --file="$PWD/Brewfile" --no-upgrade --verbose
 ```
 
-## Agent runtime state
+## Advanced troubleshooting
 
 Shared portable agent assets are installed under `~/.agents`. Runtime state,
 auth, sessions, caches, memories, generated catalogs, and decrypted environment
-files must stay local and ignored. Useful checks and helpers are:
+files must stay local and ignored. These diagnostic and repair helpers are not
+part of normal setup or maintenance:
 
 ```bash
 agent-doctor

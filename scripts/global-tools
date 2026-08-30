@@ -43,5 +43,6 @@ if command -v npm >/dev/null 2>&1; then
   npm install -g --prefix "$HOME/.local" hunkdiff
   install_hunk_skill
 else
-  echo "npm is required to install mutable agent packages."
+  printf 'global-tools: npm is required to install mutable agent packages\n' >&2
+  exit 69
 fi
