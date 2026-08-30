@@ -107,6 +107,21 @@ assert_log_order() {
   done
 }
 
+assert_darwin_activation_precedes_every_brew_command() {
+  local target="$1"
+  local activation="nix run .#darwin-rebuild -- switch --flake .#$target"
+  local activation_line
+  local brew_line
+
+  activation_line="$(grep -n -F -m 1 "$activation" "$command_log" | cut -d: -f1 || true)"
+  [[ -n "$activation_line" ]] || fail "expected Darwin activation was not run: $activation"
+
+  while IFS=: read -r brew_line _; do
+    (( brew_line > activation_line )) ||
+      fail "Darwin activation must precede every Homebrew command"
+  done < <(grep -n '^brew ' "$command_log" || true)
+}
+
 run_bootstrap() {
   HOME="$sandbox/home" \
     PATH="$sandbox/bin:/usr/bin:/bin" \
@@ -118,18 +133,20 @@ run_bootstrap() {
 
 run_bootstrap arm64
 assert_log_order \
-  'nix run .#home-manager -- switch --flake .#oss-aarch64-darwin' \
+  'nix run .#darwin-rebuild -- switch --flake .#oss-aarch64-darwin' \
   'brew shellenv' \
   "brew bundle --file=$root_dir/Brewfile" \
   'agent-assets' \
   'configure-oss-git' \
   'npm install -g --prefix /' \
   'gpg --decrypt '
+assert_darwin_activation_precedes_every_brew_command oss-aarch64-darwin
 
 : >"$command_log"
 run_bootstrap x86_64
-grep -Fxq 'nix run .#home-manager -- switch --flake .#oss-x86_64-darwin' "$command_log" ||
-  fail "x86_64 should select the Intel Home Manager target"
+grep -Fxq 'nix run .#darwin-rebuild -- switch --flake .#oss-x86_64-darwin' "$command_log" ||
+  fail "x86_64 should select the Intel Darwin target"
+assert_darwin_activation_precedes_every_brew_command oss-x86_64-darwin
 
 : >"$command_log"
 rm -f "$sandbox/home/.nix-profile/bin/npm"
@@ -147,10 +164,10 @@ if HOME="$sandbox/home" \
   FAKE_ARCH=arm64 \
   FAKE_FAILURE=nix-run \
   "$root_dir/scripts/bootstrap" >/dev/null 2>&1; then
-  fail "bootstrap should stop when Home Manager activation fails"
+  fail "bootstrap should stop when Darwin activation fails"
 fi
-[[ "$(cat "$command_log")" == 'nix run .#home-manager -- switch --flake .#oss-aarch64-darwin' ]] ||
-  fail "bootstrap should activate Home Manager before mutating Homebrew packages"
+[[ "$(cat "$command_log")" == 'nix run .#darwin-rebuild -- switch --flake .#oss-aarch64-darwin' ]] ||
+  fail "bootstrap should activate Darwin before mutating Homebrew packages"
 
 : >"$command_log"
 if HOME="$sandbox/home" \
@@ -161,7 +178,7 @@ if HOME="$sandbox/home" \
   fail "an unsupported architecture should stop bootstrap"
 fi
 if grep -Fq 'nix run' "$command_log"; then
-  fail "an unsupported architecture should stop before Home Manager activation"
+  fail "an unsupported architecture should stop before Darwin activation"
 fi
 
 : >"$command_log"
@@ -171,10 +188,17 @@ HOME="$sandbox/home" \
   FAKE_ARCH=arm64 \
   "$root_dir/scripts/update" >/dev/null
 assert_log_order \
-  'brew update' \
-  'brew upgrade' \
   'nix flake update' \
-  'nix run .#home-manager -- switch --flake .#oss-aarch64-darwin'
+  'nix run .#darwin-rebuild -- switch --flake .#oss-aarch64-darwin' \
+  'brew shellenv' \
+  "brew bundle --file=$root_dir/Brewfile" \
+  'agent-assets' \
+  'configure-oss-git' \
+  'npm install -g --prefix /' \
+  'gpg --decrypt ' \
+  'brew update' \
+  'brew upgrade'
+assert_darwin_activation_precedes_every_brew_command oss-aarch64-darwin
 
 : >"$command_log"
 if HOME="$sandbox/home" \
@@ -197,7 +221,8 @@ if HOME="$sandbox/home" \
   "$root_dir/scripts/update" >/dev/null 2>&1; then
   fail "update should stop when brew update fails"
 fi
-[[ "$(cat "$command_log")" == 'brew update' ]] ||
+assert_darwin_activation_precedes_every_brew_command oss-aarch64-darwin
+[[ "$(tail -n 1 "$command_log")" == 'brew update' ]] ||
   fail "update should not continue after a failed brew update"
 
 : >"$command_log"
@@ -209,7 +234,8 @@ if HOME="$sandbox/home" \
   "$root_dir/scripts/update" >/dev/null 2>&1; then
   fail "update should stop when brew upgrade fails"
 fi
-[[ "$(cat "$command_log")" == $'brew update\nbrew upgrade' ]] ||
+assert_darwin_activation_precedes_every_brew_command oss-aarch64-darwin
+[[ "$(tail -n 1 "$command_log")" == 'brew upgrade' ]] ||
   fail "update should not bootstrap after a failed brew upgrade"
 
 : >"$command_log"
@@ -221,7 +247,19 @@ if HOME="$sandbox/home" \
   "$root_dir/scripts/update" >/dev/null 2>&1; then
   fail "update should stop when nix flake update fails"
 fi
-[[ "$(cat "$command_log")" == $'brew update\nbrew upgrade\nnix flake update' ]] ||
+[[ "$(cat "$command_log")" == 'nix flake update' ]] ||
   fail "update should not bootstrap after a failed nix flake update"
+
+: >"$command_log"
+if HOME="$sandbox/home" \
+  PATH="$sandbox/bin:/usr/bin:/bin" \
+  BOOTSTRAP_COMMAND_LOG="$command_log" \
+  FAKE_ARCH=arm64 \
+  FAKE_FAILURE=nix-run \
+  "$root_dir/scripts/update" >/dev/null 2>&1; then
+  fail "update should stop when Darwin activation fails"
+fi
+[[ "$(cat "$command_log")" == $'nix flake update\nnix run .#darwin-rebuild -- switch --flake .#oss-aarch64-darwin' ]] ||
+  fail "update should activate Darwin before mutating Homebrew packages"
 
 printf 'PASS: bootstrap and update commands select supported targets and stop on failure\n'

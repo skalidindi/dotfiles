@@ -8,7 +8,7 @@ nix_bin=""
 # shellcheck source=lib/package-managers.sh
 source "$repo_root/scripts/lib/package-managers.sh"
 
-select_home_manager_target() {
+select_darwin_target() {
   local architecture
 
   architecture="$(uname -m)"
@@ -24,6 +24,14 @@ select_home_manager_target() {
       return 1
       ;;
   esac
+}
+
+activate_darwin() {
+  local target="$1"
+
+  printf 'Activating Nix/Darwin target %s...\n' "$target"
+  NIX_CONFIG="extra-experimental-features = nix-command flakes" \
+    "$nix_bin" run .#darwin-rebuild -- switch --flake ".#$target"
 }
 
 ensure_homebrew() {
@@ -77,13 +85,11 @@ run_home_manager_helper() {
 main() {
   local target
 
-  target="$(select_home_manager_target)"
+  target="$(select_darwin_target)"
   cd "$repo_root"
 
   ensure_nix
-  printf 'Activating Home Manager target %s...\n' "$target"
-  NIX_CONFIG="extra-experimental-features = nix-command flakes" \
-    "$nix_bin" run .#home-manager -- switch --flake ".#$target"
+  activate_darwin "$target"
 
   ensure_homebrew
   "$brew_bin" bundle --file="$repo_root/Brewfile"

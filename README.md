@@ -1,10 +1,11 @@
 # Dotfiles
 
-Personal macOS dotfiles for a development machine. Home Manager owns portable
-command-line packages, static configuration, and helper scripts. Homebrew owns
-GUI applications, fonts, and the macOS- or Work-specific tools outside the
-portable Home Manager boundary. Auth, sessions, caches, generated files, and
-other runtime state stay local and ignored.
+Personal macOS dotfiles for a development machine. Nix/Darwin owns system
+activation and activates Home Manager, which owns portable command-line
+packages, static configuration, and helper scripts. Homebrew owns GUI
+applications, fonts, and the macOS- or Work-specific tools outside the portable
+Home Manager boundary. Auth, sessions, caches, generated files, and other
+runtime state stay local and ignored.
 
 ## Fresh laptop setup
 
@@ -16,10 +17,10 @@ cd ~/oss/dotfiles
 ./scripts/bootstrap
 ```
 
-Bootstrap installs Nix when it is absent and activates the Home Manager target
+Bootstrap installs Nix when it is absent and activates the Nix/Darwin target
 for the current Mac architecture first. It then installs Homebrew when needed,
 applies the Brewfile, installs mutable agent CLIs, and restores the local agent
-and Git integration. If Nix installation or Home Manager activation fails,
+and Git integration. If Nix installation or Nix/Darwin activation fails,
 bootstrap stops before any Homebrew package mutation. If
 `env/.env-secrets.gpg` exists, it also decrypts that file atomically into the
 ignored `$HOME/.env-secrets` file.
@@ -37,11 +38,11 @@ From the repository root, run:
 ./scripts/update
 ```
 
-Update first verifies that Nix is available, then runs Homebrew update and
-upgrade, updates the locked Nix inputs, and runs `./scripts/bootstrap` to
-reapply the complete configuration. Review and commit an intentional
-`flake.lock` change after maintenance. This command does not pull repository
-changes.
+Update first verifies that Nix and Homebrew are available, updates the locked
+Nix inputs, and runs `./scripts/bootstrap` to activate Nix/Darwin and reapply
+the complete configuration before Homebrew update or upgrade. Review and commit
+an intentional `flake.lock` change after maintenance. This command does not
+pull repository changes.
 
 ## Package and configuration ownership
 
@@ -60,7 +61,7 @@ Each target should have one owner. Files that applications mutate during normal
 use should remain local or be seeded once rather than linked as immutable
 configuration.
 
-## Home Manager hosts
+## Nix/Darwin hosts
 
 The flake exposes explicit `oss-aarch64-darwin` and
 `oss-x86_64-darwin` configurations. `./scripts/bootstrap` selects one from the
@@ -91,7 +92,7 @@ Run the shell tests sequentially:
 for test in tests/*.sh; do bash "$test" || exit 1; done
 ```
 
-Validate every flake output and both Home Manager targets:
+Validate every flake output and both Nix/Darwin targets:
 
 ```bash
 nix --extra-experimental-features 'nix-command flakes' flake check --all-systems
@@ -102,7 +103,7 @@ Apply the current architecture configuration when validating a real macOS home:
 
 ```bash
 export NIX_CONFIG="extra-experimental-features = nix-command flakes"
-nix run .#home-manager -- switch --flake .#oss-$(nix eval --impure --raw --expr builtins.currentSystem)
+nix run .#darwin-rebuild -- switch --flake .#oss-$(nix eval --impure --raw --expr builtins.currentSystem)
 ```
 
 Check that the current Homebrew installation satisfies the Brewfile without

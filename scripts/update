@@ -22,11 +22,11 @@ main() {
     return 1
   fi
 
-  "$brew_bin" update
-  "$brew_bin" upgrade
-
   NIX_CONFIG="extra-experimental-features = nix-command flakes" "$nix_bin" flake update
   "$repo_root/scripts/bootstrap"
+
+  "$brew_bin" update
+  "$brew_bin" upgrade
 }
 
 main "$@"
