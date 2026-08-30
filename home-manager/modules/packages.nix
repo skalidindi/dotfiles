@@ -1,5 +1,50 @@
 { pkgs, ... }:
 
 {
-  home.packages = [ pkgs.neovim ];
+  home.packages = [
+    pkgs.ansible
+    pkgs.antidote
+    pkgs.bat
+    pkgs.btop
+    pkgs.cargo
+    pkgs.cargo-flamegraph
+    pkgs.curl
+    pkgs.delta
+    pkgs.eza
+    pkgs.fastfetch
+    pkgs.fd
+    pkgs.ffmpeg
+    pkgs.fzf
+    pkgs.git
+    pkgs.gnupg
+    pkgs.go
+    pkgs.httpie
+    pkgs.imagemagick
+    pkgs.jless
+    pkgs.jq
+    pkgs.lazygit
+    pkgs.lua
+    pkgs.neovim
+    pkgs.nmap
+    pkgs.nodejs
+    pkgs.pnpm
+    pkgs.python3
+    pkgs.ripgrep
+    pkgs.ruff
+    pkgs.rustc
+    pkgs.starship
+    pkgs.television
+    pkgs.tree
+    pkgs.tree-sitter
+    pkgs.ty
+    pkgs.uv
+    pkgs.vivid
+    pkgs.wget
+    pkgs.worktrunk
+    pkgs.yazi
+    pkgs.yt-dlp
+    pkgs.zellij
+    pkgs.zoxide
+    pkgs.zsh
+  ];
 }
