@@ -41,4 +41,24 @@ fi
   exit 1
 }
 
+legacy_target="$sandbox/oss/dotfiles/env/.env-secrets"
+mkdir -p "$(dirname "$legacy_target")"
+printf 'legacy secret\n' >"$legacy_target"
+rm -f "$sandbox/home/.env-secrets"
+ln -s "../oss/dotfiles/env/.env-secrets" "$sandbox/home/.env-secrets"
+HOME="$sandbox/home" PATH="$sandbox/bin:$PATH" bash "$root_dir/installers/050-secrets.sh" >/dev/null
+
+[[ ! -L "$sandbox/home/.env-secrets" ]] || {
+  printf 'FAIL: legacy secrets symlink should be replaced with a regular home file\n' >&2
+  exit 1
+}
+[[ "$(cat "$sandbox/home/.env-secrets")" == "secret value" ]] || {
+  printf 'FAIL: migrated secrets should be written to the home file\n' >&2
+  exit 1
+}
+[[ "$(cat "$legacy_target")" == "legacy secret" ]] || {
+  printf 'FAIL: legacy repository target should not be overwritten\n' >&2
+  exit 1
+}
+
 printf 'PASS: secrets tests\n'

@@ -13,6 +13,22 @@ if [[ -f env/.env-secrets.gpg ]]; then
   umask 077
   gpg --decrypt env/.env-secrets.gpg > "$temporary"
   chmod 600 "$temporary"
+
+  # Older Stow runs could leave ~/.env-secrets linked into the repository.
+  # Remove only that legacy link before installing the real home-owned file.
+  if [[ -L "$destination" ]]; then
+    linked_path="$(readlink "$destination")"
+    case "$linked_path" in
+      */env/.env-secrets|*/oss/dotfiles/env/.env-secrets)
+        rm -f "$destination"
+        ;;
+      *)
+        echo "Refusing to replace unexpected symlink: $destination" >&2
+        exit 1
+        ;;
+    esac
+  fi
+
   mv -f "$temporary" "$destination"
   trap - EXIT
 else
