@@ -168,6 +168,10 @@ darwin_target_names="$("$nix_bin" "${nix_args[@]}" eval --raw "$root_dir#darwinC
   "$root_dir#homeConfigurations.\"oss-aarch64-darwin\".activationPackage.drvPath" >/dev/null
 "$nix_bin" "${nix_args[@]}" eval --raw \
   "$root_dir#darwinConfigurations.\"oss-aarch64-darwin\".system.drvPath" >/dev/null
+configuration_revision="$("$nix_bin" "${nix_args[@]}" eval --raw \
+  "$root_dir#darwinConfigurations.\"oss-aarch64-darwin\".config.system.configurationRevision")"
+[[ -n "$configuration_revision" ]] ||
+  fail "the Darwin configuration should record the source revision"
 "$nix_bin" "${nix_args[@]}" eval --raw \
   "$root_dir#packages.aarch64-darwin.home-manager.name" >/dev/null
 "$nix_bin" "${nix_args[@]}" eval --raw \

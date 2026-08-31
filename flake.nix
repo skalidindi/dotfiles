@@ -29,6 +29,7 @@
       mkDarwinConfiguration = system:
         nix-darwin.lib.darwinSystem {
           inherit system;
+          specialArgs = { inherit self; };
           modules = [
             ./darwin/hosts/skalidindi.nix
             home-manager.darwinModules.home-manager
