@@ -8,7 +8,6 @@ flake="$root_dir/flake.nix"
 darwin_host_module="$root_dir/darwin/hosts/skalidindi.nix"
 ownership_documents=(
   "$root_dir/README.md"
-  "$root_dir/docs/superpowers/specs/2026-08-30-nix-darwin-design.md"
 )
 nix_bin="${NIX_BIN:-/nix/var/nix/profiles/default/bin/nix}"
 
@@ -167,7 +166,7 @@ pinentry
 pinentry-mac
 reattach-to-user-namespace
 ssh-copy-id
-tw93/tap/mole
+mole
 volta
 EOF
 )"
@@ -272,14 +271,12 @@ chmod +x "$helper_test_home/fake-bin/npm"
 HOME="$helper_test_home" PATH="$helper_test_home/fake-bin:/usr/bin:/bin" \
   /bin/bash "$global_tools" >/dev/null
 expected_mutable_agent_packages="$(cat <<'EOF'
-@anthropic-ai/claude-code
-@openai/codex
 hunkdiff
 EOF
 )"
 actual_mutable_agent_packages="$(sort "$helper_test_home/npm-packages")"
 [[ "$actual_mutable_agent_packages" == "$expected_mutable_agent_packages" ]] ||
-  fail "global-tools should install exactly Claude Code, Codex, and Hunk with npm"
+  fail "global-tools should install only Hunk with npm"
 [[ -f "$helper_test_home/.agents/skills/hunk-review/SKILL.md" ]] ||
   fail "global-tools should sync the Hunk skill installed under the mutable user prefix"
 
