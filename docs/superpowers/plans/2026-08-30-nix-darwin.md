@@ -109,7 +109,7 @@ Expected: FAIL until the explicit no-duplicate-owner contract is added.
 
 Describe nix-darwin as the system activation layer, Home Manager as the user layer, and the Brewfile as the retained Homebrew source. State that `nix-homebrew` is intentionally absent. Update the plan checkboxes as work completes.
 
-- [ ] **Step 4: Run the full verification gate**
+- [x] **Step 4: Run the full verification gate**
 
 Run: `for test in tests/*.sh; do bash "$test" || exit 1; done`
 
