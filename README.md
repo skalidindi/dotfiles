@@ -70,9 +70,10 @@ configuration.
 
 ## Nix/Darwin hosts
 
-The flake exposes the Apple Silicon `oss-aarch64-darwin` configuration.
-`./scripts/bootstrap` selects it on Apple Silicon and stops on unsupported
-architectures.
+The flake exposes the Apple Silicon `oss-aarch64-darwin` Darwin configuration
+and the portable `oss-x86_64-linux` Home Manager configuration used by Work
+Dev Workspaces. `./scripts/bootstrap` is the full macOS setup; Work invokes
+`./scripts/bootstrap-base` for the Linux Home Manager layer.
 
 `home-manager/hosts/skalidindi.nix` owns the Home Manager account identity and
 OSS Git identity. `darwin/hosts/skalidindi.nix` owns the system primary user and
@@ -88,6 +89,7 @@ data in shared modules.
 - `home-manager/modules/` defines shared file, package, and program ownership.
 - `scripts/bin/` contains portable helpers installed into `$HOME/.local/bin`.
 - `scripts/bootstrap` performs installation and applies the full configuration.
+- `scripts/bootstrap-base` applies the portable Home Manager layer on macOS or Linux.
 - `scripts/update` handles package and flake maintenance.
 - `Brewfile` lists Homebrew-owned applications and retained formulae.
 - `env/` contains encrypted environment seed material. Plaintext stays ignored.
@@ -124,9 +126,10 @@ HOMEBREW_NO_AUTO_UPDATE=1 brew bundle check --file="$PWD/Brewfile" --no-upgrade 
 
 ## Advanced troubleshooting
 
-Shared portable agent assets are installed under `~/.agents`. Runtime state,
-auth, sessions, caches, memories, generated catalogs, and decrypted environment
-files must stay local and ignored. These diagnostic and repair helpers are not
+Work dotfiles own the shared agent assets under `~/.agents`. OSS owns portable
+shell, editor, terminal, and Git configuration. Runtime state, auth, sessions,
+caches, memories, generated catalogs, and decrypted environment files must stay
+local and ignored. These diagnostic and repair helpers are not
 part of normal setup or maintenance:
 
 ```bash

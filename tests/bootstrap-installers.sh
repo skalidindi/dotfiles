@@ -13,6 +13,7 @@ fail() {
 for script in scripts/bootstrap scripts/update scripts/secrets; do
   [[ -x "$root_dir/$script" ]] || fail "$script should be an executable entrypoint"
 done
+[[ -f "$root_dir/scripts/bootstrap-base" ]] || fail "scripts/bootstrap-base should exist"
 
 [[ ! -e "$root_dir/bootstrap.sh" ]] ||
   fail "the retired root bootstrap script should not exist"
@@ -86,12 +87,6 @@ printf 'gpg %s\n' "$*" >>"$BOOTSTRAP_COMMAND_LOG"
 printf 'test material\n'
 EOF
 
-cat >"$sandbox/home/.local/bin/install-agent-assets" <<'EOF'
-#!/usr/bin/env bash
-set -euo pipefail
-printf 'agent-assets\n' >>"$BOOTSTRAP_COMMAND_LOG"
-EOF
-
 cat >"$sandbox/home/.local/bin/configure-oss-git" <<'EOF'
 #!/usr/bin/env bash
 set -euo pipefail
@@ -146,7 +141,6 @@ assert_log_order \
   'nix run .#darwin-rebuild -- switch --flake .#oss-aarch64-darwin' \
   'brew shellenv' \
   "brew bundle --file=$root_dir/Brewfile" \
-  'agent-assets' \
   'configure-oss-git' \
   'gpg --decrypt '
 assert_darwin_activation_precedes_every_brew_command oss-aarch64-darwin
@@ -193,7 +187,6 @@ assert_log_order \
   'nix run .#darwin-rebuild -- switch --flake .#oss-aarch64-darwin' \
   'brew shellenv' \
   "brew bundle --file=$root_dir/Brewfile" \
-  'agent-assets' \
   'configure-oss-git' \
   'gpg --decrypt ' \
   'brew update' \

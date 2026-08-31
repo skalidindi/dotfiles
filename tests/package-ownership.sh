@@ -218,7 +218,7 @@ fi
 
 required_count="$(wc -l <<<"$required_home_manager_packages" | tr -d ' ')"
 
-for system in aarch64-darwin; do
+for system in aarch64-darwin x86_64-linux; do
   evaluated_packages="$({
     "$nix_bin" "${nix_args[@]}" eval --raw \
       "$root_dir#homeConfigurations.\"oss-$system\".config.home.packages" \
@@ -236,4 +236,4 @@ for system in aarch64-darwin; do
     fail "the $system Home Manager target should include tmux through programs.tmux"
 done
 
-printf 'PASS: portable CLI ownership is singular and the Apple Silicon package set evaluates\n'
+printf 'PASS: portable CLI ownership is singular and both advertised package sets evaluate\n'

@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
+nix_bin=""
+
+# shellcheck source=lib/package-managers.sh
+source "$repo_root/scripts/lib/package-managers.sh"
+
+if ! nix_bin="$(find_nix)"; then
+  printf 'bootstrap-base: Nix is required; run scripts/bootstrap on a Mac or install Nix first.\n' >&2
+  exit 1
+fi
+
+case "$(uname -s):$(uname -m)" in
+  Darwin:arm64)
+    target="oss-aarch64-darwin"
+    ;;
+  Linux:x86_64)
+    target="oss-x86_64-linux"
+    ;;
+  *)
+    printf 'bootstrap-base: unsupported platform: %s/%s\n' "$(uname -s)" "$(uname -m)" >&2
+    exit 1
+    ;;
+esac
+
+cd "$repo_root"
+NIX_CONFIG="extra-experimental-features = nix-command flakes" \
+  "$nix_bin" run .#home-manager -- switch --flake ".#$target" -b backup

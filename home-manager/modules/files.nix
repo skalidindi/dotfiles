@@ -99,38 +99,8 @@
       force = true;
     };
 
-    ".agents" = {
-      source = ../../config/agents;
-      recursive = true;
-      force = true;
-    };
-
-    ".local/bin/agent-doctor" = {
-      source = ../../scripts/bin/agent-doctor;
-      executable = true;
-      force = true;
-    };
-
-    ".local/bin/agent-runtime-guard" = {
-      source = ../../scripts/bin/agent-runtime-guard;
-      executable = true;
-      force = true;
-    };
-
     ".local/bin/configure-oss-git" = {
       source = ../../scripts/bin/configure-oss-git;
-      executable = true;
-      force = true;
-    };
-
-    ".local/bin/install-agent-assets" = {
-      source = ../../scripts/bin/install-agent-assets;
-      executable = true;
-      force = true;
-    };
-
-    ".local/bin/restore-skills-sh" = {
-      source = ../../scripts/bin/restore-skills-sh;
       executable = true;
       force = true;
     };

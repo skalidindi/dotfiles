@@ -24,7 +24,7 @@ for legacy_path in bin/.local/bin claude codex cursor; do
   fi
 done
 
-for setup_doc in config/agents/README.md config/nvim/README.md; do
+for setup_doc in config/nvim/README.md; do
   if grep -Fq './bootstrap.sh' "$root_dir/$setup_doc"; then
     fail "$setup_doc should refer to scripts/bootstrap, not the retired root entrypoint"
   fi
@@ -34,10 +34,5 @@ done
 
 grep -Fq "nix run '.#darwin-rebuild'" "$root_dir/README.md" ||
   fail "the zsh-facing Darwin activation example should quote its flake reference"
-
-agent_setup="$(tr '\n' ' ' <"$root_dir/config/agents/README.md")"
-if grep -Eiq 'bootstrap[^.]*followed by[^.]*activation' <<<"$agent_setup"; then
-  fail "agent setup should not advertise a separate Home Manager activation step"
-fi
 
 printf 'PASS: declarative source layout\n'

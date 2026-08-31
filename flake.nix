@@ -13,7 +13,7 @@
 
   outputs = { self, nixpkgs, home-manager, nix-darwin, ... }:
     let
-      systems = [ "aarch64-darwin" ];
+      systems = [ "aarch64-darwin" "x86_64-linux" ];
       forAllSystems = f: nixpkgs.lib.genAttrs systems f;
       homeModules = [
         ./home-manager/hosts/skalidindi.nix
@@ -21,10 +21,10 @@
         ./home-manager/modules/packages.nix
         ./home-manager/modules/programs.nix
       ];
-      mkHomeConfiguration = system:
+      mkHomeConfiguration = { system, homeDirectory }:
         home-manager.lib.homeManagerConfiguration {
           pkgs = import nixpkgs { inherit system; };
-          modules = homeModules;
+          modules = homeModules ++ [{ home.homeDirectory = homeDirectory; }];
         };
       mkDarwinConfiguration = system:
         nix-darwin.lib.darwinSystem {
@@ -46,20 +46,34 @@
     {
       # Evaluation only; darwin-rebuild is the system activation path.
       homeConfigurations = {
-        "oss-aarch64-darwin" = mkHomeConfiguration "aarch64-darwin";
+        "oss-aarch64-darwin" = mkHomeConfiguration {
+          system = "aarch64-darwin";
+          homeDirectory = "/Users/skalidindi";
+        };
+        "oss-x86_64-linux" = mkHomeConfiguration {
+          system = "x86_64-linux";
+          homeDirectory = "/home/skalidindi";
+        };
       };
 
       darwinConfigurations = {
         "oss-aarch64-darwin" = mkDarwinConfiguration "aarch64-darwin";
       };
 
-      packages = forAllSystems (system: {
-        darwin-rebuild = nix-darwin.packages.${system}.darwin-rebuild;
-        home-manager = home-manager.packages.${system}.home-manager;
-      });
+      packages = {
+        aarch64-darwin = {
+          darwin-rebuild = nix-darwin.packages.aarch64-darwin.darwin-rebuild;
+          home-manager = home-manager.packages.aarch64-darwin.home-manager;
+        };
+        x86_64-linux = {
+          home-manager = home-manager.packages.x86_64-linux.home-manager;
+        };
+      };
 
       checks = forAllSystems (system: {
-        default = self.darwinConfigurations."oss-${system}".system;
+        default = if system == "aarch64-darwin"
+          then self.darwinConfigurations."oss-${system}".system
+          else self.homeConfigurations."oss-${system}".activationPackage;
       });
     };
 }

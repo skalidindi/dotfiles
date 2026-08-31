@@ -1,8 +1,8 @@
-{ config, ... }:
+{ config, lib, ... }:
 
 {
   home.username = "skalidindi";
-  home.homeDirectory = "/Users/${config.home.username}";
+  home.homeDirectory = lib.mkDefault "/Users/${config.home.username}";
   home.stateVersion = "25.11";
 
   xdg.configFile."git/.gitconfig.oss-base".text = ''

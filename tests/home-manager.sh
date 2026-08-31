@@ -33,11 +33,11 @@ grep -Fq 'home-manager.users.skalidindi' "$root_dir/flake.nix" ||
   fail "Darwin should assign the Home Manager configuration to skalidindi"
 grep -Fq 'home-manager.useUserPackages = false;' "$root_dir/flake.nix" ||
   fail "Darwin should preserve the existing user's Nix profile"
-grep -Fq 'modules = homeModules;' "$root_dir/flake.nix" ||
+grep -Fq 'modules = homeModules ++' "$root_dir/flake.nix" ||
   fail "direct Home Manager evaluation should reuse the shared module list"
 grep -Fq 'imports = homeModules;' "$root_dir/flake.nix" ||
   fail "Darwin Home Manager activation should reuse the shared module list"
-grep -Fq 'default = self.darwinConfigurations."oss-${system}".system;' "$root_dir/flake.nix" ||
+grep -Fq 'self.darwinConfigurations."oss-${system}".system' "$root_dir/flake.nix" ||
   fail "flake checks should evaluate the Darwin system output"
 
 [[ -f "$darwin_host_module" ]] ||
@@ -57,7 +57,7 @@ fi
 
 for identity_setting in \
   'home.username' \
-  'home.homeDirectory = "/Users/${config.home.username}"' \
+  'home.homeDirectory' \
   'Santosh Kalidindi' \
   'skalidindi8@gmail.com' \
   '5EFA48B9657D7C02' \
@@ -133,7 +133,7 @@ grep -Fq 'lock="$HOME/.config/nvim/lazy-lock.json"' "$programs_module" ||
 grep -Fq 'pkgs.neovim' "$packages_module" ||
   fail "the packages module should retain Neovim ownership"
 
-for helper in agent-doctor agent-runtime-guard configure-oss-git install-agent-assets restore-skills-sh zrun; do
+for helper in configure-oss-git zrun; do
   grep -Fq ".local/bin/$helper" "$files_module" ||
     fail "the files module should own the $helper helper"
 done
@@ -156,8 +156,8 @@ nix_args=(--extra-experimental-features 'nix-command flakes')
 
 target_names="$("$nix_bin" "${nix_args[@]}" eval --raw "$root_dir#homeConfigurations" \
   --apply 'configs: builtins.concatStringsSep "," (builtins.attrNames configs)')"
-[[ "$target_names" == 'oss-aarch64-darwin' ]] ||
-  fail "Home Manager should expose only the Apple Silicon target"
+[[ "$target_names" == 'oss-aarch64-darwin,oss-x86_64-linux' ]] ||
+  fail "Home Manager should expose Apple Silicon and Linux targets"
 
 darwin_target_names="$("$nix_bin" "${nix_args[@]}" eval --raw "$root_dir#darwinConfigurations" \
   --apply 'configs: builtins.concatStringsSep "," (builtins.attrNames configs)')"
@@ -176,6 +176,8 @@ configuration_revision="$("$nix_bin" "${nix_args[@]}" eval --raw \
   "$root_dir#packages.aarch64-darwin.home-manager.name" >/dev/null
 "$nix_bin" "${nix_args[@]}" eval --raw \
   "$root_dir#packages.aarch64-darwin.darwin-rebuild.name" >/dev/null
+"$nix_bin" "${nix_args[@]}" eval --raw \
+  "$root_dir#homeConfigurations.oss-x86_64-linux.activationPackage.drvPath" >/dev/null
 
 source_manifest() {
   local file_group="$1"
@@ -243,16 +245,11 @@ home_sources="$(source_manifest home.file)"
 while IFS='|' read -r target source; do
   assert_source_mapping "$home_sources" "$target" "$root_dir/$source"
 done <<'EOF'
-.agents|config/agents
 .aliases|config/bash/.aliases
 .bash_profile|config/bash/.bash_profile
 .exports|config/bash/.exports
 .functions|config/bash/.functions
-.local/bin/agent-doctor|scripts/bin/agent-doctor
-.local/bin/agent-runtime-guard|scripts/bin/agent-runtime-guard
 .local/bin/configure-oss-git|scripts/bin/configure-oss-git
-.local/bin/install-agent-assets|scripts/bin/install-agent-assets
-.local/bin/restore-skills-sh|scripts/bin/restore-skills-sh
 .local/bin/zrun|scripts/bin/zrun
 .path|config/bash/.path
 .zsh.d/_flamegraph|config/zsh/.zsh.d/_flamegraph
@@ -291,4 +288,4 @@ gpg_sign="$(printf '%s' "$git_profile" | git config --file /dev/stdin --type=boo
 [[ "$gpg_sign" == 'true' ]] ||
   fail "the generated Git profile should enable commit signing"
 
-printf 'PASS: Home Manager modules, Apple Silicon Darwin integration, and identity boundary\n'
+printf 'PASS: Home Manager modules, cross-platform target integration, and identity boundary\n'

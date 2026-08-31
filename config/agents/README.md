@@ -3,9 +3,9 @@
 This directory is the portable, cross-tool agent layer for Claude, Codex,
 Cursor, and future coding agents.
 
-The portable files in this directory are linked into `~/.agents` by Home
-Manager. The normal entrypoint is `./scripts/bootstrap`, which applies the full
-Home Manager configuration as part of setup.
+This legacy source is retained for reference only. Work dotfiles own and
+materialize the live `~/.agents` tree on both laptops and Dev Workspaces.
+The OSS Home Manager configuration no longer links this directory.
 
 ## Contract
 
@@ -30,14 +30,10 @@ instead of the live file.
 
 ## Install And Check
 
-```bash
-./scripts/bootstrap
-install-agent-assets
-agent-doctor
-```
+Use the Work dotfiles installer to install and refresh these assets.
 
-`install-agent-assets` syncs the shared base prompt into the Claude and Codex
-prompt files and merges tracked hook templates into local hook config.
+Work's installer renders the shared base prompt into each tool's local prompt
+file and keeps runtime-owned files out of this repository.
 
 ## Prompts
 
