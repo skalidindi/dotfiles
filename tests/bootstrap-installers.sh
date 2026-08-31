@@ -148,17 +148,14 @@ assert_log_order \
   "brew bundle --file=$root_dir/Brewfile" \
   'agent-assets' \
   'configure-oss-git' \
-  'npm install -g --prefix /' \
   'gpg --decrypt '
 assert_darwin_activation_precedes_every_brew_command oss-aarch64-darwin
 
 : >"$command_log"
 rm -f "$sandbox/home/.nix-profile/bin/npm"
-if run_bootstrap arm64 1 2>/dev/null; then
-  fail "bootstrap should fail when Home Manager does not provide npm"
-fi
+run_bootstrap arm64 1
 if grep -Fq 'npm install' "$command_log"; then
-  fail "bootstrap should not report npm installs when npm is unavailable"
+  fail "bootstrap should not install agent tools with npm"
 fi
 
 : >"$command_log"
@@ -198,7 +195,6 @@ assert_log_order \
   "brew bundle --file=$root_dir/Brewfile" \
   'agent-assets' \
   'configure-oss-git' \
-  'npm install -g --prefix /' \
   'gpg --decrypt ' \
   'brew update' \
   'brew upgrade'

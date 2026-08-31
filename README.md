@@ -59,8 +59,8 @@ pull repository changes.
 - `nix-homebrew` is intentionally absent. Homebrew installation and tap
   management would add a second package-owner migration without improving the
   existing Brewfile boundary.
-- `scripts/global-tools` owns mutable npm-installed agent CLIs and the Hunk
-  agent skill.
+- `Brewfile` owns Hunk. Its bundled agent skill remains available through
+  `hunk skill path`.
 - `scripts/secrets` owns the optional encrypted environment-file migration and
   decryption step.
 
