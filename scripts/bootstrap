@@ -31,7 +31,7 @@ activate_darwin() {
     NIX_CONFIG="extra-experimental-features = nix-command flakes" \
       "$nix_bin" run .#darwin-rebuild -- switch --flake ".#$target"
   else
-    sudo env NIX_CONFIG="extra-experimental-features = nix-command flakes" \
+    sudo env HOME=/var/root NIX_CONFIG="extra-experimental-features = nix-command flakes" \
       "$nix_bin" run .#darwin-rebuild -- switch --flake ".#$target"
   fi
 }

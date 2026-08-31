@@ -22,6 +22,7 @@ done
 mkdir -p "$sandbox/bin" "$sandbox/home/.local/bin" "$sandbox/homebrew/bin"
 command_log="$sandbox/commands.log"
 : >"$command_log"
+export BOOTSTRAP_TEST_HOME="$sandbox/home"
 
 cat >"$sandbox/bin/uname" <<'EOF'
 #!/usr/bin/env bash
@@ -61,13 +62,13 @@ if [[ "${FAKE_FAILURE:-}" == "nix-${1:-}" ]]; then
 fi
 
 if [[ "${1:-}" == run && "${FAKE_NIX_OMIT_NPM:-0}" != 1 ]]; then
-  mkdir -p "$HOME/.nix-profile/bin"
-  cat >"$HOME/.nix-profile/bin/npm" <<'NPM'
+  mkdir -p "$BOOTSTRAP_TEST_HOME/.nix-profile/bin"
+  cat >"$BOOTSTRAP_TEST_HOME/.nix-profile/bin/npm" <<'NPM'
 #!/usr/bin/env bash
 set -euo pipefail
 printf 'npm %s\n' "$*" >>"$BOOTSTRAP_COMMAND_LOG"
 NPM
-  chmod +x "$HOME/.nix-profile/bin/npm"
+  chmod +x "$BOOTSTRAP_TEST_HOME/.nix-profile/bin/npm"
 fi
 EOF
 
@@ -139,8 +140,8 @@ run_bootstrap() {
 }
 
 run_bootstrap arm64
-grep -Fxq "sudo env NIX_CONFIG=extra-experimental-features = nix-command flakes $sandbox/bin/nix run .#darwin-rebuild -- switch --flake .#oss-aarch64-darwin" "$command_log" ||
-  fail "bootstrap should use sudo to activate the Darwin target when it is not root"
+grep -Fxq "sudo env HOME=/var/root NIX_CONFIG=extra-experimental-features = nix-command flakes $sandbox/bin/nix run .#darwin-rebuild -- switch --flake .#oss-aarch64-darwin" "$command_log" ||
+  fail "bootstrap should activate Darwin with root's home when it is not root"
 assert_log_order \
   'nix run .#darwin-rebuild -- switch --flake .#oss-aarch64-darwin' \
   'brew shellenv' \
@@ -169,7 +170,7 @@ if HOME="$sandbox/home" \
   "$root_dir/scripts/bootstrap" >/dev/null 2>&1; then
   fail "bootstrap should stop when Darwin activation fails"
 fi
-[[ "$(cat "$command_log")" == $'sudo env NIX_CONFIG=extra-experimental-features = nix-command flakes '"$sandbox"$'/bin/nix run .#darwin-rebuild -- switch --flake .#oss-aarch64-darwin\nnix run .#darwin-rebuild -- switch --flake .#oss-aarch64-darwin' ]] ||
+[[ "$(cat "$command_log")" == $'sudo env HOME=/var/root NIX_CONFIG=extra-experimental-features = nix-command flakes '"$sandbox"$'/bin/nix run .#darwin-rebuild -- switch --flake .#oss-aarch64-darwin\nnix run .#darwin-rebuild -- switch --flake .#oss-aarch64-darwin' ]] ||
   fail "bootstrap should activate Darwin before mutating Homebrew packages"
 
 : >"$command_log"
@@ -262,7 +263,7 @@ if HOME="$sandbox/home" \
   "$root_dir/scripts/update" >/dev/null 2>&1; then
   fail "update should stop when Darwin activation fails"
 fi
-[[ "$(cat "$command_log")" == $'nix flake update\nsudo env NIX_CONFIG=extra-experimental-features = nix-command flakes '"$sandbox"$'/bin/nix run .#darwin-rebuild -- switch --flake .#oss-aarch64-darwin\nnix run .#darwin-rebuild -- switch --flake .#oss-aarch64-darwin' ]] ||
+[[ "$(cat "$command_log")" == $'nix flake update\nsudo env HOME=/var/root NIX_CONFIG=extra-experimental-features = nix-command flakes '"$sandbox"$'/bin/nix run .#darwin-rebuild -- switch --flake .#oss-aarch64-darwin\nnix run .#darwin-rebuild -- switch --flake .#oss-aarch64-darwin' ]] ||
   fail "update should activate Darwin before mutating Homebrew packages"
 
 printf 'PASS: bootstrap and update commands select supported targets and stop on failure\n'
