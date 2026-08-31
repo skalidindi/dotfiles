@@ -1,11 +1,7 @@
-# Homebrew taps
-tap "tw93/tap"
-
 # Homebrew Cask applications
 cask "1password"
 cask "1password-cli"
 cask "alcove"
-cask "balsamiq-wireframes"
 cask "brave-browser"
 cask "bruno"
 cask "chatgpt"
@@ -53,6 +49,7 @@ brew "helm"
 brew "herdr"
 brew "kompose"
 brew "maven"
+brew "mole"
 brew "mysql"
 brew "openjdk"
 brew "pinentry"
