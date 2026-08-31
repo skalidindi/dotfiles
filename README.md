@@ -70,9 +70,9 @@ configuration.
 
 ## Nix/Darwin hosts
 
-The flake exposes explicit `oss-aarch64-darwin` and
-`oss-x86_64-darwin` configurations. `./scripts/bootstrap` selects one from the
-current machine architecture.
+The flake exposes the Apple Silicon `oss-aarch64-darwin` configuration.
+`./scripts/bootstrap` selects it on Apple Silicon and stops on unsupported
+architectures.
 
 `home-manager/hosts/skalidindi.nix` owns the Home Manager account identity and
 OSS Git identity. `darwin/hosts/skalidindi.nix` owns the system primary user and
@@ -111,9 +111,8 @@ bash tests/home-manager.sh
 Apply the current architecture configuration when validating a real macOS home:
 
 ```bash
-target="oss-$(nix --extra-experimental-features 'nix-command flakes' eval --impure --raw --expr builtins.currentSystem)"
 sudo env NIX_CONFIG="extra-experimental-features = nix-command flakes" \
-  nix run '.#darwin-rebuild' -- switch --flake ".#$target"
+  nix run '.#darwin-rebuild' -- switch --flake '.#oss-aarch64-darwin'
 ```
 
 Check that the current Homebrew installation satisfies the Brewfile without

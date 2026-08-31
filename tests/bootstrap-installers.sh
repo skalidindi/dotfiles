@@ -152,12 +152,6 @@ assert_log_order \
 assert_darwin_activation_precedes_every_brew_command oss-aarch64-darwin
 
 : >"$command_log"
-run_bootstrap x86_64
-grep -Fxq 'nix run .#darwin-rebuild -- switch --flake .#oss-x86_64-darwin' "$command_log" ||
-  fail "x86_64 should select the Intel Darwin target"
-assert_darwin_activation_precedes_every_brew_command oss-x86_64-darwin
-
-: >"$command_log"
 rm -f "$sandbox/home/.nix-profile/bin/npm"
 if run_bootstrap arm64 1 2>/dev/null; then
   fail "bootstrap should fail when Home Manager does not provide npm"
@@ -182,12 +176,12 @@ fi
 if HOME="$sandbox/home" \
   PATH="$sandbox/bin:/usr/bin:/bin" \
   BOOTSTRAP_COMMAND_LOG="$command_log" \
-  FAKE_ARCH=unsupported-cpu \
+  FAKE_ARCH=x86_64 \
   "$root_dir/scripts/bootstrap" >/dev/null 2>&1; then
-  fail "an unsupported architecture should stop bootstrap"
+  fail "Intel should be rejected because only Apple Silicon is supported"
 fi
 if grep -Fq 'nix run' "$command_log"; then
-  fail "an unsupported architecture should stop before Darwin activation"
+  fail "Intel should stop before Darwin activation"
 fi
 
 : >"$command_log"

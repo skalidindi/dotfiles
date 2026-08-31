@@ -11,8 +11,8 @@ existing GUI, font, and macOS/work package manifest.
 
 - Add release-aligned `nix-darwin` to the flake, following the existing
   `nixpkgs-26.05-darwin` input.
-- Define explicit Apple Silicon and Intel `darwinConfigurations`. Each imports
-  the existing Home Manager host and shared modules through
+- Define the Apple Silicon `darwinConfigurations` target. It imports the
+  existing Home Manager host and shared modules through
   `home-manager.darwinModules.home-manager`.
 - Keep account-specific `system.primaryUser`, state version, and Nix feature
   settings in a Darwin host module. Do not add speculative macOS defaults.
@@ -33,12 +33,13 @@ existing GUI, font, and macOS/work package manifest.
   `./scripts/update`.
 - Preserve Home Manager's current host/shared identity boundary; shared modules
   must not contain an absolute user-home path.
-- Preserve explicit Apple Silicon and Intel evaluations.
+- Support Apple Silicon only; reject unsupported architectures before
+  activation.
 
 ## Verification
 
 - Shell tests cover Darwin target selection and confirm Nix/Darwin activation
   occurs before Homebrew mutation.
-- `nix flake check --all-systems` evaluates both Darwin outputs.
+- `nix flake check --all-systems` evaluates the Apple Silicon Darwin output.
 - The live current-architecture `darwin-rebuild switch` completes.
 - `brew bundle check --file="$PWD/Brewfile" --no-upgrade --verbose` passes.

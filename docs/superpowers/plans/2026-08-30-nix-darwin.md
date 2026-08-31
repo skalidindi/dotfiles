@@ -4,7 +4,7 @@
 
 **Goal:** Make nix-darwin the minimal macOS activation layer while retaining Home Manager and the Brewfile ownership boundaries.
 
-**Architecture:** `flake.nix` will construct an explicit nix-darwin system per Darwin architecture and import the existing Home Manager configuration as its user layer. A Darwin-only host module owns system identity and Nix settings. Bootstrap selects one architecture-specific Darwin target and invokes its flake-provided `darwin-rebuild` package before any Homebrew mutation.
+**Architecture:** `flake.nix` constructs the Apple Silicon nix-darwin system and imports the existing Home Manager configuration as its user layer. A Darwin-only host module owns system identity and Nix settings. Bootstrap selects the supported Darwin target and invokes its flake-provided `darwin-rebuild` package before any Homebrew mutation.
 
 **Tech Stack:** Nix flakes, nix-darwin 26.05, Home Manager 26.05, Bash, Homebrew Bundle.
 
@@ -15,6 +15,7 @@
 - Do not add nix-homebrew or duplicate the Brewfile package list in Nix.
 - Do not modify `/Users/skalidindi/work/dotfiles`.
 - Do not read, decrypt, or print encrypted secret contents.
+- Support Apple Silicon only; reject Intel and any other unsupported architecture.
 - Keep `./scripts/bootstrap` and `./scripts/update` as the normal interface.
 - Require successful Nix/Darwin activation before any Homebrew mutation.
 
@@ -29,11 +30,11 @@
 
 **Interfaces:**
 - Consumes: the existing `home-manager/hosts/skalidindi.nix` and shared modules.
-- Produces: `darwinConfigurations.oss-aarch64-darwin` and `darwinConfigurations.oss-x86_64-darwin`, plus a flake `darwin-rebuild` package per system.
+- Produces: `darwinConfigurations.oss-aarch64-darwin` and its flake `darwin-rebuild` package.
 
 - [x] **Step 1: Write the failing structural assertions**
 
-Add checks that the flake declares release-aligned nix-darwin, exports both Darwin targets, and that the Darwin host module contains `system.primaryUser`, a Darwin state version, and flake feature settings without a hard-coded `/Users/<username>` path.
+Add checks that the flake declares release-aligned nix-darwin, exports the Apple Silicon Darwin target, and that the Darwin host module contains `system.primaryUser`, a Darwin state version, and flake feature settings without a hard-coded `/Users/<username>` path.
 
 - [x] **Step 2: Run the focused test to verify it fails**
 

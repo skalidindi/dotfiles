@@ -156,28 +156,22 @@ nix_args=(--extra-experimental-features 'nix-command flakes')
 
 target_names="$("$nix_bin" "${nix_args[@]}" eval --raw "$root_dir#homeConfigurations" \
   --apply 'configs: builtins.concatStringsSep "," (builtins.attrNames configs)')"
-[[ "$target_names" == 'oss-aarch64-darwin,oss-x86_64-darwin' ]] ||
-  fail "Home Manager should expose only explicit Apple Silicon and Intel targets"
+[[ "$target_names" == 'oss-aarch64-darwin' ]] ||
+  fail "Home Manager should expose only the Apple Silicon target"
 
 darwin_target_names="$("$nix_bin" "${nix_args[@]}" eval --raw "$root_dir#darwinConfigurations" \
   --apply 'configs: builtins.concatStringsSep "," (builtins.attrNames configs)')"
-[[ "$darwin_target_names" == 'oss-aarch64-darwin,oss-x86_64-darwin' ]] ||
-  fail "nix-darwin should expose only explicit Apple Silicon and Intel targets"
+[[ "$darwin_target_names" == 'oss-aarch64-darwin' ]] ||
+  fail "nix-darwin should expose only the Apple Silicon target"
 
 "$nix_bin" "${nix_args[@]}" eval --raw \
   "$root_dir#homeConfigurations.\"oss-aarch64-darwin\".activationPackage.drvPath" >/dev/null
 "$nix_bin" "${nix_args[@]}" eval --raw \
-  "$root_dir#homeConfigurations.\"oss-x86_64-darwin\".activationPackage.drvPath" >/dev/null
-"$nix_bin" "${nix_args[@]}" eval --raw \
   "$root_dir#darwinConfigurations.\"oss-aarch64-darwin\".system.drvPath" >/dev/null
-"$nix_bin" "${nix_args[@]}" eval --raw \
-  "$root_dir#darwinConfigurations.\"oss-x86_64-darwin\".system.drvPath" >/dev/null
 "$nix_bin" "${nix_args[@]}" eval --raw \
   "$root_dir#packages.aarch64-darwin.home-manager.name" >/dev/null
 "$nix_bin" "${nix_args[@]}" eval --raw \
   "$root_dir#packages.aarch64-darwin.darwin-rebuild.name" >/dev/null
-"$nix_bin" "${nix_args[@]}" eval --raw \
-  "$root_dir#packages.x86_64-darwin.darwin-rebuild.name" >/dev/null
 
 source_manifest() {
   local file_group="$1"
@@ -293,4 +287,4 @@ gpg_sign="$(printf '%s' "$git_profile" | git config --file /dev/stdin --type=boo
 [[ "$gpg_sign" == 'true' ]] ||
   fail "the generated Git profile should enable commit signing"
 
-printf 'PASS: Home Manager modules, Darwin integration, identity boundary, and explicit targets\n'
+printf 'PASS: Home Manager modules, Apple Silicon Darwin integration, and identity boundary\n'

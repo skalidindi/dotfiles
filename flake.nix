@@ -13,7 +13,7 @@
 
   outputs = { self, nixpkgs, home-manager, nix-darwin, ... }:
     let
-      systems = [ "aarch64-darwin" "x86_64-darwin" ];
+      systems = [ "aarch64-darwin" ];
       forAllSystems = f: nixpkgs.lib.genAttrs systems f;
       homeModules = [
         ./home-manager/hosts/skalidindi.nix
@@ -46,12 +46,10 @@
       # Evaluation only; darwin-rebuild is the system activation path.
       homeConfigurations = {
         "oss-aarch64-darwin" = mkHomeConfiguration "aarch64-darwin";
-        "oss-x86_64-darwin" = mkHomeConfiguration "x86_64-darwin";
       };
 
       darwinConfigurations = {
         "oss-aarch64-darwin" = mkDarwinConfiguration "aarch64-darwin";
-        "oss-x86_64-darwin" = mkDarwinConfiguration "x86_64-darwin";
       };
 
       packages = forAllSystems (system: {
