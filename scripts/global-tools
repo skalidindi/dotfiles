@@ -38,8 +38,8 @@ export PATH="$HOME/.local/bin:$PATH"
 
 if command -v npm >/dev/null 2>&1; then
   echo "Installing mutable agent packages..."
-  npm install -g --prefix "$HOME/.local" @anthropic-ai/claude-code
-  npm install -g --prefix "$HOME/.local" @openai/codex
+  # npm install -g --prefix "$HOME/.local" @anthropic-ai/claude-code
+  # npm install -g --prefix "$HOME/.local" @openai/codex
   npm install -g --prefix "$HOME/.local" hunkdiff
   install_hunk_skill
 else
