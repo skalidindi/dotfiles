@@ -16,6 +16,9 @@ select_darwin_target() {
     arm64)
       printf '%s\n' oss-aarch64-darwin
       ;;
+    x86_64)
+      printf '%s\n' oss-x86_64-darwin
+      ;;
     *)
       printf 'bootstrap: unsupported architecture: %s\n' "$architecture" >&2
       return 1

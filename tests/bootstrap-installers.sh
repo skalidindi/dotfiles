@@ -170,11 +170,13 @@ if HOME="$sandbox/home" \
   BOOTSTRAP_COMMAND_LOG="$command_log" \
   FAKE_ARCH=x86_64 \
   "$root_dir/scripts/bootstrap" >/dev/null 2>&1; then
-  fail "Intel should be rejected because only Apple Silicon is supported"
+  :
+else
+  fail "Intel Mac should be accepted by bootstrap"
 fi
-if grep -Fq 'nix run' "$command_log"; then
-  fail "Intel should stop before Darwin activation"
-fi
+grep -Fq 'nix run .#darwin-rebuild -- switch --flake .#oss-x86_64-darwin' "$command_log" ||
+  fail "Intel Mac should activate the x86_64 Darwin target"
+assert_darwin_activation_precedes_every_brew_command oss-x86_64-darwin
 
 : >"$command_log"
 HOME="$sandbox/home" \

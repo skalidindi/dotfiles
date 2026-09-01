@@ -13,7 +13,7 @@
 
   outputs = { self, nixpkgs, home-manager, nix-darwin, ... }:
     let
-      systems = [ "aarch64-darwin" "x86_64-linux" ];
+      systems = [ "aarch64-darwin" "x86_64-darwin" "x86_64-linux" ];
       forAllSystems = f: nixpkgs.lib.genAttrs systems f;
       homeModules = [
         ./home-manager/hosts/skalidindi.nix
@@ -50,6 +50,10 @@
           system = "aarch64-darwin";
           homeDirectory = "/Users/skalidindi";
         };
+        "oss-x86_64-darwin" = mkHomeConfiguration {
+          system = "x86_64-darwin";
+          homeDirectory = "/Users/skalidindi";
+        };
         "oss-x86_64-linux" = mkHomeConfiguration {
           system = "x86_64-linux";
           homeDirectory = "/home/skalidindi";
@@ -58,6 +62,7 @@
 
       darwinConfigurations = {
         "oss-aarch64-darwin" = mkDarwinConfiguration "aarch64-darwin";
+        "oss-x86_64-darwin" = mkDarwinConfiguration "x86_64-darwin";
       };
 
       packages = {
@@ -65,13 +70,17 @@
           darwin-rebuild = nix-darwin.packages.aarch64-darwin.darwin-rebuild;
           home-manager = home-manager.packages.aarch64-darwin.home-manager;
         };
+        x86_64-darwin = {
+          darwin-rebuild = nix-darwin.packages.x86_64-darwin.darwin-rebuild;
+          home-manager = home-manager.packages.x86_64-darwin.home-manager;
+        };
         x86_64-linux = {
           home-manager = home-manager.packages.x86_64-linux.home-manager;
         };
       };
 
       checks = forAllSystems (system: {
-        default = if system == "aarch64-darwin"
+        default = if nixpkgs.lib.hasSuffix "-darwin" system
           then self.darwinConfigurations."oss-${system}".system
           else self.homeConfigurations."oss-${system}".activationPackage;
       });

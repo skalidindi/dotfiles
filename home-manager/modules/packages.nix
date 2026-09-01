@@ -20,6 +20,7 @@
     pkgs.go
     pkgs.httpie
     pkgs.imagemagick
+    pkgs.git-lfs
     pkgs.jless
     pkgs.jq
     pkgs.lazygit
@@ -38,6 +39,7 @@
     pkgs.tree-sitter
     pkgs.ty
     pkgs.uv
+    pkgs.unzip
     pkgs.vivid
     pkgs.wget
     pkgs.worktrunk

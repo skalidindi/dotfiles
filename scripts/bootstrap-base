@@ -16,6 +16,9 @@ case "$(uname -s):$(uname -m)" in
   Darwin:arm64)
     target="oss-aarch64-darwin"
     ;;
+  Darwin:x86_64)
+    target="oss-x86_64-darwin"
+    ;;
   Linux:x86_64)
     target="oss-x86_64-linux"
     ;;

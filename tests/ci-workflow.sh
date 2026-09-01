@@ -21,15 +21,15 @@ for required in \
   'actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09' \
   'DeterminateSystems/nix-installer-action@ef8a148080ab6020fd15196c2084a2eea5ff2d25' \
   'for test in tests/*.sh; do bash "$test" || exit 1; done' \
-  "nix --extra-experimental-features 'nix-command flakes' flake check"; do
+  "nix --extra-experimental-features 'nix-command flakes' flake check --all-systems"; do
   grep -Fq "$required" "$workflow" ||
     fail "the CI verification workflow should contain $required"
 done
 
-for prohibited in 'darwin-rebuild' 'scripts/bootstrap' 'scripts/update' 'brew' 'flake check --all-systems'; do
+for prohibited in 'darwin-rebuild' 'scripts/bootstrap' 'scripts/update' 'brew'; do
   if grep -Fq "$prohibited" "$workflow"; then
     fail "the CI verification workflow should not run $prohibited"
   fi
 done
 
-printf 'PASS: CI workflow validates the Apple Silicon Nix configuration without activation\n'
+printf 'PASS: CI workflow validates all Nix systems without activation\n'

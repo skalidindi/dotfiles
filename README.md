@@ -70,10 +70,11 @@ configuration.
 
 ## Nix/Darwin hosts
 
-The flake exposes the Apple Silicon `oss-aarch64-darwin` Darwin configuration
-and the portable `oss-x86_64-linux` Home Manager configuration used by Work
-Dev Workspaces. `./scripts/bootstrap` is the full macOS setup; Work invokes
-`./scripts/bootstrap-base` for the Linux Home Manager layer.
+The flake exposes `oss-aarch64-darwin` and `oss-x86_64-darwin` Darwin
+configurations, plus the portable `oss-x86_64-linux` Home Manager
+configuration used by Work Dev Workspaces. `./scripts/bootstrap` is the full
+macOS setup; Work invokes `./scripts/bootstrap-base` for the Linux Home
+Manager layer.
 
 `home-manager/hosts/skalidindi.nix` owns the Home Manager account identity and
 OSS Git identity. `darwin/hosts/skalidindi.nix` owns the system primary user and

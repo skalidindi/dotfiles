@@ -156,18 +156,22 @@ nix_args=(--extra-experimental-features 'nix-command flakes')
 
 target_names="$("$nix_bin" "${nix_args[@]}" eval --raw "$root_dir#homeConfigurations" \
   --apply 'configs: builtins.concatStringsSep "," (builtins.attrNames configs)')"
-[[ "$target_names" == 'oss-aarch64-darwin,oss-x86_64-linux' ]] ||
-  fail "Home Manager should expose Apple Silicon and Linux targets"
+[[ "$target_names" == 'oss-aarch64-darwin,oss-x86_64-darwin,oss-x86_64-linux' ]] ||
+  fail "Home Manager should expose Apple Silicon, Intel Mac, and Linux targets"
 
 darwin_target_names="$("$nix_bin" "${nix_args[@]}" eval --raw "$root_dir#darwinConfigurations" \
   --apply 'configs: builtins.concatStringsSep "," (builtins.attrNames configs)')"
-[[ "$darwin_target_names" == 'oss-aarch64-darwin' ]] ||
-  fail "nix-darwin should expose only the Apple Silicon target"
+[[ "$darwin_target_names" == 'oss-aarch64-darwin,oss-x86_64-darwin' ]] ||
+  fail "nix-darwin should expose both Mac architectures"
 
 "$nix_bin" "${nix_args[@]}" eval --raw \
   "$root_dir#homeConfigurations.\"oss-aarch64-darwin\".activationPackage.drvPath" >/dev/null
 "$nix_bin" "${nix_args[@]}" eval --raw \
   "$root_dir#darwinConfigurations.\"oss-aarch64-darwin\".system.drvPath" >/dev/null
+"$nix_bin" "${nix_args[@]}" eval --raw \
+  "$root_dir#homeConfigurations.\"oss-x86_64-darwin\".activationPackage.drvPath" >/dev/null
+"$nix_bin" "${nix_args[@]}" eval --raw \
+  "$root_dir#darwinConfigurations.\"oss-x86_64-darwin\".system.drvPath" >/dev/null
 configuration_revision="$("$nix_bin" "${nix_args[@]}" eval --raw \
   "$root_dir#darwinConfigurations.\"oss-aarch64-darwin\".config.system.configurationRevision")"
 [[ -n "$configuration_revision" ]] ||
@@ -176,6 +180,10 @@ configuration_revision="$("$nix_bin" "${nix_args[@]}" eval --raw \
   "$root_dir#packages.aarch64-darwin.home-manager.name" >/dev/null
 "$nix_bin" "${nix_args[@]}" eval --raw \
   "$root_dir#packages.aarch64-darwin.darwin-rebuild.name" >/dev/null
+"$nix_bin" "${nix_args[@]}" eval --raw \
+  "$root_dir#packages.x86_64-darwin.home-manager.name" >/dev/null
+"$nix_bin" "${nix_args[@]}" eval --raw \
+  "$root_dir#packages.x86_64-darwin.darwin-rebuild.name" >/dev/null
 "$nix_bin" "${nix_args[@]}" eval --raw \
   "$root_dir#homeConfigurations.oss-x86_64-linux.activationPackage.drvPath" >/dev/null
 

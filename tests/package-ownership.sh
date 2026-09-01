@@ -70,6 +70,7 @@ gnupg
 go
 httpie
 imagemagick
+git-lfs
 jless
 jq
 lazygit
@@ -87,6 +88,7 @@ television
 tree
 tree-sitter
 ty
+unzip
 uv
 vivid
 wget
@@ -218,7 +220,7 @@ fi
 
 required_count="$(wc -l <<<"$required_home_manager_packages" | tr -d ' ')"
 
-for system in aarch64-darwin x86_64-linux; do
+for system in aarch64-darwin x86_64-darwin x86_64-linux; do
   evaluated_packages="$({
     "$nix_bin" "${nix_args[@]}" eval --raw \
       "$root_dir#homeConfigurations.\"oss-$system\".config.home.packages" \
