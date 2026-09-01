@@ -104,10 +104,11 @@ Run the shell tests sequentially:
 for test in tests/*.sh; do bash "$test" || exit 1; done
 ```
 
-Validate every flake output and both Nix/Darwin targets:
+Validate the native flake output, then evaluate all advertised Nix/Darwin
+targets without cross-building them:
 
 ```bash
-nix --extra-experimental-features 'nix-command flakes' flake check --all-systems
+nix --extra-experimental-features 'nix-command flakes' flake check
 bash tests/home-manager.sh
 ```
 

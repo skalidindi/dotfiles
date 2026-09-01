@@ -18,4 +18,8 @@ jobs:
       - name: Run checks
         run: |
           for test in tests/*.sh; do bash "$test" || exit 1; done
-          nix --extra-experimental-features 'nix-command flakes' flake check --all-systems
+          # Build the runner's native target. Cross-system target coverage is
+          # exercised by the evaluation tests above; --all-systems attempts
+          # to build Linux on the ARM macOS runner and fails with a platform
+          # mismatch.
+          nix --extra-experimental-features 'nix-command flakes' flake check
