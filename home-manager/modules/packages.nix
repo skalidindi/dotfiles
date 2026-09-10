@@ -27,6 +27,9 @@
     pkgs.lua
     pkgs.neovim
     pkgs.nmap
+    # Keep Nix's compatibility commands available while layered Home Manager
+    # activations run in the same workspace process.
+    pkgs.nix
     pkgs.nodejs
     pkgs.pnpm
     pkgs.python3
