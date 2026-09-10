@@ -159,6 +159,11 @@ target_names="$("$nix_bin" "${nix_args[@]}" eval --raw "$root_dir#homeConfigurat
 [[ "$target_names" == 'oss-aarch64-darwin,oss-x86_64-darwin,oss-x86_64-linux' ]] ||
   fail "Home Manager should expose Apple Silicon, Intel Mac, and Linux targets"
 
+linux_home_directory="$("$nix_bin" "${nix_args[@]}" eval --raw \
+  "$root_dir#homeConfigurations.oss-x86_64-linux.config.home.homeDirectory")"
+[[ "$linux_home_directory" == '/home/coder' ]] ||
+  fail "the Linux Home Manager target should match the Dev Workspace home directory"
+
 darwin_target_names="$("$nix_bin" "${nix_args[@]}" eval --raw "$root_dir#darwinConfigurations" \
   --apply 'configs: builtins.concatStringsSep "," (builtins.attrNames configs)')"
 [[ "$darwin_target_names" == 'oss-aarch64-darwin,oss-x86_64-darwin' ]] ||

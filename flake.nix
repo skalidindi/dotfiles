@@ -56,7 +56,9 @@
         };
         "oss-x86_64-linux" = mkHomeConfiguration {
           system = "x86_64-linux";
-          homeDirectory = "/home/skalidindi";
+          # Netflix Dev Workspaces run the user as skalidindi with /home/coder
+          # as the mounted home directory.
+          homeDirectory = "/home/coder";
         };
       };
 
