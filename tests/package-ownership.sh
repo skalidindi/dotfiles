@@ -78,7 +78,6 @@ lua
 neovim
 nmap
 nodejs
-nix
 pnpm
 python3
 ripgrep

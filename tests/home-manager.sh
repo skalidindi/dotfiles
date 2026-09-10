@@ -133,7 +133,7 @@ grep -Fq 'lock="$HOME/.config/nvim/lazy-lock.json"' "$programs_module" ||
 grep -Fq 'pkgs.neovim' "$packages_module" ||
   fail "the packages module should retain Neovim ownership"
 
-for helper in configure-oss-git zrun; do
+for helper in configure-oss-git nix-build zrun; do
   grep -Fq ".local/bin/$helper" "$files_module" ||
     fail "the files module should own the $helper helper"
 done
@@ -263,6 +263,7 @@ done <<'EOF'
 .exports|config/bash/.exports
 .functions|config/bash/.functions
 .local/bin/configure-oss-git|scripts/bin/configure-oss-git
+.local/bin/nix-build|scripts/bin/nix-build
 .local/bin/zrun|scripts/bin/zrun
 .path|config/bash/.path
 .zsh.d/_flamegraph|config/zsh/.zsh.d/_flamegraph

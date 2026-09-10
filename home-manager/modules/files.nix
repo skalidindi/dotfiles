@@ -105,6 +105,12 @@
       force = true;
     };
 
+    ".local/bin/nix-build" = {
+      source = ../../scripts/bin/nix-build;
+      executable = true;
+      force = true;
+    };
+
     ".local/bin/zrun" = {
       source = ../../scripts/bin/zrun;
       executable = true;

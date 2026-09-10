@@ -30,7 +30,7 @@ esac
 
 # Home Manager's activation script invokes `nix` by name, so make the
 # discovered per-user or system profile available to child processes.
-export PATH="$(dirname "$nix_bin"):$PATH"
+export PATH="$HOME/.local/bin:$(dirname "$nix_bin"):$PATH"
 
 cd "$repo_root"
 NIX_CONFIG="extra-experimental-features = nix-command flakes" \
