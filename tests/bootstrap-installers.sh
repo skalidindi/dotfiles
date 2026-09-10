@@ -25,6 +25,22 @@ command_log="$sandbox/commands.log"
 : >"$command_log"
 export BOOTSTRAP_TEST_HOME="$sandbox/home"
 
+mkdir -p "$sandbox/home/.nix-profile/bin"
+cat >"$sandbox/home/.nix-profile/bin/nix" <<'EOF'
+#!/usr/bin/env bash
+exit 0
+EOF
+chmod +x "$sandbox/home/.nix-profile/bin/nix"
+
+nix_profile_path="$(
+  env -u NIX_BIN \
+    HOME="$sandbox/home" \
+    PATH="/usr/bin:/bin" \
+    /bin/bash -c 'source "$1"; find_nix' _ "$root_dir/scripts/lib/package-managers.sh"
+)" || fail "find_nix should discover the per-user Nix profile"
+[[ "$nix_profile_path" == "$sandbox/home/.nix-profile/bin/nix" ]] ||
+  fail "find_nix should prefer the per-user Nix profile when it is not on PATH"
+
 cat >"$sandbox/bin/uname" <<'EOF'
 #!/usr/bin/env bash
 set -euo pipefail

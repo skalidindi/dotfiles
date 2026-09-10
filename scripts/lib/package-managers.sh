@@ -30,6 +30,11 @@ find_nix() {
     return 0
   fi
 
+  if [[ -x "$HOME/.nix-profile/bin/nix" ]]; then
+    printf '%s\n' "$HOME/.nix-profile/bin/nix"
+    return 0
+  fi
+
   if [[ -x /nix/var/nix/profiles/default/bin/nix ]]; then
     printf '%s\n' /nix/var/nix/profiles/default/bin/nix
     return 0
