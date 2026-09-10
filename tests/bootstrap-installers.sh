@@ -273,4 +273,34 @@ fi
 [[ "$(cat "$command_log")" == $'nix flake update\nsudo env HOME=/var/root NIX_CONFIG=extra-experimental-features = nix-command flakes '"$sandbox"$'/bin/nix run .#darwin-rebuild -- switch --flake .#oss-aarch64-darwin\nnix run .#darwin-rebuild -- switch --flake .#oss-aarch64-darwin' ]] ||
   fail "update should activate Darwin before mutating Homebrew packages"
 
+mkdir -p "$sandbox/linux-bin"
+cat >"$sandbox/linux-bin/uname" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+case "${1:-}" in
+  -s) printf 'Linux\n' ;;
+  -m) printf 'x86_64\n' ;;
+  *) printf 'unexpected uname argument: %s\n' "${1:-}" >&2; exit 64 ;;
+esac
+EOF
+chmod +x "$sandbox/linux-bin/uname"
+
+cat >"$sandbox/home/.nix-profile/bin/nix" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+if [[ "${1:-}" == run ]]; then
+  command -v nix >/dev/null 2>&1 || {
+    printf 'nix should be available to Home Manager through PATH\n' >&2
+    exit 1
+  }
+fi
+EOF
+chmod +x "$sandbox/home/.nix-profile/bin/nix"
+
+if ! HOME="$sandbox/home" \
+  PATH="$sandbox/linux-bin:/usr/bin:/bin" \
+  "$root_dir/scripts/bootstrap-base" >/dev/null 2>&1; then
+  fail "bootstrap-base should expose the discovered Nix profile to Home Manager"
+fi
+
 printf 'PASS: bootstrap and update commands select supported targets and stop on failure\n'
