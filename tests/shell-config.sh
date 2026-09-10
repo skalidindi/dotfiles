@@ -128,12 +128,12 @@ fi
 
 alias_stderr="$sandbox/zsh-alias.stderr"
 if ! HOME="$home" TERM=dumb PATH="$home/.nix-profile/bin:/usr/bin:/bin" \
-  /bin/zsh -c 'alias claude="command claude"; source "$1"; functions claude >/dev/null' \
+  /bin/zsh -c 'alias claude="command claude"; alias codex="command codex"; source "$1"; functions claude >/dev/null; functions codex >/dev/null' \
   _ "$root_dir/config/bash/.functions" 2>"$alias_stderr"; then
-  fail "zsh should load the Claude wrapper when a parent alias exists"
+  fail "zsh should load agent wrappers when parent aliases exist"
 fi
 [[ ! -s "$alias_stderr" ]] ||
-  fail "zsh should remove a parent Claude alias before defining the wrapper"
+  fail "zsh should remove parent agent aliases before defining wrappers"
 
 [[ "$(sed -n '1p' <<<"$zsh_result")" == 1 ]] ||
   fail "zsh should load Antidote from the Home Manager profile"
