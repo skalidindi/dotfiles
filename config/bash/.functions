@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
 # Keep agent identity scoped to the process that is launched.
+# Workspaces may define a Claude alias before loading these functions. Remove
+# it before zsh parses the function declaration so the wrapper remains valid.
+unalias claude 2>/dev/null || true
 claude() {
   HERDR_AGENT=claude command claude "$@"
 }
