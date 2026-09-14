@@ -53,6 +53,8 @@ pull repository changes.
   `home-manager/modules/packages.nix`.
 - Home Manager links static configuration from `config/` and executable helpers
   from `scripts/bin/`.
+- Volta owns Node.js and npm so repository pins in `package.json` take effect;
+  bootstrap installs Node 24 and npm 11 as the default toolchain.
 - `Brewfile` remains the sole Homebrew package source. It owns macOS
   applications, fonts, Java tooling, and the retained macOS or Work-adjacent
   formulae.

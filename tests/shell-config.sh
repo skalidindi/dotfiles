@@ -27,15 +27,19 @@ for command_dir in \
   "$home/.nix-profile/bin" \
   "$home/.cargo/bin" \
   "$home/.npm-global/bin" \
-  "$home/.volta/bin" \
   "$home/.local/bin" \
   "$home/.nub/bin" \
   "$home/.antigravity/antigravity/bin" \
   "$home/xp-env/bin"; do
-  for command_name in cargo git node nvim; do
+  for command_name in cargo git node npm nvim; do
     printf '#!/usr/bin/env bash\n' >"$command_dir/$command_name"
     chmod +x "$command_dir/$command_name"
   done
+done
+
+for command_name in node npm; do
+  printf '#!/usr/bin/env bash\n' >"$home/.volta/bin/$command_name"
+  chmod +x "$home/.volta/bin/$command_name"
 done
 
 printf '#!/usr/bin/env bash\n' >"$home/.local/bin/agent-doctor"
@@ -54,20 +58,26 @@ if ! resolved_commands="$({
     path_once="$PATH"
     source "$1"
     [[ "$PATH" == "$path_once" ]] || exit 1
-    printf "%s\n" "$PATH" "$(command -v git)" "$(command -v agent-doctor)" "${PYTHON_HOME-unset}"
+    printf "%s\n" "$PATH" "$(command -v git)" "$(command -v node)" "$(command -v npm)" "$(command -v agent-doctor)" "${PYTHON_HOME-unset}"
   ' _ "$root_dir/config/bash/.path"
 })"; then
   fail "repeated shell startup should not accumulate PATH entries"
 fi
 resolved_path="$(sed -n '1p' <<<"$resolved_commands")"
 resolved_git="$(sed -n '2p' <<<"$resolved_commands")"
-resolved_agent_doctor="$(sed -n '3p' <<<"$resolved_commands")"
-python_home="$(sed -n '4p' <<<"$resolved_commands")"
+resolved_node="$(sed -n '3p' <<<"$resolved_commands")"
+resolved_npm="$(sed -n '4p' <<<"$resolved_commands")"
+resolved_agent_doctor="$(sed -n '5p' <<<"$resolved_commands")"
+python_home="$(sed -n '6p' <<<"$resolved_commands")"
 
-[[ "$resolved_path" == "$home/.nix-profile/bin:"* ]] ||
-  fail "Home Manager packages should remain first on PATH"
+[[ "$resolved_path" == "$home/.volta/bin:$home/.nix-profile/bin:"* ]] ||
+  fail "Volta should precede Home Manager without displacing the Nix profile"
 [[ "$resolved_git" == "$home/.nix-profile/bin/git" ]] ||
   fail "legacy tool directories should not shadow Home Manager packages"
+[[ "$resolved_node" == "$home/.volta/bin/node" ]] ||
+  fail "Volta should own Node.js"
+[[ "$resolved_npm" == "$home/.volta/bin/npm" ]] ||
+  fail "Volta should own npm"
 [[ "$resolved_agent_doctor" == "$home/.local/bin/agent-doctor" ]] ||
   fail "user-owned helpers should remain discoverable"
 [[ "$python_home" == unset && "$resolved_path" != *'/opt/python/libexec'* ]] ||
@@ -115,7 +125,7 @@ if ! zsh_result="$({
     /bin/zsh -c '
       source "$1"
       print -r -- "$ANTIDOTE_FROM_NIX_PROFILE"
-      for command_name in cargo git node nvim; do
+      for command_name in cargo git node npm nvim; do
         command -v "$command_name"
       done
       print -r -- "$PATH"
@@ -137,12 +147,16 @@ fi
 
 [[ "$(sed -n '1p' <<<"$zsh_result")" == 1 ]] ||
   fail "zsh should load Antidote from the Home Manager profile"
-for result_line in 2 3 4 5; do
+for result_line in 2 3 6; do
   [[ "$(sed -n "${result_line}p" <<<"$zsh_result")" == "$home/.nix-profile/bin/"* ]] ||
     fail "the complete zsh startup chain should keep Home Manager tools authoritative"
 done
+[[ "$(sed -n '4p' <<<"$zsh_result")" == "$home/.volta/bin/node" ]] ||
+  fail "the complete zsh startup chain should select Volta Node.js"
+[[ "$(sed -n '5p' <<<"$zsh_result")" == "$home/.volta/bin/npm" ]] ||
+  fail "the complete zsh startup chain should select Volta npm"
 
-zsh_path="$(sed -n '6p' <<<"$zsh_result")"
+zsh_path="$(sed -n '7p' <<<"$zsh_result")"
 for launcher_dir in \
   "$home/.nub/bin" \
   "$home/.antigravity/antigravity/bin" \

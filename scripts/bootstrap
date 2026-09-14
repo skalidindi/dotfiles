@@ -87,6 +87,20 @@ run_home_manager_helper() {
   "$helper_path"
 }
 
+install_node_toolchain() {
+  export VOLTA_HOME="$HOME/.volta"
+  export PATH="$VOLTA_HOME/bin:$PATH"
+
+  if ! command -v volta >/dev/null 2>&1; then
+    printf 'bootstrap: Volta is required after applying the Brewfile\n' >&2
+    return 1
+  fi
+
+  printf 'Installing Node.js and npm through Volta...\n'
+  volta install node@24
+  volta install npm@11
+}
+
 main() {
   local target
 
@@ -98,6 +112,7 @@ main() {
 
   ensure_homebrew
   "$brew_bin" bundle --file="$repo_root/Brewfile"
+  install_node_toolchain
 
   export PATH="$HOME/.nix-profile/bin:$PATH"
   run_home_manager_helper configure-oss-git

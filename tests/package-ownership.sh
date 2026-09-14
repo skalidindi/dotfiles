@@ -77,7 +77,6 @@ lazygit
 lua
 neovim
 nmap
-nodejs
 pnpm
 python3
 ripgrep
@@ -105,6 +104,10 @@ while IFS= read -r package; do
   contains_line "$package" "$home_manager_packages" ||
     fail "Home Manager should own nixpkgs package $package"
 done <<<"$required_home_manager_packages"
+
+if contains_line nodejs "$home_manager_packages"; then
+  fail "Volta, not Home Manager, should own Node.js"
+fi
 
 portable_brew_formulae="$(cat <<'EOF'
 ansible

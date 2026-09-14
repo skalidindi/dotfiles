@@ -8,14 +8,25 @@ path_append() {
   esac
 }
 
+path_prepend() {
+  local directory="$1"
+  local entry
+  local previous_ifs="$IFS"
+  local updated_path=""
+
+  [ -d "$directory" ] || return 0
+  IFS=:
+  for entry in $PATH; do
+    [ "$entry" = "$directory" ] && continue
+    updated_path="${updated_path:+$updated_path:}$entry"
+  done
+  IFS="$previous_ifs"
+  PATH="$directory${updated_path:+:$updated_path}"
+}
+
 # Keep Home Manager authoritative even when a parent process inherited a
 # legacy tool directory ahead of the user profile.
-if [ -d "$HOME/.nix-profile/bin" ]; then
-  case "$PATH" in
-    "$HOME/.nix-profile/bin"|"$HOME/.nix-profile/bin":*) ;;
-    *) PATH="$HOME/.nix-profile/bin${PATH:+:$PATH}" ;;
-  esac
-fi
+path_prepend "$HOME/.nix-profile/bin"
 
 # Append retained machine-local and user-owned executable directories.
 path_append "$HOME/bin"
@@ -31,7 +42,7 @@ path_append "$HOME/.cargo/bin"
 path_append "$HOME/.npm-global/bin"
 
 export VOLTA_HOME="$HOME/.volta"
-path_append "$VOLTA_HOME/bin"
+path_prepend "$VOLTA_HOME/bin"
 path_append "$HOME/.local/bin"
 path_append "$HOME/.nub/bin"
 path_append "$HOME/.antigravity/antigravity/bin"
@@ -39,4 +50,4 @@ path_append "$HOME/xp-env/bin"
 path_append "$HOME/.lmstudio/bin"
 
 export PATH
-unset -f path_append
+unset -f path_append path_prepend

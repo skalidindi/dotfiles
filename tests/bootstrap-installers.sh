@@ -89,6 +89,16 @@ NPM
 fi
 EOF
 
+cat >"$sandbox/bin/volta" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+printf 'volta %s\n' "$*" >>"$BOOTSTRAP_COMMAND_LOG"
+
+if [[ "${FAKE_FAILURE:-}" == "volta-${1:-}-${2:-}" ]]; then
+  exit 42
+fi
+EOF
+
 cat >"$sandbox/bin/sudo" <<'EOF'
 #!/usr/bin/env bash
 set -euo pipefail
@@ -157,6 +167,8 @@ assert_log_order \
   'nix run .#darwin-rebuild -- switch --flake .#oss-aarch64-darwin' \
   'brew shellenv' \
   "brew bundle --file=$root_dir/Brewfile" \
+  'volta install node@24' \
+  'volta install npm@11' \
   'configure-oss-git' \
   'gpg --decrypt '
 assert_darwin_activation_precedes_every_brew_command oss-aarch64-darwin
@@ -167,6 +179,18 @@ run_bootstrap arm64 1
 if grep -Fq 'npm install' "$command_log"; then
   fail "bootstrap should not install agent tools with npm"
 fi
+
+: >"$command_log"
+if HOME="$sandbox/home" \
+  PATH="$sandbox/bin:/usr/bin:/bin" \
+  BOOTSTRAP_COMMAND_LOG="$command_log" \
+  FAKE_ARCH=arm64 \
+  FAKE_FAILURE=volta-install-node@24 \
+  "$root_dir/scripts/bootstrap" >/dev/null 2>&1; then
+  fail "bootstrap should stop when Volta cannot install Node.js"
+fi
+[[ "$(tail -n 1 "$command_log")" == 'volta install node@24' ]] ||
+  fail "bootstrap should not continue after a failed Node.js install"
 
 : >"$command_log"
 if HOME="$sandbox/home" \
@@ -205,6 +229,8 @@ assert_log_order \
   'nix run .#darwin-rebuild -- switch --flake .#oss-aarch64-darwin' \
   'brew shellenv' \
   "brew bundle --file=$root_dir/Brewfile" \
+  'volta install node@24' \
+  'volta install npm@11' \
   'configure-oss-git' \
   'gpg --decrypt ' \
   'brew update' \

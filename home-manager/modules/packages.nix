@@ -27,7 +27,6 @@
     pkgs.lua
     pkgs.neovim
     pkgs.nmap
-    pkgs.nodejs
     pkgs.pnpm
     pkgs.python3
     pkgs.ripgrep
