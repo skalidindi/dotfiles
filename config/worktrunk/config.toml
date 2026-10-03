@@ -1,8 +1,5 @@
 worktree-path = "~/work/{{ repo }}.{{ branch | sanitize }}"
 
-[list]
-json-schema = 1
-
 # # User Configuration
 #
 # Create with `wt config create`. Values shown are defaults unless noted otherwise.

@@ -156,6 +156,11 @@
       "name": "writing-for-agents",
       "source": "mattpocock/skills",
       "path": "skills/productivity/writing-for-agents"
+    },
+    {
+      "name": "zero-tech-debt",
+      "source": "jnsahaj/skills",
+      "path": "skills/zero-tech-debt"
     }
   ]
 }
