@@ -88,9 +88,24 @@
       "path": "cursor-team-kit/skills/make-pr-easy-to-review"
     },
     {
+      "name": "principle-encode-lessons-in-structure",
+      "source": "cursor/plugins",
+      "path": "pstack/skills/principle-encode-lessons-in-structure"
+    },
+    {
+      "name": "principle-prove-it-works",
+      "source": "cursor/plugins",
+      "path": "pstack/skills/principle-prove-it-works"
+    },
+    {
       "name": "prototype",
       "source": "mattpocock/skills",
       "path": "skills/engineering/prototype"
+    },
+    {
+      "name": "reflect",
+      "source": "cursor/plugins",
+      "path": "pstack/skills/reflect"
     },
     {
       "name": "research",
