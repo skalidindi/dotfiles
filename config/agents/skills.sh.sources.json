@@ -88,6 +88,11 @@
       "path": "cursor-team-kit/skills/make-pr-easy-to-review"
     },
     {
+      "name": "no-comments",
+      "source": "cursor/plugins",
+      "path": "pstack/skills/no-comments"
+    },
+    {
       "name": "principle-encode-lessons-in-structure",
       "source": "cursor/plugins",
       "path": "pstack/skills/principle-encode-lessons-in-structure"
