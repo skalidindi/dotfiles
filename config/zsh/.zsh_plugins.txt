@@ -15,6 +15,9 @@ belak/zsh-utils path:utility
 ohmyzsh/ohmyzsh path:lib
 ohmyzsh/ohmyzsh path:plugins/docker kind:fpath
 
+# Load after Oh My Zsh key bindings and initialize completions first.
+Aloxaf/fzf-tab pre:run-compinit
+
 # popular fish-like plugins
 mattmc3/zfunctions
 zsh-users/zsh-autosuggestions kind:defer
