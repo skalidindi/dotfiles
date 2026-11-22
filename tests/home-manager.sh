@@ -60,7 +60,6 @@ for identity_setting in \
   'home.homeDirectory' \
   'Santosh Kalidindi' \
   'skalidindi8@gmail.com' \
-  '5EFA48B9657D7C02' \
   'git/.gitconfig.oss-base' \
   'git/.gitconfig.oss-laptop' \
   'includeIf'; do
@@ -297,9 +296,19 @@ git_profile="$("$nix_bin" "${nix_args[@]}" eval --raw \
   "$root_dir#homeConfigurations.\"oss-aarch64-darwin\".config.xdg.configFile.\"git/.gitconfig.oss-base\".text")"
 signing_key="$(printf '%s' "$git_profile" | git config --file /dev/stdin --get user.signingKey || true)"
 gpg_sign="$(printf '%s' "$git_profile" | git config --file /dev/stdin --type=bool --get commit.gpgSign || true)"
-[[ "$signing_key" == '5EFA48B9657D7C02' ]] ||
-  fail "the generated Git profile should select the host GPG key through user.signingKey"
+[[ "$signing_key" == 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILStz8inUx8fxRsyC0YCILnXJlgTDc24tyiGenJJQHXY' ]] ||
+  fail "the generated Git profile should select the host SSH public key through user.signingKey"
 [[ "$gpg_sign" == 'true' ]] ||
   fail "the generated Git profile should enable commit signing"
+[[ "$(printf '%s' "$git_profile" | git config --file /dev/stdin --get gpg.format)" == ssh ]] ||
+  fail "the generated Git profile should use SSH signatures"
+[[ "$(printf '%s' "$git_profile" | git config --file /dev/stdin --get gpg.ssh.program)" == /Applications/1Password.app/Contents/MacOS/op-ssh-sign ]] ||
+  fail "the Mac Git profile should sign through 1Password"
+
+linux_git_profile="$("$nix_bin" "${nix_args[@]}" eval --raw \
+  "$root_dir#homeConfigurations.oss-x86_64-linux.config.xdg.configFile.\"git/.gitconfig.oss-base\".text")"
+if printf '%s' "$linux_git_profile" | git config --file /dev/stdin --get gpg.ssh.program; then
+  fail "the Linux Git profile should use the default SSH signing program"
+fi
 
 printf 'PASS: Home Manager modules, cross-platform target integration, and identity boundary\n'

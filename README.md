@@ -84,6 +84,13 @@ derived macOS home directory. To use this repository for another macOS account,
 add both host modules and a matching flake target rather than putting identity
 data in shared modules.
 
+OSS commits use SSH signatures with the Ed25519 key stored in 1Password. On
+macOS, Git calls 1Password's `op-ssh-sign` helper. Linux uses `ssh-keygen`
+and requires the key to be available through a forwarded SSH agent. The
+managed `~/.config/git/allowed_signers` file enables local verification.
+Register the public key as a signing key in your Git hosting account to show
+verified signatures there.
+
 ## Repository layout
 
 - `config/` contains declarative shell, editor, terminal, Git, and agent files.
